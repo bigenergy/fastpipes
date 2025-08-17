@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "CCC",
+    "GPG",
+    "CSC"
+  ],
+  "key": {
+    "C": {
+      "item": "minecraft:popped_chorus_fruit"
+    },
+    "G": {
+      "tag": "c:glass_blocks"
+    },
+    "P": {
+      "item": "minecraft:prismarine_shard"
+    },
+    "S": {
+      "tag": "c:slimeballs"
+    }
+  },
+  "result": {
+    "id": "fastpipes:ultimate_fluid_pipe",
+    "count": 6
+  }
+} 

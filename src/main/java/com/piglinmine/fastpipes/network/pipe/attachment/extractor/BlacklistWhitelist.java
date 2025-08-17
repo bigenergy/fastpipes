@@ -1,0 +1,27 @@
+package com.piglinmine.fastpipes.network.pipe.attachment.extractor;
+
+public enum BlacklistWhitelist {
+    BLACKLIST,
+    WHITELIST;
+
+    public static BlacklistWhitelist get(byte b) {
+        BlacklistWhitelist[] v = values();
+
+        if (b < 0 || b >= v.length) {
+            return BLACKLIST;
+        }
+
+        return v[b];
+    }
+
+    public BlacklistWhitelist next() {
+        switch (this) {
+            case BLACKLIST:
+                return WHITELIST;
+            case WHITELIST:
+                return BLACKLIST;
+            default:
+                return BLACKLIST;
+        }
+    }
+} 

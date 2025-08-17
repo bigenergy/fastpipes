@@ -1,0 +1,7 @@
+{
+  "parent": "fastpipes:block/pipe/item/extension",
+  "textures": {
+    "0": "fastpipes:blocks/pipe/item/connector",
+    "particle": "fastpipes:blocks/pipe/item/connector"
+  }
+}

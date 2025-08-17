@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "   ",
+    "DDD",
+    "DPD"
+  ],
+  "key": {
+    "D": {
+      "tag": "c:gems/diamond"
+    },
+    "P": {
+      "item": "fastpipes:improved_extractor_attachment"
+    }
+  },
+  "result": {
+    "id": "fastpipes:advanced_extractor_attachment"
+  }
+} 

@@ -1,0 +1,6 @@
+{
+  "parent": "fastpipes:block/pipe/attachment/attachment",
+  "textures": {
+    "1": "fastpipes:blocks/pipe/attachment/extractor/advanced"
+  }
+}

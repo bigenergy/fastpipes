@@ -1,0 +1,7 @@
+{
+  "parent": "fastpipes:block/pipe/item/core",
+  "textures": {
+    "0": "fastpipes:blocks/pipe/fluid/ultimate",
+    "particle": "fastpipes:blocks/pipe/fluid/ultimate"
+  }
+}

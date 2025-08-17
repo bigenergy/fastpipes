@@ -1,0 +1,8 @@
+{
+  "parent": "fastpipes:block/pipe/energy/straight",
+  "textures": {
+    "0": "fastpipes:blocks/pipe/energy/basic",
+    "1": "fastpipes:blocks/pipe/item/connector",
+    "particle": "fastpipes:blocks/pipe/energy/basic"
+  }
+}

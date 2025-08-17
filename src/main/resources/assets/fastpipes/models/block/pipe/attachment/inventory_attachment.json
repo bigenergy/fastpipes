@@ -1,0 +1,6 @@
+{
+  "parent": "fastpipes:block/pipe/attachment/attachment",
+  "textures": {
+    "attachment": "fastpipes:blocks/pipe/attachment/inventory_attachment"
+  }
+}

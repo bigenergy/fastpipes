@@ -1,0 +1,9 @@
+{
+  "sources": [
+    {
+      "type": "directory",
+      "source": "blocks/pipe",
+      "prefix": "blocks/pipe/"
+    }
+  ]
+} 
