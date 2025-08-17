@@ -28,3 +28,6 @@ A modern, high-performance pipe system for items, fluids, and energy—optimized
 - **Item Transport Animation**: Rotating items visible in pipes
 - **Fluid Visualization**: Animated fluid levels in pipes
 - **Attachment Rendering**: Full 3D representation of all attachments
+
+### Config
+All pipes can be fully customized in the config.
