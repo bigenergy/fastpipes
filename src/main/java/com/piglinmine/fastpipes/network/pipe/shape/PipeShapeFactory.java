@@ -7,10 +7,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
-// TODO: Implement PipeShapeFactory for NeoForge
 public class PipeShapeFactory {
     public PipeShapeFactory() {
-        // TODO: Implement shape factory system
     }
 
     public VoxelShape createShape(BlockState state, ResourceLocation[] attachmentState) {

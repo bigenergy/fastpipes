@@ -55,7 +55,6 @@ public abstract class PipeBlockEntity extends BaseBlockEntity {
         }
     }
 
-    // TODO: remove when chunk unloading is properly handled
     private boolean unloaded;
 
     @Override

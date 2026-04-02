@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-// TODO: Implement PipeShapeCache for NeoForge
 public class PipeShapeCache {
     private static final ResourceLocation[] NO_ATTACHMENT_STATE = new ResourceLocation[Direction.values().length];
 

@@ -3,7 +3,6 @@ package com.piglinmine.fastpipes.network.pipe.shape;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
-// TODO: Implement PipeShapeProps for NeoForge
 public class PipeShapeProps {
     public static final VoxelShape CORE_SHAPE = Block.box(4, 4, 4, 12, 12, 12);
     public static final VoxelShape NORTH_EXTENSION_SHAPE = Block.box(4, 4, 0, 12, 12, 4);

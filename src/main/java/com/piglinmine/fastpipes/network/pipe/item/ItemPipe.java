@@ -11,6 +11,7 @@ import com.piglinmine.fastpipes.network.pipe.transport.ItemTransportProps;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 
@@ -53,14 +54,15 @@ public class ItemPipe extends Pipe {
         super.readFromNbt(tag);
         // Type is set in constructor, no need to read from NBT
         
-        // TODO: Read transports from NBT when ItemTransport.of() is fully implemented
-        // ListTag transports = tag.getList("transports", Tag.TAG_COMPOUND);
-        // for (Tag transportTag : transports) {
-        //     ItemTransport transport = ItemTransport.of((CompoundTag) transportTag);
-        //     if (transport != null) {
-        //         this.transports.add(transport);
-        //     }
-        // }
+        if (tag.contains("transports")) {
+            ListTag transportList = tag.getList("transports", Tag.TAG_COMPOUND);
+            for (Tag transportTag : transportList) {
+                ItemTransport transport = ItemTransport.of((CompoundTag) transportTag, level.registryAccess());
+                if (transport != null) {
+                    transports.add(transport);
+                }
+            }
+        }
     }
 
     @Override

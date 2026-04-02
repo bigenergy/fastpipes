@@ -61,7 +61,8 @@ public class FluidPipeBlockEntity extends PipeBlockEntity {
     }
 
     public static void tick(FluidPipeBlockEntity blockEntity) {
-        // TODO: Implement fluid pipe ticking
+        // Server-side network updates are handled by FluidPipe.update() via CommonSetup.onLevelTick.
+        // Client-side fluid/fullness data is updated via FluidPipeMessage packets.
     }
 
     public FluidStack getFluid() {
