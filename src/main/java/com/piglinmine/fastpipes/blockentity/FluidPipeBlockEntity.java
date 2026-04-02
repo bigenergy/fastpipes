@@ -2,6 +2,8 @@ package com.piglinmine.fastpipes.blockentity;
 
 import com.piglinmine.fastpipes.FPipesBlockEntities;
 import com.piglinmine.fastpipes.FPipesBlocks;
+import com.piglinmine.fastpipes.network.NetworkManager;
+import com.piglinmine.fastpipes.network.fluid.FluidNetwork;
 import com.piglinmine.fastpipes.network.pipe.Pipe;
 import com.piglinmine.fastpipes.network.pipe.fluid.FluidPipe;
 import com.piglinmine.fastpipes.network.pipe.fluid.FluidPipeType;
@@ -92,15 +94,16 @@ public class FluidPipeBlockEntity extends PipeBlockEntity {
 
     @Override
     public CompoundTag writeUpdate(CompoundTag tag, HolderLookup.Provider registries) {
-        // TODO: Implement when NetworkManager and FluidPipe are available
-        /*
-        Pipe pipe = NetworkManager.get(level).getPipe(worldPosition);
-        if (pipe instanceof FluidPipe && pipe.getNetwork() != null) {
-            tag.put("fluid", ((FluidNetwork) pipe.getNetwork()).getFluidTank().getFluid().writeToNBT(new CompoundTag()));
-            tag.putFloat("fullness", ((FluidPipe) pipe).getFullness());
+        if (level != null && !level.isClientSide()) {
+            Pipe pipe = NetworkManager.get(level).getPipe(worldPosition);
+            if (pipe instanceof FluidPipe fluidPipe && fluidPipe.getNetwork() instanceof FluidNetwork fluidNetwork) {
+                FluidStack fluid = fluidNetwork.getFluidTank().getFluid();
+                if (!fluid.isEmpty()) {
+                    tag.put("fluid", fluid.save(registries, new CompoundTag()));
+                }
+                tag.putFloat("fullness", fluidPipe.getFullness());
+            }
         }
-        */
-
         return super.writeUpdate(tag, registries);
     }
 
@@ -133,8 +136,11 @@ public class FluidPipeBlockEntity extends PipeBlockEntity {
 
     // NeoForge Capability Handler
     public net.neoforged.neoforge.fluids.capability.IFluidHandler getFluidHandler(net.minecraft.core.Direction side) {
-        // TODO: Return actual fluid handler when network system is available
-        // For now, return null to indicate no capability
+        if (level == null || level.isClientSide()) return null;
+        Pipe pipe = NetworkManager.get(level).getPipe(worldPosition);
+        if (pipe != null && pipe.getNetwork() instanceof FluidNetwork fluidNetwork) {
+            return fluidNetwork.getFluidTank();
+        }
         return null;
     }
 

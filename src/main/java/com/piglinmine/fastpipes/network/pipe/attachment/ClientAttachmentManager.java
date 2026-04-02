@@ -1,5 +1,6 @@
 package com.piglinmine.fastpipes.network.pipe.attachment;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
@@ -70,9 +71,10 @@ public class ClientAttachmentManager implements AttachmentManager {
                 attachmentState[dir.ordinal()] = ResourceLocation.parse(tag.getString(attachmentKey));
                 
                 if (tag.contains(pickBlockKey)) {
-                    // TODO: Use proper HolderLookup.Provider when available
-                    // pickBlocks[dir.ordinal()] = ItemStack.parseOptional(registries, tag.getCompound(pickBlockKey));
-                    pickBlocks[dir.ordinal()] = ItemStack.EMPTY; // Placeholder
+                    pickBlocks[dir.ordinal()] = ItemStack.parseOptional(
+                        Minecraft.getInstance().level.registryAccess(),
+                        tag.getCompound(pickBlockKey)
+                    );
                 }
             } else {
                 attachmentState[dir.ordinal()] = null;

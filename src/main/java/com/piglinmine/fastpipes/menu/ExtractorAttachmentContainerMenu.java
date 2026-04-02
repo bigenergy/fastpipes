@@ -15,6 +15,8 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidUtil;
 import net.neoforged.neoforge.items.ItemStackHandler;
 import net.neoforged.neoforge.items.SlotItemHandler;
 
@@ -158,12 +160,11 @@ public class ExtractorAttachmentContainerMenu extends BaseContainerMenu {
                     FluidFilterSlot fluidSlot = (FluidFilterSlot) filterSlot;
 
                     if (fluidSlot.getFluidInventory().getFluid(fluidSlot.getSlotIndex()).isEmpty()) {
-                        // TODO: Implement fluid extraction when FluidUtil is available
-                        // FluidStack fluidStack = FluidUtil.getFluidContained(slot.getItem()).orElse(FluidStack.EMPTY);
-                        // if (!fluidStack.isEmpty()) {
-                        //     fluidSlot.getFluidInventory().setFluid(fluidSlot.getSlotIndex(), fluidStack);
-                        //     break;
-                        // }
+                        FluidStack fluidStack = FluidUtil.getFluidContained(slot.getItem()).orElse(FluidStack.EMPTY);
+                        if (!fluidStack.isEmpty()) {
+                            fluidSlot.getFluidInventory().setFluid(fluidSlot.getSlotIndex(), fluidStack);
+                            break;
+                        }
                         break;
                     }
                 } else if (filterSlot instanceof SlotItemHandler) {

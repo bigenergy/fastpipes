@@ -1,6 +1,7 @@
 package com.piglinmine.fastpipes.network.pipe.fluid;
 
 import com.piglinmine.fastpipes.FastPipes;
+import com.piglinmine.fastpipes.network.FastPipesNetwork;
 import com.piglinmine.fastpipes.network.fluid.FluidNetwork;
 import com.piglinmine.fastpipes.network.message.FluidPipeMessage;
 import com.piglinmine.fastpipes.network.pipe.Pipe;
@@ -34,8 +35,10 @@ public class FluidPipe extends Pipe {
     }
 
     public void sendFluidPipeUpdate() {
-        // TODO: Implement fluid pipe update message when networking is available
-        // FastPipes.NETWORK.sendInArea(level, pos, 32, new FluidPipeMessage(pos, ((FluidNetwork) network).getFluidTank().getFluid(), getFullness()));
+        if (network instanceof FluidNetwork fluidNetwork && !level.isClientSide()) {
+            FastPipesNetwork.sendInArea(level, pos, 32,
+                new FluidPipeMessage(pos, fluidNetwork.getFluidTank().getFluid(), getFullness()));
+        }
     }
 
     public float getFullness() {
