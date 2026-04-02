@@ -5,7 +5,6 @@ import com.piglinmine.fastpipes.menu.slot.FluidFilterSlot;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -34,7 +33,7 @@ public abstract class BaseScreen<T extends BaseContainerMenu> extends AbstractCo
         if (texture == null) return;
         TextureAtlasSprite sprite = Minecraft.getInstance()
             .getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(texture);
-        graphics.blitSprite(RenderType::guiTextured, sprite, x + 1, y + 1, 16, 16);
+        graphics.blit(x + 1, y + 1, 0, 16, 16, sprite);
     }
 
     @Override
