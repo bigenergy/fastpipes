@@ -1,21 +1,20 @@
 package com.piglinmine.fastpipes.network.pipe.fluid;
 
 import com.piglinmine.fastpipes.FastPipes;
+import com.piglinmine.fastpipes.config.ServerConfig;
 import net.minecraft.resources.ResourceLocation;
 
 public enum FluidPipeType {
-    BASIC(0, 1000),
-    IMPROVED(1, 2000),
-    ADVANCED(2, 4000),
-    ELITE(3, 8000),
-    ULTIMATE(4, 16000);
+    BASIC(0),
+    IMPROVED(1),
+    ADVANCED(2),
+    ELITE(3),
+    ULTIMATE(4);
 
     private final int tier;
-    private final int capacity;
 
-    FluidPipeType(int tier, int capacity) {
+    FluidPipeType(int tier) {
         this.tier = tier;
-        this.capacity = capacity;
     }
 
     public static FluidPipeType get(int ordinal) {
@@ -30,26 +29,23 @@ public enum FluidPipeType {
         return tier;
     }
 
+    private ServerConfig.FluidPipe getConfig() {
+        switch (this) {
+            case BASIC: return FastPipes.SERVER_CONFIG.getBasicFluidPipe();
+            case IMPROVED: return FastPipes.SERVER_CONFIG.getImprovedFluidPipe();
+            case ADVANCED: return FastPipes.SERVER_CONFIG.getAdvancedFluidPipe();
+            case ELITE: return FastPipes.SERVER_CONFIG.getEliteFluidPipe();
+            case ULTIMATE: return FastPipes.SERVER_CONFIG.getUltimateFluidPipe();
+            default: throw new RuntimeException("Unknown FluidPipeType: " + this);
+        }
+    }
+
     public int getCapacity() {
-        return capacity;
+        return getConfig().getCapacity();
     }
 
     public int getTransferRate() {
-        // TODO: Use config values when available
-        switch (this) {
-            case BASIC:
-                return 50;
-            case IMPROVED:
-                return 100;
-            case ADVANCED:
-                return 200;
-            case ELITE:
-                return 400;
-            case ULTIMATE:
-                return 800;
-            default:
-                throw new RuntimeException("Unknown FluidPipeType: " + this);
-        }
+        return getConfig().getTransferRate();
     }
 
     public ResourceLocation getId() {

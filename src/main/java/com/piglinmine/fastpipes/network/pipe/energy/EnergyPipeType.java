@@ -1,23 +1,20 @@
 package com.piglinmine.fastpipes.network.pipe.energy;
 
 import com.piglinmine.fastpipes.FastPipes;
+import com.piglinmine.fastpipes.config.ServerConfig;
 import net.minecraft.resources.ResourceLocation;
 
 public enum EnergyPipeType {
-    BASIC(0, 1000, 100),
-    IMPROVED(1, 2000, 200),
-    ADVANCED(2, 4000, 400),
-    ELITE(3, 8000, 800),
-    ULTIMATE(4, 16000, 1600);
+    BASIC(0),
+    IMPROVED(1),
+    ADVANCED(2),
+    ELITE(3),
+    ULTIMATE(4);
 
     private final int tier;
-    private final int capacity;
-    private final int transferRate;
 
-    EnergyPipeType(int tier, int capacity, int transferRate) {
+    EnergyPipeType(int tier) {
         this.tier = tier;
-        this.capacity = capacity;
-        this.transferRate = transferRate;
     }
 
     public static EnergyPipeType get(int ordinal) {
@@ -32,12 +29,23 @@ public enum EnergyPipeType {
         return tier;
     }
 
+    private ServerConfig.EnergyPipe getConfig() {
+        switch (this) {
+            case BASIC: return FastPipes.SERVER_CONFIG.getBasicEnergyPipe();
+            case IMPROVED: return FastPipes.SERVER_CONFIG.getImprovedEnergyPipe();
+            case ADVANCED: return FastPipes.SERVER_CONFIG.getAdvancedEnergyPipe();
+            case ELITE: return FastPipes.SERVER_CONFIG.getEliteEnergyPipe();
+            case ULTIMATE: return FastPipes.SERVER_CONFIG.getUltimateEnergyPipe();
+            default: throw new RuntimeException("Unknown EnergyPipeType: " + this);
+        }
+    }
+
     public int getCapacity() {
-        return capacity;
+        return getConfig().getCapacity();
     }
 
     public int getTransferRate() {
-        return transferRate;
+        return getConfig().getTransferRate();
     }
 
     public ResourceLocation getId() {

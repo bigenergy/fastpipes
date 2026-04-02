@@ -1,6 +1,7 @@
 package com.piglinmine.fastpipes.network.pipe.item;
 
 import com.piglinmine.fastpipes.FastPipes;
+import com.piglinmine.fastpipes.config.ServerConfig;
 import net.minecraft.resources.ResourceLocation;
 
 public enum ItemPipeType {
@@ -26,17 +27,17 @@ public enum ItemPipeType {
         return tier;
     }
 
-    public int getMaxTicksInPipe() {
+    private ServerConfig.ItemPipe getConfig() {
         switch (this) {
-            case BASIC:
-                return 20; // TODO: Use config value
-            case IMPROVED:
-                return 15; // TODO: Use config value
-            case ADVANCED:
-                return 10; // TODO: Use config value
-            default:
-                throw new RuntimeException("Unknown ItemPipeType: " + this);
+            case BASIC: return FastPipes.SERVER_CONFIG.getBasicItemPipe();
+            case IMPROVED: return FastPipes.SERVER_CONFIG.getImprovedItemPipe();
+            case ADVANCED: return FastPipes.SERVER_CONFIG.getAdvancedItemPipe();
+            default: throw new RuntimeException("Unknown ItemPipeType: " + this);
         }
+    }
+
+    public int getMaxTicksInPipe() {
+        return getConfig().getMaxTicks();
     }
 
     public ResourceLocation getId() {
