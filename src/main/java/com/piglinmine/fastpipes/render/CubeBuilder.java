@@ -79,40 +79,40 @@ public class CubeBuilder {
 
         switch (face) {
             case DOWN:
-                uv.u1 = texture.getU(x1 * 16);
-                uv.v1 = texture.getV(z1 * 16);
-                uv.u2 = texture.getU(x2 * 16);
-                uv.v2 = texture.getV(z2 * 16);
+                uv.u1 = texture.getU(x1);
+                uv.v1 = texture.getV(z1);
+                uv.u2 = texture.getU(x2);
+                uv.v2 = texture.getV(z2);
                 break;
             case UP:
-                uv.u1 = texture.getU(x1 * 16);
-                uv.v1 = texture.getV(z1 * 16);
-                uv.u2 = texture.getU(x2 * 16);
-                uv.v2 = texture.getV(z2 * 16);
+                uv.u1 = texture.getU(x1);
+                uv.v1 = texture.getV(z1);
+                uv.u2 = texture.getU(x2);
+                uv.v2 = texture.getV(z2);
                 break;
             case NORTH:
-                uv.u1 = texture.getU(x1 * 16);
-                uv.v1 = texture.getV(16 - y1 * 16);
-                uv.u2 = texture.getU(x2 * 16);
-                uv.v2 = texture.getV(16 - y2 * 16);
+                uv.u1 = texture.getU(x1);
+                uv.v1 = texture.getV(1 - y1);
+                uv.u2 = texture.getU(x2);
+                uv.v2 = texture.getV(1 - y2);
                 break;
             case SOUTH:
-                uv.u1 = texture.getU(x1 * 16);
-                uv.v1 = texture.getV(16 - y1 * 16);
-                uv.u2 = texture.getU(x2 * 16);
-                uv.v2 = texture.getV(16 - y2 * 16);
+                uv.u1 = texture.getU(x1);
+                uv.v1 = texture.getV(1 - y1);
+                uv.u2 = texture.getU(x2);
+                uv.v2 = texture.getV(1 - y2);
                 break;
             case WEST:
-                uv.u1 = texture.getU(z1 * 16);
-                uv.v1 = texture.getV(16 - y1 * 16);
-                uv.u2 = texture.getU(z2 * 16);
-                uv.v2 = texture.getV(16 - y2 * 16);
+                uv.u1 = texture.getU(z1);
+                uv.v1 = texture.getV(1 - y1);
+                uv.u2 = texture.getU(z2);
+                uv.v2 = texture.getV(1 - y2);
                 break;
             case EAST:
-                uv.u1 = texture.getU(z2 * 16);
-                uv.v1 = texture.getV(16 - y1 * 16);
-                uv.u2 = texture.getU(z1 * 16);
-                uv.v2 = texture.getV(16 - y2 * 16);
+                uv.u1 = texture.getU(z2);
+                uv.v1 = texture.getV(1 - y1);
+                uv.u2 = texture.getU(z1);
+                uv.v2 = texture.getV(1 - y2);
                 break;
         }
 

@@ -55,10 +55,11 @@ public class FluidPipeBlockEntityRenderer implements BlockEntityRenderer<FluidPi
         int g = fluidColor >> 8 & 0xFF;
         int b = fluidColor & 0xFF;
         int a = fluidColor >> 24 & 0xFF;
+        if (a == 0) a = 255; // some fluids return RGB without alpha byte
 
         TextureAtlasSprite sprite = Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(stillTexture);
 
-        VertexConsumer buffer = bufferSource.getBuffer(RenderType.text(sprite.atlasLocation()));
+        VertexConsumer buffer = bufferSource.getBuffer(RenderType.translucent());
 
         float fullness = blockEntity.updateAndGetRenderFullness(partialTicks);
         if (fullness == 0) {

@@ -21,7 +21,7 @@ public record FluidFilterSlotUpdateMessage(int containerSlot, FluidStack stack) 
     public static final StreamCodec<RegistryFriendlyByteBuf, FluidFilterSlotUpdateMessage> STREAM_CODEC = StreamCodec.composite(
         ByteBufCodecs.VAR_INT,
         FluidFilterSlotUpdateMessage::containerSlot,
-        FluidStack.STREAM_CODEC,
+        FluidStack.OPTIONAL_STREAM_CODEC,
         FluidFilterSlotUpdateMessage::stack,
         FluidFilterSlotUpdateMessage::new
     );

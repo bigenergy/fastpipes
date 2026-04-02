@@ -21,7 +21,7 @@ public record FluidPipeMessage(BlockPos pos, FluidStack fluid, float fullness) i
     public static final StreamCodec<RegistryFriendlyByteBuf, FluidPipeMessage> STREAM_CODEC = StreamCodec.composite(
         BlockPos.STREAM_CODEC,
         FluidPipeMessage::pos,
-        FluidStack.STREAM_CODEC,
+        FluidStack.OPTIONAL_STREAM_CODEC,
         FluidPipeMessage::fluid,
         ByteBufCodecs.FLOAT,
         FluidPipeMessage::fullness,
