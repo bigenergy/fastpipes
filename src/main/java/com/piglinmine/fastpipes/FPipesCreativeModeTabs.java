@@ -40,6 +40,12 @@ public class FPipesCreativeModeTabs {
                 output.accept(FPipesItems.ADVANCED_EXTRACTOR_ATTACHMENT.get());
                 output.accept(FPipesItems.ELITE_EXTRACTOR_ATTACHMENT.get());
                 output.accept(FPipesItems.ULTIMATE_EXTRACTOR_ATTACHMENT.get());
+
+                output.accept(FPipesItems.BASIC_INSERTER_ATTACHMENT.get());
+                output.accept(FPipesItems.IMPROVED_INSERTER_ATTACHMENT.get());
+                output.accept(FPipesItems.ADVANCED_INSERTER_ATTACHMENT.get());
+                output.accept(FPipesItems.ELITE_INSERTER_ATTACHMENT.get());
+                output.accept(FPipesItems.ULTIMATE_INSERTER_ATTACHMENT.get());
             })
             .build()
     );
