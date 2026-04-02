@@ -160,7 +160,7 @@ public class ExtractorAttachment extends Attachment {
             destination.getReceiver(),
             path.toQueue(),
             new ItemInsertTransportCallback(destination.getReceiver(), destination.getIncomingDirection(), extracted),
-            new ItemBounceBackTransportCallback(destination.getReceiver(), sourcePos, extracted),
+            new ItemBounceBackTransportCallback(sourcePos, getDirection().getOpposite(), extracted),
             new ItemPipeGoneTransportCallback(extracted)
         ));
     }
