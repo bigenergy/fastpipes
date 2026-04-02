@@ -9,7 +9,6 @@ import com.piglinmine.fastpipes.screen.widget.IconButton;
 import com.piglinmine.fastpipes.screen.widget.IconButtonPreset;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -40,6 +39,8 @@ public class InserterAttachmentScreen extends BaseScreen<InserterAttachmentConta
     @Override
     protected void init() {
         super.init();
+        this.titleLabelX = 7;
+        this.inventoryLabelX = 7;
 
         redstoneModeButton = this.addRenderableWidget(new IconButton(
             this.leftPos + 32, this.topPos + 76,
@@ -125,8 +126,6 @@ public class InserterAttachmentScreen extends BaseScreen<InserterAttachmentConta
 
     @Override
     protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
-        font.drawInBatch(title.getString(), 7, 7, 4210752, false, graphics.pose().last().pose(), graphics.bufferSource(), net.minecraft.client.gui.Font.DisplayMode.NORMAL, 0, 15728880);
-        font.drawInBatch(I18n.get("container.inventory"), 7, 103 - 4, 4210752, false, graphics.pose().last().pose(), graphics.bufferSource(), net.minecraft.client.gui.Font.DisplayMode.NORMAL, 0, 15728880);
 
         tooltip.clear();
 
