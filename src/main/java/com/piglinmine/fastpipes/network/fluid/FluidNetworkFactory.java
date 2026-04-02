@@ -5,6 +5,7 @@ import com.piglinmine.fastpipes.network.NetworkFactory;
 import com.piglinmine.fastpipes.network.pipe.fluid.FluidPipeType;
 import com.piglinmine.fastpipes.util.StringUtil;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -27,12 +28,16 @@ public class FluidNetworkFactory implements NetworkFactory {
 
     @Override
     public Network create(CompoundTag tag) {
+        return new FluidNetwork(BlockPos.of(tag.getLong("origin")), tag.getString("id"), pipeType);
+    }
+
+    @Override
+    public Network create(CompoundTag tag, HolderLookup.Provider provider) {
         FluidNetwork network = new FluidNetwork(BlockPos.of(tag.getLong("origin")), tag.getString("id"), pipeType);
 
-        // TODO: Implement proper NBT deserialization with HolderLookup.Provider when available
-        // if (tag.contains("tank")) {
-        //     network.getFluidTank().readFromNBT(registries, tag.getCompound("tank"));
-        // }
+        if (tag.contains("tank")) {
+            network.getFluidTank().readFromNBT(provider, tag.getCompound("tank"));
+        }
 
         LOGGER.debug("Deserialized fluid network {} of type {}", network.getId(), network.getType().toString());
 

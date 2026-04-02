@@ -282,7 +282,7 @@ public class NetworkManager extends SavedData {
                 continue;
             }
 
-            Network network = factory.create(netTagCompound);
+            Network network = factory.create(netTagCompound, provider);
 
             networks.put(network.getId(), network);
         }
@@ -305,7 +305,7 @@ public class NetworkManager extends SavedData {
         this.networks.values().forEach(n -> {
             CompoundTag networkTag = new CompoundTag();
             networkTag.putString("type", n.getType().toString());
-            networks.add(n.writeToNbt(networkTag));
+            networks.add(n.writeToNbt(networkTag, provider));
         });
         tag.put("networks", networks);
 

@@ -7,6 +7,7 @@ import com.piglinmine.fastpipes.network.pipe.DestinationType;
 import com.piglinmine.fastpipes.network.pipe.fluid.FluidPipe;
 import com.piglinmine.fastpipes.network.pipe.fluid.FluidPipeType;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
@@ -110,12 +111,9 @@ public class FluidNetwork extends Network {
     }
 
     @Override
-    public CompoundTag writeToNbt(CompoundTag tag) {
-        tag = super.writeToNbt(tag);
-
-        // TODO: Implement proper NBT serialization with HolderLookup.Provider when available
-        // tag.put("tank", fluidTank.writeToNBT(registries, new CompoundTag()));
-
+    public CompoundTag writeToNbt(CompoundTag tag, HolderLookup.Provider provider) {
+        tag = super.writeToNbt(tag, provider);
+        tag.put("tank", fluidTank.writeToNBT(provider, new CompoundTag()));
         return tag;
     }
 } 

@@ -4,6 +4,8 @@ import com.piglinmine.fastpipes.inventory.fluid.FluidInventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidUtil;
 
 public class FluidFilterSlot extends Slot {
     private final FluidInventory fluidInventory;
@@ -42,8 +44,12 @@ public class FluidFilterSlot extends Slot {
         return fluidInventory;
     }
 
-    public void onContainerClicked(ItemStack stack) {
-        // TODO: Implement fluid filter clicking logic
+    public FluidStack onContainerClicked(ItemStack held) {
+        FluidStack fluid = held.isEmpty()
+            ? FluidStack.EMPTY
+            : FluidUtil.getFluidContained(held).orElse(FluidStack.EMPTY);
+        fluidInventory.setFluid(getSlotIndex(), fluid);
+        return fluid;
     }
 
     // Dummy container implementation for Slot constructor

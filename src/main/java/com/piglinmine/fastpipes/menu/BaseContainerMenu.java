@@ -2,12 +2,16 @@ package com.piglinmine.fastpipes.menu;
 
 import com.piglinmine.fastpipes.menu.slot.FilterSlot;
 import com.piglinmine.fastpipes.menu.slot.FluidFilterSlot;
+import com.piglinmine.fastpipes.network.FastPipesNetwork;
+import com.piglinmine.fastpipes.network.message.FluidFilterSlotUpdateMessage;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.fluids.FluidStack;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -56,11 +60,11 @@ public class BaseContainerMenu extends AbstractContainerMenu {
                 slot.set(holding.copy());
             }
             return;
-        } else if (slot instanceof FluidFilterSlot) {
-            if (holding.isEmpty()) {
-                ((FluidFilterSlot) slot).onContainerClicked(ItemStack.EMPTY);
-            } else {
-                ((FluidFilterSlot) slot).onContainerClicked(holding);
+        } else if (slot instanceof FluidFilterSlot fluidSlot) {
+            FluidStack result = fluidSlot.onContainerClicked(holding);
+            if (!player.level().isClientSide()) {
+                FastPipesNetwork.sendToClient((ServerPlayer) player,
+                    new FluidFilterSlotUpdateMessage(id, result));
             }
             return;
         }
