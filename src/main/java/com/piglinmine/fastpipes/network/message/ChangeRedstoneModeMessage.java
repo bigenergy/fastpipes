@@ -6,6 +6,7 @@ import com.piglinmine.fastpipes.network.NetworkManager;
 import com.piglinmine.fastpipes.network.pipe.attachment.Attachment;
 import com.piglinmine.fastpipes.network.pipe.attachment.extractor.ExtractorAttachment;
 import com.piglinmine.fastpipes.network.pipe.attachment.extractor.RedstoneMode;
+import com.piglinmine.fastpipes.network.pipe.attachment.inserter.InserterAttachment;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -47,10 +48,12 @@ public record ChangeRedstoneModeMessage(BlockPos pos, Direction direction, int m
             if (blockEntity instanceof PipeBlockEntity) {
                 Attachment attachment = ((PipeBlockEntity) blockEntity).getAttachmentManager().getAttachment(message.direction());
 
+                RedstoneMode redstoneMode = RedstoneMode.get((byte) message.mode());
                 if (attachment instanceof ExtractorAttachment) {
-                    RedstoneMode redstoneMode = RedstoneMode.get((byte) message.mode());
                     ((ExtractorAttachment) attachment).setRedstoneMode(redstoneMode);
-
+                    NetworkManager.get(blockEntity.getLevel()).setDirty();
+                } else if (attachment instanceof InserterAttachment) {
+                    ((InserterAttachment) attachment).setRedstoneMode(redstoneMode);
                     NetworkManager.get(blockEntity.getLevel()).setDirty();
                 }
             }

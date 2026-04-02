@@ -1,6 +1,7 @@
 package com.piglinmine.fastpipes;
 
 import com.piglinmine.fastpipes.screen.ExtractorAttachmentScreen;
+import com.piglinmine.fastpipes.screen.InserterAttachmentScreen;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -12,5 +13,6 @@ public class FPipesScreens {
     @SubscribeEvent
     public static void registerScreens(RegisterMenuScreensEvent event) {
         event.register(FPipesContainerMenus.EXTRACTOR_ATTACHMENT.get(), ExtractorAttachmentScreen::new);
+        event.register(FPipesContainerMenus.INSERTER_ATTACHMENT.get(), InserterAttachmentScreen::new);
     }
 } 

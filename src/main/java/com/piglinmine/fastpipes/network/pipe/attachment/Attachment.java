@@ -38,4 +38,29 @@ public abstract class Attachment {
 
     public void openContainer(ServerPlayer player) {
     }
+
+    /**
+     * Whether this attachment allows the adjacent block to be treated as a destination
+     * in the item routing graph. Extractors return false (they are sources, not destinations).
+     * Inserters return true (they explicitly mark a side as a destination).
+     */
+    public boolean isItemDestinationProvider() {
+        return false;
+    }
+
+    /**
+     * Whether this attachment allows the given item to be inserted into the adjacent block.
+     * Only meaningful when {@link #isItemDestinationProvider()} returns true.
+     */
+    public boolean canInsert(ItemStack stack) {
+        return true;
+    }
+
+    /**
+     * Priority for item routing. Higher value = items routed here first.
+     * Only meaningful when {@link #isItemDestinationProvider()} returns true.
+     */
+    public int getInsertionPriority() {
+        return 0;
+    }
 } 

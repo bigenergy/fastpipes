@@ -1,7 +1,10 @@
 package com.piglinmine.fastpipes;
 
 import com.piglinmine.fastpipes.menu.ExtractorAttachmentContainerMenu;
+import com.piglinmine.fastpipes.menu.InserterAttachmentContainerMenu;
 import com.piglinmine.fastpipes.network.pipe.attachment.extractor.*;
+import com.piglinmine.fastpipes.network.pipe.attachment.inserter.InserterAttachment;
+import com.piglinmine.fastpipes.network.pipe.attachment.inserter.InserterAttachmentType;
 import com.piglinmine.fastpipes.util.DirectionUtil;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.inventory.MenuType;
@@ -35,6 +38,27 @@ public class FPipesContainerMenus {
             } else {
                 // Fallback for client-only constructor
                 return new ExtractorAttachmentContainerMenu(windowId, inv.player);
+            }
+        })
+    );
+
+    public static final DeferredHolder<MenuType<?>, MenuType<InserterAttachmentContainerMenu>> INSERTER_ATTACHMENT = CONTAINER_MENUS.register(
+        "inserter_attachment",
+        () -> IMenuTypeExtension.create((windowId, inv, data) -> {
+            if (data != null) {
+                return new InserterAttachmentContainerMenu(
+                    windowId,
+                    inv.player,
+                    data.readBlockPos(),
+                    DirectionUtil.safeGet(data.readByte()),
+                    RedstoneMode.get(data.readByte()),
+                    BlacklistWhitelist.get(data.readByte()),
+                    data.readBoolean(),
+                    InserterAttachmentType.get(data.readByte()),
+                    InserterAttachment.createItemFilterInventory(null)
+                );
+            } else {
+                return new InserterAttachmentContainerMenu(windowId, inv.player);
             }
         })
     );

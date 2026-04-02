@@ -4,6 +4,7 @@ import com.piglinmine.fastpipes.network.NetworkManager;
 import com.piglinmine.fastpipes.network.pipe.Destination;
 import com.piglinmine.fastpipes.network.pipe.DestinationType;
 import com.piglinmine.fastpipes.network.pipe.Pipe;
+import com.piglinmine.fastpipes.network.pipe.attachment.Attachment;
 import com.piglinmine.fastpipes.network.pipe.energy.EnergyPipeEnergyStorage;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -77,8 +78,10 @@ public class NetworkGraphScanner {
         } else if (request.getParent() != null) {
             Pipe connectedPipe = NetworkManager.get(request.getLevel()).getPipe(request.getParent().getPos());
 
-            // If this destination is connected to a pipe with an attachment, then this is not a valid destination.
-            if (!connectedPipe.getAttachmentManager().hasAttachment(request.getDirection())) {
+            // Attachments block destinations by default (e.g. extractors).
+            // Inserter attachments explicitly mark their side as a valid destination.
+            Attachment att = connectedPipe.getAttachmentManager().getAttachment(request.getDirection());
+            if (att == null || att.isItemDestinationProvider()) {
                 BlockEntity blockEntity = request.getLevel().getBlockEntity(request.getPos());
 
                 if (blockEntity != null) {

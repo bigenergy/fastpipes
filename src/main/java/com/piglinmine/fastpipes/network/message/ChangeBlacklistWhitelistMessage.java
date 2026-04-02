@@ -6,6 +6,7 @@ import com.piglinmine.fastpipes.network.NetworkManager;
 import com.piglinmine.fastpipes.network.pipe.attachment.Attachment;
 import com.piglinmine.fastpipes.network.pipe.attachment.extractor.BlacklistWhitelist;
 import com.piglinmine.fastpipes.network.pipe.attachment.extractor.ExtractorAttachment;
+import com.piglinmine.fastpipes.network.pipe.attachment.inserter.InserterAttachment;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -43,10 +44,12 @@ public record ChangeBlacklistWhitelistMessage(BlockPos pos, Direction direction,
             if (blockEntity instanceof PipeBlockEntity) {
                 Attachment attachment = ((PipeBlockEntity) blockEntity).getAttachmentManager().getAttachment(message.direction());
 
+                BlacklistWhitelist blacklistWhitelist = message.blacklist() ? BlacklistWhitelist.BLACKLIST : BlacklistWhitelist.WHITELIST;
                 if (attachment instanceof ExtractorAttachment) {
-                    BlacklistWhitelist blacklistWhitelist = message.blacklist() ? BlacklistWhitelist.BLACKLIST : BlacklistWhitelist.WHITELIST;
                     ((ExtractorAttachment) attachment).setBlacklistWhitelist(blacklistWhitelist);
-
+                    NetworkManager.get(blockEntity.getLevel()).setDirty();
+                } else if (attachment instanceof InserterAttachment) {
+                    ((InserterAttachment) attachment).setBlacklistWhitelist(blacklistWhitelist);
                     NetworkManager.get(blockEntity.getLevel()).setDirty();
                 }
             }

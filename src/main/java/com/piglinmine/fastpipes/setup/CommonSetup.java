@@ -10,6 +10,8 @@ import com.piglinmine.fastpipes.network.pipe.PipeRegistry;
 import com.piglinmine.fastpipes.network.pipe.attachment.AttachmentRegistry;
 import com.piglinmine.fastpipes.network.pipe.attachment.extractor.ExtractorAttachmentFactory;
 import com.piglinmine.fastpipes.network.pipe.attachment.extractor.ExtractorAttachmentType;
+import com.piglinmine.fastpipes.network.pipe.attachment.inserter.InserterAttachmentFactory;
+import com.piglinmine.fastpipes.network.pipe.attachment.inserter.InserterAttachmentType;
 import com.piglinmine.fastpipes.network.pipe.energy.EnergyPipe;
 import com.piglinmine.fastpipes.network.pipe.energy.EnergyPipeFactory;
 import com.piglinmine.fastpipes.network.pipe.energy.EnergyPipeType;
@@ -108,6 +110,12 @@ public class CommonSetup {
         AttachmentRegistry.INSTANCE.addFactory(ExtractorAttachmentType.ULTIMATE.getId(), new ExtractorAttachmentFactory(ExtractorAttachmentType.ULTIMATE));
         LOGGER.debug("Registered ExtractorAttachmentFactory for type: {}", ExtractorAttachmentType.ULTIMATE.getId());
         
+        // Register InserterAttachment factories for all types
+        for (InserterAttachmentType type : InserterAttachmentType.values()) {
+            AttachmentRegistry.INSTANCE.addFactory(type.getId(), new InserterAttachmentFactory(type));
+            LOGGER.debug("Registered InserterAttachmentFactory for type: {}", type.getId());
+        }
+
         LOGGER.debug("Attachment factories registered successfully");
     }
 

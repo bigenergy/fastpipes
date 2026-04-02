@@ -96,6 +96,22 @@ public class FastPipesJEIPlugin implements IModPlugin {
         registration.addIngredientInfo(FPipesItems.ULTIMATE_EXTRACTOR_ATTACHMENT.get(),
             Component.translatable("jei.fastpipes.ultimate_extractor_attachment.description"));
 
+        // Add inserter attachments
+        registration.addIngredientInfo(FPipesItems.BASIC_INSERTER_ATTACHMENT.get(),
+            Component.translatable("jei.fastpipes.basic_inserter_attachment.description"));
+
+        registration.addIngredientInfo(FPipesItems.IMPROVED_INSERTER_ATTACHMENT.get(),
+            Component.translatable("jei.fastpipes.improved_inserter_attachment.description"));
+
+        registration.addIngredientInfo(FPipesItems.ADVANCED_INSERTER_ATTACHMENT.get(),
+            Component.translatable("jei.fastpipes.advanced_inserter_attachment.description"));
+
+        registration.addIngredientInfo(FPipesItems.ELITE_INSERTER_ATTACHMENT.get(),
+            Component.translatable("jei.fastpipes.elite_inserter_attachment.description"));
+
+        registration.addIngredientInfo(FPipesItems.ULTIMATE_INSERTER_ATTACHMENT.get(),
+            Component.translatable("jei.fastpipes.ultimate_inserter_attachment.description"));
+
         LOGGER.debug("Finished registering Fast Pipes ingredient information with JEI");
         
         // Note: Vanilla crafting recipes should be automatically detected by JEI

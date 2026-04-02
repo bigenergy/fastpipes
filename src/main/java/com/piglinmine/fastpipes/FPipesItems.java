@@ -3,6 +3,7 @@ package com.piglinmine.fastpipes;
 import com.piglinmine.fastpipes.item.AttachmentItem;
 import com.piglinmine.fastpipes.item.BaseBlockItem;
 import com.piglinmine.fastpipes.network.pipe.attachment.extractor.ExtractorAttachmentType;
+import com.piglinmine.fastpipes.network.pipe.attachment.inserter.InserterAttachmentType;
 import net.minecraft.world.item.Item;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -84,7 +85,28 @@ public class FPipesItems {
         () -> new AttachmentItem(ExtractorAttachmentType.ELITE.getFactory())
     );
     public static final DeferredHolder<Item, AttachmentItem> ULTIMATE_EXTRACTOR_ATTACHMENT = ITEMS.register(
-        "ultimate_extractor_attachment", 
+        "ultimate_extractor_attachment",
         () -> new AttachmentItem(ExtractorAttachmentType.ULTIMATE.getFactory())
+    );
+
+    public static final DeferredHolder<Item, AttachmentItem> BASIC_INSERTER_ATTACHMENT = ITEMS.register(
+        "basic_inserter_attachment",
+        () -> new AttachmentItem(InserterAttachmentType.BASIC.getFactory())
+    );
+    public static final DeferredHolder<Item, AttachmentItem> IMPROVED_INSERTER_ATTACHMENT = ITEMS.register(
+        "improved_inserter_attachment",
+        () -> new AttachmentItem(InserterAttachmentType.IMPROVED.getFactory())
+    );
+    public static final DeferredHolder<Item, AttachmentItem> ADVANCED_INSERTER_ATTACHMENT = ITEMS.register(
+        "advanced_inserter_attachment",
+        () -> new AttachmentItem(InserterAttachmentType.ADVANCED.getFactory())
+    );
+    public static final DeferredHolder<Item, AttachmentItem> ELITE_INSERTER_ATTACHMENT = ITEMS.register(
+        "elite_inserter_attachment",
+        () -> new AttachmentItem(InserterAttachmentType.ELITE.getFactory())
+    );
+    public static final DeferredHolder<Item, AttachmentItem> ULTIMATE_INSERTER_ATTACHMENT = ITEMS.register(
+        "ultimate_inserter_attachment",
+        () -> new AttachmentItem(InserterAttachmentType.ULTIMATE.getFactory())
     );
 } 

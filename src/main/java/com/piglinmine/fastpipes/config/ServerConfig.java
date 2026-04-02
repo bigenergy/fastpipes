@@ -28,6 +28,12 @@ public class ServerConfig {
     private final ExtractorAttachment eliteExtractorAttachment;
     private final ExtractorAttachment ultimateExtractorAttachment;
 
+    private final InserterAttachment basicInserterAttachment;
+    private final InserterAttachment improvedInserterAttachment;
+    private final InserterAttachment advancedInserterAttachment;
+    private final InserterAttachment eliteInserterAttachment;
+    private final InserterAttachment ultimateInserterAttachment;
+
     public ServerConfig() {
         builder.push("pipe");
         {
@@ -61,6 +67,16 @@ public class ServerConfig {
 
             builder.push("attachment");
             {
+                builder.push("inserter");
+                {
+                    basicInserterAttachment    = new InserterAttachment("basic",    0,  false, false, false, 0);
+                    improvedInserterAttachment = new InserterAttachment("improved", 4,  true,  false, false, 1);
+                    advancedInserterAttachment = new InserterAttachment("advanced", 8,  true,  true,  true,  2);
+                    eliteInserterAttachment    = new InserterAttachment("elite",    12, true,  true,  true,  3);
+                    ultimateInserterAttachment = new InserterAttachment("ultimate", 15, true,  true,  true,  4);
+                }
+                builder.pop();
+
                 builder.push("extractor");
                 {
                     basicExtractorAttachment = new ExtractorAttachment(
@@ -179,6 +195,12 @@ public class ServerConfig {
         return ultimateEnergyPipe;
     }
 
+    public InserterAttachment getBasicInserterAttachment() { return basicInserterAttachment; }
+    public InserterAttachment getImprovedInserterAttachment() { return improvedInserterAttachment; }
+    public InserterAttachment getAdvancedInserterAttachment() { return advancedInserterAttachment; }
+    public InserterAttachment getEliteInserterAttachment() { return eliteInserterAttachment; }
+    public InserterAttachment getUltimateInserterAttachment() { return ultimateInserterAttachment; }
+
     public ExtractorAttachment getBasicExtractorAttachment() {
         return basicExtractorAttachment;
     }
@@ -257,6 +279,32 @@ public class ServerConfig {
         public int getTransferRate() {
             return transferRate.get();
         }
+    }
+
+    public class InserterAttachment {
+        private final ModConfigSpec.IntValue filterSlots;
+        private final ModConfigSpec.BooleanValue canSetRedstoneMode;
+        private final ModConfigSpec.BooleanValue canSetWhitelistBlacklist;
+        private final ModConfigSpec.BooleanValue canSetExactMode;
+        private final ModConfigSpec.IntValue priority;
+
+        public InserterAttachment(String type, int defaultFilterSlots, boolean defaultCanSetRedstoneMode,
+                                  boolean defaultCanSetWhitelistBlacklist, boolean defaultCanSetExactMode,
+                                  int defaultPriority) {
+            builder.push(type);
+            filterSlots          = builder.comment("The number of filter slots.").defineInRange("filterSlots", defaultFilterSlots, 0, 15);
+            canSetRedstoneMode   = builder.comment("Whether the redstone mode can be configured.").define("canSetRedstoneMode", defaultCanSetRedstoneMode);
+            canSetWhitelistBlacklist = builder.comment("Whether the inserter can toggle between whitelist and blacklist.").define("canSetWhitelistBlacklist", defaultCanSetWhitelistBlacklist);
+            canSetExactMode      = builder.comment("Whether the inserter can toggle exact mode.").define("canSetExactMode", defaultCanSetExactMode);
+            priority             = builder.comment("Insertion priority. Items are routed to higher-priority inserters first.").defineInRange("priority", defaultPriority, 0, Integer.MAX_VALUE);
+            builder.pop();
+        }
+
+        public int getFilterSlots() { return filterSlots.get(); }
+        public boolean getCanSetRedstoneMode() { return canSetRedstoneMode.get(); }
+        public boolean getCanSetWhitelistBlacklist() { return canSetWhitelistBlacklist.get(); }
+        public boolean getCanSetExactMode() { return canSetExactMode.get(); }
+        public int getPriority() { return priority.get(); }
     }
 
     public class ExtractorAttachment {
