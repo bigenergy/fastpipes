@@ -2,8 +2,6 @@ package com.piglinmine.fastpipes.block;
 
 import com.piglinmine.fastpipes.blockentity.PipeBlockEntity;
 import com.piglinmine.fastpipes.item.AttachmentItem;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import com.piglinmine.fastpipes.item.WrenchItem;
 import com.piglinmine.fastpipes.network.NetworkManager;
 import com.piglinmine.fastpipes.network.pipe.Pipe;
@@ -46,7 +44,6 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import javax.annotation.Nullable;
 
 public abstract class PipeBlock extends Block implements EntityBlock {
-    private static final Logger LOGGER = LogManager.getLogger(PipeBlock.class);
     public static final BooleanProperty NORTH = BooleanProperty.create("north");
     public static final BooleanProperty EAST = BooleanProperty.create("east");
     public static final BooleanProperty SOUTH = BooleanProperty.create("south");
@@ -135,10 +132,7 @@ public abstract class PipeBlock extends Block implements EntityBlock {
                         // Update the dyed pipe itself
                         pipe.sendBlockUpdate();
                         BlockState newState = getState(level.getBlockState(pos), level, pos);
-                        boolean setResult = level.setBlock(pos, newState, flags);
-                        LOGGER.warn("[DYE] setBlock at {} result={} n={} s={} e={} w={}",
-                            pos, setResult, newState.getValue(NORTH), newState.getValue(SOUTH),
-                            newState.getValue(EAST), newState.getValue(WEST));
+                        level.setBlock(pos, newState, flags);
 
                         // Update all neighbor pipe block states
                         for (Direction dir : Direction.values()) {
@@ -150,10 +144,7 @@ public abstract class PipeBlock extends Block implements EntityBlock {
                                     neighborPipe.sendBlockUpdate();
                                 }
                                 BlockState newNeighborState = neighborPipeBlock.getState(neighborState, level, neighborPos);
-                                boolean neighborResult = level.setBlock(neighborPos, newNeighborState, flags);
-                                LOGGER.warn("[DYE] setBlock neighbor at {} result={} n={} s={} e={} w={}",
-                                    neighborPos, neighborResult, newNeighborState.getValue(NORTH), newNeighborState.getValue(SOUTH),
-                                    newNeighborState.getValue(EAST), newNeighborState.getValue(WEST));
+                                level.setBlock(neighborPos, newNeighborState, flags);
                             }
                         }
 
@@ -346,17 +337,7 @@ public abstract class PipeBlock extends Block implements EntityBlock {
         if (world instanceof Level lvl && lvl.isClientSide) {
             return state;
         }
-        BlockState result = getState(state, world, pos);
-        // Debug: log when server updateShape changes a state
-        if (world instanceof Level lvl2 && !lvl2.isClientSide && !result.equals(state)) {
-            LOGGER.warn("[SERVER updateShape] {} changed: north {}->{}, south {}->{}, east {}->{}, west {}->{}",
-                pos,
-                state.getValue(NORTH), result.getValue(NORTH),
-                state.getValue(SOUTH), result.getValue(SOUTH),
-                state.getValue(EAST), result.getValue(EAST),
-                state.getValue(WEST), result.getValue(WEST));
-        }
-        return result;
+        return getState(state, world, pos);
     }
 
     @Override

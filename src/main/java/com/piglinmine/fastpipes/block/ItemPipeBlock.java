@@ -15,14 +15,11 @@ import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import org.jetbrains.annotations.Nullable;
 
 public class ItemPipeBlock extends PipeBlock implements EntityBlock {
-    private static final Logger LOGGER = LogManager.getLogger(ItemPipeBlock.class);
     private final ItemPipeType type;
 
     public ItemPipeBlock(PipeShapeCache shapeCache, ItemPipeType type) {
@@ -63,8 +60,6 @@ public class ItemPipeBlock extends PipeBlock implements EntityBlock {
                 DyeColor myColor = myPipe.getColor();
                 DyeColor theirColor = theirPipe.getColor();
                 if (myColor != null && theirColor != null && myColor != theirColor) {
-                    LOGGER.warn("[COLOR] Blocking connection {} -> {} (my={}, their={})",
-                        pos, pos.relative(direction), myColor, theirColor);
                     return false;
                 }
             }

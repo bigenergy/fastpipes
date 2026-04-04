@@ -1,6 +1,5 @@
 package com.piglinmine.fastpipes.blockentity;
 
-import com.piglinmine.fastpipes.block.PipeBlock;
 import com.piglinmine.fastpipes.network.NetworkManager;
 import com.piglinmine.fastpipes.network.pipe.Pipe;
 import com.piglinmine.fastpipes.network.pipe.attachment.Attachment;
@@ -19,9 +18,6 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.client.model.data.ModelData;
 import net.neoforged.neoforge.client.model.data.ModelProperty;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import java.util.EnumSet;
 import java.util.Set;
 
@@ -29,7 +25,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public abstract class PipeBlockEntity extends BaseBlockEntity {
-    private static final Logger LOGGER = LogManager.getLogger(PipeBlockEntity.class);
     public static final ModelProperty<ResourceLocation[]> ATTACHMENTS_PROPERTY = new ModelProperty<>();
     public static final ModelProperty<Integer> COLOR_PROPERTY = new ModelProperty<>();
     private final AttachmentManager clientAttachmentManager = new ClientAttachmentManager();
@@ -185,14 +180,6 @@ public abstract class PipeBlockEntity extends BaseBlockEntity {
 
         BlockState state = level.getBlockState(worldPosition);
         level.sendBlockUpdated(worldPosition, state, state, 1 | 2);
-
-        // Debug: log the client's block state after readUpdate
-        if (level != null && level.isClientSide && state.getBlock() instanceof PipeBlock) {
-            LOGGER.warn("[CLIENT readUpdate] {} color={} north={} south={} east={} west={}",
-                worldPosition, clientColor,
-                state.getValue(PipeBlock.NORTH), state.getValue(PipeBlock.SOUTH),
-                state.getValue(PipeBlock.EAST), state.getValue(PipeBlock.WEST));
-        }
     }
 
     protected abstract Pipe createPipe(Level level, BlockPos pos);
