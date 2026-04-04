@@ -86,6 +86,7 @@ public class ExtractorAttachmentFactory implements AttachmentFactory {
 
     @Override
     public void addInformation(List<Component> tooltip) {
+        tooltip.add(Component.translatable("tooltip.fastpipes.extractor_attachment.hint").withStyle(ChatFormatting.DARK_GRAY, ChatFormatting.ITALIC));
         tooltip.add(Component.translatable("misc.fastpipes.tier", Component.translatable("enchantment.level." + type.getTier())).withStyle(ChatFormatting.YELLOW));
 
         Component itemsToExtract = Component.literal(StringUtil.formatNumber(type.getItemsToExtract()) + " ")
@@ -126,6 +127,10 @@ public class ExtractorAttachmentFactory implements AttachmentFactory {
         addAbilityToInformation(tooltip, type.getCanSetWhitelistBlacklist(), "misc.fastpipes.mode");
         addAbilityToInformation(tooltip, type.getCanSetRoutingMode(), "misc.fastpipes.routing_mode");
         addAbilityToInformation(tooltip, type.getCanSetExactMode(), "misc.fastpipes.exact_mode");
+
+        tooltip.add(Component.empty());
+        tooltip.add(Component.translatable("tooltip.fastpipes.attachment.place").withStyle(ChatFormatting.DARK_GRAY));
+        tooltip.add(Component.translatable("tooltip.fastpipes.attachment.remove").withStyle(ChatFormatting.DARK_GRAY));
     }
 
     private void addAbilityToInformation(List<Component> tooltip, boolean possible, String key) {

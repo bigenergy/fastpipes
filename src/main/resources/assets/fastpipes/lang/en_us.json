@@ -81,6 +81,10 @@
   "jei.fastpipes.elite_extractor_attachment.description": "Extracts items or fluids from inventories/tanks. Elite extraction rate.",
   "jei.fastpipes.ultimate_extractor_attachment.description": "Extracts items or fluids from inventories/tanks. Ultimate extraction rate.",
   
+  "tooltip.fastpipes.extractor_attachment.hint": "Place on a pipe facing an inventory to pull items/fluids",
+  "tooltip.fastpipes.inserter_attachment.hint": "Place on a pipe to mark it as an item destination",
+  "tooltip.fastpipes.attachment.place": "Right-click a pipe side to place",
+  "tooltip.fastpipes.attachment.remove": "Sneak + empty hand to remove",
   "config.jade.plugin_fastpipes.energy_pipe_info": "Energy Pipe Information",
   "config.jade.plugin_fastpipes.item_pipe_info": "Item Pipe Information",
   "config.jade.plugin_fastpipes.fluid_pipe_info": "Fluid Pipe Information",

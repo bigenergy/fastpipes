@@ -55,6 +55,7 @@ public class InserterAttachmentFactory implements AttachmentFactory {
 
     @Override
     public void addInformation(List<Component> tooltip) {
+        tooltip.add(Component.translatable("tooltip.fastpipes.inserter_attachment.hint").withStyle(ChatFormatting.DARK_GRAY, ChatFormatting.ITALIC));
         tooltip.add(Component.translatable("misc.fastpipes.tier", Component.translatable("enchantment.level." + type.getTier())).withStyle(ChatFormatting.YELLOW));
 
         tooltip.add(Component.translatable(
@@ -70,6 +71,10 @@ public class InserterAttachmentFactory implements AttachmentFactory {
         addAbilityToInformation(tooltip, type.getCanSetRedstoneMode(), "misc.fastpipes.redstone_mode");
         addAbilityToInformation(tooltip, type.getCanSetWhitelistBlacklist(), "misc.fastpipes.mode");
         addAbilityToInformation(tooltip, type.getCanSetExactMode(), "misc.fastpipes.exact_mode");
+
+        tooltip.add(Component.empty());
+        tooltip.add(Component.translatable("tooltip.fastpipes.attachment.place").withStyle(ChatFormatting.DARK_GRAY));
+        tooltip.add(Component.translatable("tooltip.fastpipes.attachment.remove").withStyle(ChatFormatting.DARK_GRAY));
     }
 
     private void addAbilityToInformation(List<Component> tooltip, boolean possible, String key) {
