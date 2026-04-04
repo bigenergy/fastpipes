@@ -57,6 +57,7 @@ public abstract class PipeBlock extends Block implements EntityBlock {
         super(BlockBehaviour.Properties.of()
             .destroyTime(0.35F)
             .explosionResistance(0.35F)
+            .noOcclusion()
         );
 
         this.shapeCache = shapeCache;

@@ -1,5 +1,6 @@
 {
 	"credit": "Made with Blockbench",
+	"ambientocclusion": false,
 	"textures": {
 		"0": "fastpipes:blocks/pipe/item/connector",
 		"particle": "fastpipes:blocks/pipe/item/connector"
@@ -19,10 +20,12 @@
 		},
 		{
 			"name": "Cube",
-			"from": [3, 3, 0],
+			"from": [3, 3, -0.01],
 			"to": [13, 13, 1],
 			"faces": {
+				"north": {"uv": [3, 3, 13, 13], "texture": "#0"},
 				"east": {"uv": [12, 3, 13, 13], "texture": "#0"},
+				"south": {"uv": [3, 3, 13, 13], "texture": "#0"},
 				"west": {"uv": [3, 3, 4, 13], "texture": "#0"},
 				"up": {"uv": [3, 3, 13, 4], "texture": "#0"},
 				"down": {"uv": [3, 12, 13, 13], "texture": "#0"}

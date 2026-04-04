@@ -33,7 +33,6 @@ import java.util.concurrent.ConcurrentHashMap;
 public class PipeBakedModel implements BakedModel {
     private static final Logger LOGGER = LogManager.getLogger(PipeBakedModel.class);
     private static final Map<Direction, Transformation> SIDE_TRANSFORMS = new EnumMap<>(Direction.class);
-    
     private final BakedModel core;
     private final BakedModel extension;
     private final BakedModel straight;
@@ -138,8 +137,18 @@ public class PipeBakedModel implements BakedModel {
             LOGGER.debug("No attachment state found for pipe");
         }
 
-        // Add inventory attachment indicators
+        // Add inventory attachment indicators — only for non-pipe inventory connections.
+        // Pipes expose capabilities (IItemHandler, IFluidHandler, IEnergyStorage), so
+        // hasInvConnection is true for pipe-to-pipe links too.  Skip those to avoid
+        // rendering the attachment model on top of the extension/straight connector ring.
         if (state.getState() != null) {
+            boolean north = state.getState().getValue(PipeBlock.NORTH);
+            boolean east  = state.getState().getValue(PipeBlock.EAST);
+            boolean south = state.getState().getValue(PipeBlock.SOUTH);
+            boolean west  = state.getState().getValue(PipeBlock.WEST);
+            boolean up    = state.getState().getValue(PipeBlock.UP);
+            boolean down  = state.getState().getValue(PipeBlock.DOWN);
+
             boolean invNorth = state.getState().getValue(PipeBlock.INV_NORTH);
             boolean invEast = state.getState().getValue(PipeBlock.INV_EAST);
             boolean invSouth = state.getState().getValue(PipeBlock.INV_SOUTH);
@@ -147,32 +156,46 @@ public class PipeBakedModel implements BakedModel {
             boolean invUp = state.getState().getValue(PipeBlock.INV_UP);
             boolean invDown = state.getState().getValue(PipeBlock.INV_DOWN);
 
-            if (invNorth && !state.hasAttachmentState(Direction.NORTH)) {
+            if (invNorth && !north && !state.hasAttachmentState(Direction.NORTH)) {
                 quads.addAll(getTransformedQuads(inventoryAttachment, Direction.NORTH, state));
             }
 
-            if (invEast && !state.hasAttachmentState(Direction.EAST)) {
+            if (invEast && !east && !state.hasAttachmentState(Direction.EAST)) {
                 quads.addAll(getTransformedQuads(inventoryAttachment, Direction.EAST, state));
             }
 
-            if (invSouth && !state.hasAttachmentState(Direction.SOUTH)) {
+            if (invSouth && !south && !state.hasAttachmentState(Direction.SOUTH)) {
                 quads.addAll(getTransformedQuads(inventoryAttachment, Direction.SOUTH, state));
             }
 
-            if (invWest && !state.hasAttachmentState(Direction.WEST)) {
+            if (invWest && !west && !state.hasAttachmentState(Direction.WEST)) {
                 quads.addAll(getTransformedQuads(inventoryAttachment, Direction.WEST, state));
             }
 
-            if (invUp && !state.hasAttachmentState(Direction.UP)) {
+            if (invUp && !up && !state.hasAttachmentState(Direction.UP)) {
                 quads.addAll(getTransformedQuads(inventoryAttachment, Direction.UP, state));
             }
 
-            if (invDown && !state.hasAttachmentState(Direction.DOWN)) {
+            if (invDown && !down && !state.hasAttachmentState(Direction.DOWN)) {
                 quads.addAll(getTransformedQuads(inventoryAttachment, Direction.DOWN, state));
             }
         }
 
-        return quads;
+        return postProcess(quads);
+    }
+
+    /**
+     * Filters out #missing texture quads (invisible placeholder faces from Blockbench exports).
+     */
+    private static List<BakedQuad> postProcess(List<BakedQuad> quads) {
+        List<BakedQuad> result = new ArrayList<>(quads.size());
+        for (BakedQuad quad : quads) {
+            if (quad.getSprite() != null && "missingno".equals(quad.getSprite().contents().name().getPath())) {
+                continue;
+            }
+            result.add(quad);
+        }
+        return result;
     }
 
     private List<BakedQuad> getTransformedQuads(BakedModel model, Direction facing, PipeState state) {

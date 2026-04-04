@@ -11,8 +11,6 @@ import com.piglinmine.fastpipes.network.pipe.item.ItemPipeType;
 import com.piglinmine.fastpipes.render.FluidPipeBlockEntityRenderer;
 import com.piglinmine.fastpipes.render.ItemPipeBlockEntityRenderer;
 import com.piglinmine.fastpipes.render.PipeBakedModel;
-import net.minecraft.client.renderer.ItemBlockRenderTypes;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.ModelResourceLocation;
@@ -33,22 +31,7 @@ public class ClientSetup {
     @SubscribeEvent
     public static void onClientSetup(FMLClientSetupEvent event) {
         event.enqueueWork(() -> {
-            // Set render layers for pipes to cutout for transparency
-            ItemBlockRenderTypes.setRenderLayer(FPipesBlocks.BASIC_ITEM_PIPE.get(), RenderType.cutout());
-            ItemBlockRenderTypes.setRenderLayer(FPipesBlocks.IMPROVED_ITEM_PIPE.get(), RenderType.cutout());
-            ItemBlockRenderTypes.setRenderLayer(FPipesBlocks.ADVANCED_ITEM_PIPE.get(), RenderType.cutout());
-
-            ItemBlockRenderTypes.setRenderLayer(FPipesBlocks.BASIC_FLUID_PIPE.get(), RenderType.cutout());
-            ItemBlockRenderTypes.setRenderLayer(FPipesBlocks.IMPROVED_FLUID_PIPE.get(), RenderType.cutout());
-            ItemBlockRenderTypes.setRenderLayer(FPipesBlocks.ADVANCED_FLUID_PIPE.get(), RenderType.cutout());
-            ItemBlockRenderTypes.setRenderLayer(FPipesBlocks.ELITE_FLUID_PIPE.get(), RenderType.cutout());
-            ItemBlockRenderTypes.setRenderLayer(FPipesBlocks.ULTIMATE_FLUID_PIPE.get(), RenderType.cutout());
-
-            ItemBlockRenderTypes.setRenderLayer(FPipesBlocks.BASIC_ENERGY_PIPE.get(), RenderType.cutout());
-            ItemBlockRenderTypes.setRenderLayer(FPipesBlocks.IMPROVED_ENERGY_PIPE.get(), RenderType.cutout());
-            ItemBlockRenderTypes.setRenderLayer(FPipesBlocks.ADVANCED_ENERGY_PIPE.get(), RenderType.cutout());
-            ItemBlockRenderTypes.setRenderLayer(FPipesBlocks.ELITE_ENERGY_PIPE.get(), RenderType.cutout());
-            ItemBlockRenderTypes.setRenderLayer(FPipesBlocks.ULTIMATE_ENERGY_PIPE.get(), RenderType.cutout());
+            // Render type is set via PipeBakedModel.getRenderTypes() — no need for setRenderLayer
 
             // Register block entity renderers
             BlockEntityRenderers.register(FPipesBlockEntities.BASIC_ITEM_PIPE.get(), ItemPipeBlockEntityRenderer::new);
