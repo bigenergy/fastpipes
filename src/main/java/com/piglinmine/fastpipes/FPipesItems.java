@@ -2,6 +2,7 @@ package com.piglinmine.fastpipes;
 
 import com.piglinmine.fastpipes.item.AttachmentItem;
 import com.piglinmine.fastpipes.item.BaseBlockItem;
+import com.piglinmine.fastpipes.item.WrenchItem;
 import com.piglinmine.fastpipes.network.pipe.attachment.extractor.ExtractorAttachmentType;
 import com.piglinmine.fastpipes.network.pipe.attachment.inserter.InserterAttachmentType;
 import net.minecraft.world.item.Item;
@@ -65,6 +66,12 @@ public class FPipesItems {
     public static final DeferredHolder<Item, BaseBlockItem> ULTIMATE_ENERGY_PIPE = ITEMS.register(
         "ultimate_energy_pipe", 
         () -> new BaseBlockItem(FPipesBlocks.ULTIMATE_ENERGY_PIPE.get())
+    );
+
+    // Tools
+    public static final DeferredHolder<Item, WrenchItem> WRENCH = ITEMS.register(
+        "wrench",
+        () -> new WrenchItem()
     );
 
     // Attachment Items

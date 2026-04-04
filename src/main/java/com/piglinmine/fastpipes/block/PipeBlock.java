@@ -2,6 +2,7 @@ package com.piglinmine.fastpipes.block;
 
 import com.piglinmine.fastpipes.blockentity.PipeBlockEntity;
 import com.piglinmine.fastpipes.item.AttachmentItem;
+import com.piglinmine.fastpipes.item.WrenchItem;
 import com.piglinmine.fastpipes.network.NetworkManager;
 import com.piglinmine.fastpipes.network.pipe.Pipe;
 import com.piglinmine.fastpipes.network.pipe.attachment.Attachment;
@@ -13,6 +14,8 @@ import com.piglinmine.fastpipes.util.Raytracer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -95,10 +98,28 @@ public abstract class PipeBlock extends Block implements EntityBlock {
     @Override
     @SuppressWarnings("deprecation")
     public InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
+        ItemStack held = player.getMainHandItem();
+
+        // Wrench: shift+right-click to break pipe
+        if (held.getItem() instanceof WrenchItem && player.isCrouching()) {
+            if (!level.isClientSide) {
+                level.destroyBlock(pos, !player.isCreative(), player);
+            }
+            return InteractionResult.SUCCESS;
+        }
+
+        // Wrench: right-click to toggle disconnect on a side
+        if (held.getItem() instanceof WrenchItem) {
+            Direction dir = getAttachmentDirectionClicked(pos, hit.getLocation());
+            if (dir == null) {
+                dir = hit.getDirection(); // fallback to the face that was clicked
+            }
+            return toggleDisconnect(level, pos, dir);
+        }
+
         Direction dirClicked = getAttachmentDirectionClicked(pos, hit.getLocation());
 
         if (dirClicked != null) {
-            ItemStack held = player.getMainHandItem();
             BlockEntity blockEntity = level.getBlockEntity(pos);
 
             if (held.isEmpty() && player.isCrouching()) {
@@ -111,6 +132,42 @@ public abstract class PipeBlock extends Block implements EntityBlock {
         }
 
         return InteractionResult.PASS;
+    }
+
+    private InteractionResult toggleDisconnect(Level level, BlockPos pos, Direction dir) {
+        if (!level.isClientSide) {
+            Pipe pipe = NetworkManager.get(level).getPipe(pos);
+
+            if (pipe != null) {
+                boolean disconnected = pipe.toggleDisconnect(dir);
+                NetworkManager.get(level).setDirty();
+
+                // Rescan the network to update connections
+                if (pipe.getNetwork() != null) {
+                    pipe.getNetwork().scanGraph(level, pos);
+                }
+
+                // Also rescan the neighbor pipe's network if it exists
+                Pipe neighborPipe = NetworkManager.get(level).getPipe(pos.relative(dir));
+                if (neighborPipe != null && neighborPipe.getNetwork() != null) {
+                    neighborPipe.getNetwork().scanGraph(level, pos.relative(dir));
+                }
+
+                pipe.sendBlockUpdate();
+                level.setBlockAndUpdate(pos, getState(level.getBlockState(pos), level, pos));
+
+                // Update neighbor block state too
+                BlockState neighborState = level.getBlockState(pos.relative(dir));
+                if (neighborState.getBlock() instanceof PipeBlock neighborPipeBlock) {
+                    level.setBlockAndUpdate(pos.relative(dir),
+                        neighborPipeBlock.getState(neighborState, level, pos.relative(dir)));
+                }
+
+                level.playSound(null, pos, SoundEvents.LEVER_CLICK, SoundSource.BLOCKS, 0.5F, disconnected ? 0.5F : 0.7F);
+            }
+        }
+
+        return InteractionResult.SUCCESS;
     }
 
     private InteractionResult addAttachment(Player player, Level level, BlockPos pos, ItemStack attachment, Direction dir) {
@@ -186,7 +243,7 @@ public abstract class PipeBlock extends Block implements EntityBlock {
         return shapeCache.getShape(state, world, pos, ctx);
     }
 
-    private BlockState getState(BlockState currentState, LevelAccessor world, BlockPos pos) {
+    BlockState getState(BlockState currentState, LevelAccessor world, BlockPos pos) {
         return currentState
             .setValue(NORTH, hasConnection(world, pos, Direction.NORTH))
             .setValue(EAST, hasConnection(world, pos, Direction.EAST))

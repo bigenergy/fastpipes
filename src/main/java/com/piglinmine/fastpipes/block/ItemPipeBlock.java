@@ -30,17 +30,17 @@ public class ItemPipeBlock extends PipeBlock implements EntityBlock {
     @Override
     protected boolean hasConnection(LevelAccessor world, BlockPos pos, Direction direction) {
         BlockEntity currentBlockEntity = world.getBlockEntity(pos);
-        if (currentBlockEntity instanceof ItemPipeBlockEntity &&
-            ((ItemPipeBlockEntity) currentBlockEntity).getAttachmentManager().hasAttachment(direction)) {
-            return false;
+        if (currentBlockEntity instanceof ItemPipeBlockEntity ipe) {
+            if (ipe.getAttachmentManager().hasAttachment(direction)) return false;
+            if (ipe.isDisconnected(direction)) return false;
         }
 
         BlockState facingState = world.getBlockState(pos.relative(direction));
         BlockEntity facingBlockEntity = world.getBlockEntity(pos.relative(direction));
 
-        if (facingBlockEntity instanceof ItemPipeBlockEntity &&
-            ((ItemPipeBlockEntity) facingBlockEntity).getAttachmentManager().hasAttachment(direction.getOpposite())) {
-            return false;
+        if (facingBlockEntity instanceof ItemPipeBlockEntity ipe) {
+            if (ipe.getAttachmentManager().hasAttachment(direction.getOpposite())) return false;
+            if (ipe.isDisconnected(direction.getOpposite())) return false;
         }
 
         return facingState.getBlock() instanceof ItemPipeBlock;
@@ -48,6 +48,9 @@ public class ItemPipeBlock extends PipeBlock implements EntityBlock {
 
     @Override
     protected boolean hasInvConnection(LevelAccessor world, BlockPos pos, Direction direction) {
+        BlockEntity be = world.getBlockEntity(pos);
+        if (be instanceof ItemPipeBlockEntity ipe && ipe.isDisconnected(direction)) return false;
+
         if (world instanceof Level level) {
             return level.getCapability(Capabilities.ItemHandler.BLOCK, pos.relative(direction), direction.getOpposite()) != null;
         }

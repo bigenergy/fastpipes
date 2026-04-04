@@ -67,6 +67,11 @@ public class NetworkGraphScanner {
                 request.setSuccessful(true);
 
                 for (Direction dir : Direction.values()) {
+                    // Skip disconnected sides - wrench can disconnect pipe sides
+                    if (pipe.isDisconnected(dir)) {
+                        continue;
+                    }
+
                     addRequest(new NetworkGraphScannerRequest(
                         request.getLevel(),
                         request.getPos().relative(dir),

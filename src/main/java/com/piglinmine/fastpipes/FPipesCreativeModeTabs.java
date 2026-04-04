@@ -34,6 +34,9 @@ public class FPipesCreativeModeTabs {
                 output.accept(FPipesItems.ELITE_ENERGY_PIPE.get());
                 output.accept(FPipesItems.ULTIMATE_ENERGY_PIPE.get());
                 
+                // Tools
+                output.accept(FPipesItems.WRENCH.get());
+
                 // Attachments
                 output.accept(FPipesItems.BASIC_EXTRACTOR_ATTACHMENT.get());
                 output.accept(FPipesItems.IMPROVED_EXTRACTOR_ATTACHMENT.get());

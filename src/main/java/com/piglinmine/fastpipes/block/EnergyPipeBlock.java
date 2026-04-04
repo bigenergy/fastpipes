@@ -30,17 +30,17 @@ public class EnergyPipeBlock extends PipeBlock implements EntityBlock {
     @Override
     protected boolean hasConnection(LevelAccessor level, BlockPos pos, Direction direction) {
         BlockEntity currentBlockEntity = level.getBlockEntity(pos);
-        if (currentBlockEntity instanceof EnergyPipeBlockEntity &&
-            ((EnergyPipeBlockEntity) currentBlockEntity).getAttachmentManager().hasAttachment(direction)) {
-            return false;
+        if (currentBlockEntity instanceof EnergyPipeBlockEntity epe) {
+            if (epe.getAttachmentManager().hasAttachment(direction)) return false;
+            if (epe.isDisconnected(direction)) return false;
         }
 
         BlockState facingState = level.getBlockState(pos.relative(direction));
         BlockEntity facingBlockEntity = level.getBlockEntity(pos.relative(direction));
 
-        if (facingBlockEntity instanceof EnergyPipeBlockEntity &&
-            ((EnergyPipeBlockEntity) facingBlockEntity).getAttachmentManager().hasAttachment(direction.getOpposite())) {
-            return false;
+        if (facingBlockEntity instanceof EnergyPipeBlockEntity epe) {
+            if (epe.getAttachmentManager().hasAttachment(direction.getOpposite())) return false;
+            if (epe.isDisconnected(direction.getOpposite())) return false;
         }
 
         return facingState.getBlock() instanceof EnergyPipeBlock
@@ -49,6 +49,9 @@ public class EnergyPipeBlock extends PipeBlock implements EntityBlock {
 
     @Override
     protected boolean hasInvConnection(LevelAccessor world, BlockPos pos, Direction direction) {
+        BlockEntity be = world.getBlockEntity(pos);
+        if (be instanceof EnergyPipeBlockEntity epe && epe.isDisconnected(direction)) return false;
+
         if (world instanceof Level level) {
             IEnergyStorage energyStorage = level.getCapability(Capabilities.EnergyStorage.BLOCK, pos.relative(direction), direction.getOpposite());
             if (energyStorage == null) {

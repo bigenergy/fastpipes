@@ -85,6 +85,11 @@
   "tooltip.fastpipes.inserter_attachment.hint": "Place on a pipe to mark it as an item destination",
   "tooltip.fastpipes.attachment.place": "Right-click a pipe side to place",
   "tooltip.fastpipes.attachment.remove": "Sneak + empty hand to remove",
+  "item.fastpipes.wrench": "Pipe Wrench",
+  "tooltip.fastpipes.wrench.hint1": "Right-click a pipe side to disconnect/reconnect",
+  "tooltip.fastpipes.wrench.hint2": "Sneak + right-click to break pipe",
+  "jei.fastpipes.wrench.description": "Right-click a pipe side to disconnect or reconnect it. Sneak + right-click to break the pipe.",
+
   "config.jade.plugin_fastpipes.energy_pipe_info": "Energy Pipe Information",
   "config.jade.plugin_fastpipes.item_pipe_info": "Item Pipe Information",
   "config.jade.plugin_fastpipes.fluid_pipe_info": "Fluid Pipe Information",
