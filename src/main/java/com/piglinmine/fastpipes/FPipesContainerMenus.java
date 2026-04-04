@@ -1,14 +1,18 @@
 package com.piglinmine.fastpipes;
 
+import com.piglinmine.fastpipes.inventory.fluid.FluidInventory;
 import com.piglinmine.fastpipes.menu.ExtractorAttachmentContainerMenu;
 import com.piglinmine.fastpipes.menu.InserterAttachmentContainerMenu;
 import com.piglinmine.fastpipes.network.pipe.attachment.extractor.*;
 import com.piglinmine.fastpipes.network.pipe.attachment.inserter.InserterAttachment;
 import com.piglinmine.fastpipes.network.pipe.attachment.inserter.InserterAttachmentType;
 import com.piglinmine.fastpipes.util.DirectionUtil;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.inventory.MenuType;
 import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
+import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
@@ -19,24 +23,32 @@ public class FPipesContainerMenus {
         "extractor_attachment",
         () -> IMenuTypeExtension.create((windowId, inv, data) -> {
             if (data != null) {
-                // Server-side data available - use real values
+                BlockPos pos = data.readBlockPos();
+                Direction dir = DirectionUtil.safeGet(data.readByte());
+                RedstoneMode rm = RedstoneMode.get(data.readByte());
+                BlacklistWhitelist bw = BlacklistWhitelist.get(data.readByte());
+                RoutingMode routingMode = RoutingMode.get(data.readByte());
+                int stackSize = data.readInt();
+                boolean exactMode = data.readBoolean();
+                ExtractorAttachmentType type = ExtractorAttachmentType.get(data.readByte());
+                boolean fluidMode = data.readBoolean();
+
+                // Read fluid filter contents from buffer
+                FluidInventory fluidFilter = ExtractorAttachment.createFluidFilterInventory(null);
+                for (int i = 0; i < ExtractorAttachment.MAX_FILTER_SLOTS; i++) {
+                    FluidStack fluid = FluidStack.OPTIONAL_STREAM_CODEC.decode(data);
+                    if (!fluid.isEmpty()) {
+                        fluidFilter.setFluid(i, fluid);
+                    }
+                }
+
                 return new ExtractorAttachmentContainerMenu(
-                    windowId,
-                    inv.player,
-                    data.readBlockPos(),
-                    DirectionUtil.safeGet(data.readByte()),
-                    RedstoneMode.get(data.readByte()),
-                    BlacklistWhitelist.get(data.readByte()),
-                    RoutingMode.get(data.readByte()),
-                    data.readInt(),
-                    data.readBoolean(),
-                    ExtractorAttachmentType.get(data.readByte()),
+                    windowId, inv.player, pos, dir, rm, bw, routingMode,
+                    stackSize, exactMode, type,
                     ExtractorAttachment.createItemFilterInventory(null),
-                    ExtractorAttachment.createFluidFilterInventory(null),
-                    data.readBoolean()
+                    fluidFilter, fluidMode
                 );
             } else {
-                // Fallback for client-only constructor
                 return new ExtractorAttachmentContainerMenu(windowId, inv.player);
             }
         })
@@ -46,20 +58,31 @@ public class FPipesContainerMenus {
         "inserter_attachment",
         () -> IMenuTypeExtension.create((windowId, inv, data) -> {
             if (data != null) {
+                BlockPos pos = data.readBlockPos();
+                Direction dir = DirectionUtil.safeGet(data.readByte());
+                RedstoneMode rm = RedstoneMode.get(data.readByte());
+                BlacklistWhitelist bw = BlacklistWhitelist.get(data.readByte());
+                boolean exactMode = data.readBoolean();
+                InserterAttachmentType type = InserterAttachmentType.get(data.readByte());
+                boolean fluidMode = data.readBoolean();
+
+                // Read fluid filter contents from buffer
+                FluidInventory fluidFilter = InserterAttachment.createFluidFilterInventory(null);
+                for (int i = 0; i < InserterAttachment.MAX_FILTER_SLOTS; i++) {
+                    FluidStack fluid = FluidStack.OPTIONAL_STREAM_CODEC.decode(data);
+                    if (!fluid.isEmpty()) {
+                        fluidFilter.setFluid(i, fluid);
+                    }
+                }
+
                 return new InserterAttachmentContainerMenu(
-                    windowId,
-                    inv.player,
-                    data.readBlockPos(),
-                    DirectionUtil.safeGet(data.readByte()),
-                    RedstoneMode.get(data.readByte()),
-                    BlacklistWhitelist.get(data.readByte()),
-                    data.readBoolean(),
-                    InserterAttachmentType.get(data.readByte()),
-                    InserterAttachment.createItemFilterInventory(null)
+                    windowId, inv.player, pos, dir, rm, bw, exactMode, type,
+                    InserterAttachment.createItemFilterInventory(null),
+                    fluidFilter, fluidMode
                 );
             } else {
                 return new InserterAttachmentContainerMenu(windowId, inv.player);
             }
         })
     );
-} 
+}

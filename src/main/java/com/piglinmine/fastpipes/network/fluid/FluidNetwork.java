@@ -4,6 +4,7 @@ import com.piglinmine.fastpipes.network.Network;
 import com.piglinmine.fastpipes.network.graph.NetworkGraphScannerResult;
 import com.piglinmine.fastpipes.network.pipe.Destination;
 import com.piglinmine.fastpipes.network.pipe.DestinationType;
+import com.piglinmine.fastpipes.network.pipe.attachment.Attachment;
 import com.piglinmine.fastpipes.network.pipe.fluid.FluidPipe;
 import com.piglinmine.fastpipes.network.pipe.fluid.FluidPipeType;
 import net.minecraft.core.BlockPos;
@@ -64,6 +65,12 @@ public class FluidNetwork extends Network {
         }
 
         for (Destination destination : destinations) {
+            // Check if the connected pipe has an inserter attachment that filters this fluid
+            Attachment att = destination.getConnectedPipe().getAttachmentManager().getAttachment(destination.getIncomingDirection());
+            if (att != null && !att.canAcceptFluid(fluidTank.getFluid())) {
+                continue;
+            }
+
             BlockEntity blockEntity = destination.getConnectedPipe().getLevel().getBlockEntity(destination.getReceiver());
             if (blockEntity == null) {
                 continue;

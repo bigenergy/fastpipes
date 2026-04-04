@@ -8,6 +8,7 @@ import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.neoforged.neoforge.fluids.FluidStack;
 
 import javax.annotation.Nullable;
 
@@ -56,6 +57,11 @@ public class ExtractorAttachmentMenuProvider implements MenuProvider {
             buf.writeBoolean(attachment.isExactMode());
             buf.writeByte(attachment.getType().ordinal());
             buf.writeBoolean(attachment.isFluidMode());
+
+            // Sync fluid filter contents to client
+            for (int i = 0; i < ExtractorAttachment.MAX_FILTER_SLOTS; i++) {
+                FluidStack.OPTIONAL_STREAM_CODEC.encode(buf, attachment.getFluidFilter().getFluid(i));
+            }
         });
     }
-} 
+}

@@ -1,5 +1,6 @@
 package com.piglinmine.fastpipes.network.pipe.attachment.inserter;
 
+import com.piglinmine.fastpipes.block.FluidPipeBlock;
 import com.piglinmine.fastpipes.block.ItemPipeBlock;
 import com.piglinmine.fastpipes.network.pipe.Pipe;
 import com.piglinmine.fastpipes.network.pipe.attachment.Attachment;
@@ -34,6 +35,9 @@ public class InserterAttachmentFactory implements AttachmentFactory {
         if (tag.contains("exa")) attachment.setExactMode(tag.getBoolean("exa"));
         if (tag.contains("itemfilter")) {
             attachment.getItemFilter().deserializeNBT(pipe.getLevel().registryAccess(), tag.getCompound("itemfilter"));
+        }
+        if (tag.contains("fluidfilter")) {
+            attachment.getFluidFilter().readFromNbt(tag.getCompound("fluidfilter"), pipe.getLevel().registryAccess());
         }
 
         return attachment;
@@ -86,6 +90,7 @@ public class InserterAttachmentFactory implements AttachmentFactory {
 
     @Override
     public boolean canPlaceOnPipe(Block pipe) {
-        return pipe instanceof ItemPipeBlock;
+        return pipe instanceof ItemPipeBlock
+            || pipe instanceof FluidPipeBlock;
     }
 }

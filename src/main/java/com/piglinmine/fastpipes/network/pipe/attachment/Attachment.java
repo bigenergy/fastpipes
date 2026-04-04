@@ -6,6 +6,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.fluids.FluidStack;
 
 public abstract class Attachment {
     protected final Pipe pipe;
@@ -53,6 +54,14 @@ public abstract class Attachment {
      * Only meaningful when {@link #isItemDestinationProvider()} returns true.
      */
     public boolean canInsert(ItemStack stack) {
+        return true;
+    }
+
+    /**
+     * Whether this attachment allows the given fluid to be pushed to the adjacent block.
+     * Only meaningful for fluid pipe inserters.
+     */
+    public boolean canAcceptFluid(FluidStack stack) {
         return true;
     }
 

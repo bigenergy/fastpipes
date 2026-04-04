@@ -1,7 +1,9 @@
 package com.piglinmine.fastpipes.menu;
 
 import com.piglinmine.fastpipes.FPipesContainerMenus;
+import com.piglinmine.fastpipes.inventory.fluid.FluidInventory;
 import com.piglinmine.fastpipes.menu.slot.FilterSlot;
+import com.piglinmine.fastpipes.menu.slot.FluidFilterSlot;
 import com.piglinmine.fastpipes.network.FastPipesNetwork;
 import com.piglinmine.fastpipes.network.message.*;
 import com.piglinmine.fastpipes.network.pipe.attachment.extractor.BlacklistWhitelist;
@@ -13,6 +15,8 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidUtil;
 import net.neoforged.neoforge.items.ItemStackHandler;
 import net.neoforged.neoforge.items.SlotItemHandler;
 
@@ -20,6 +24,7 @@ public class InserterAttachmentContainerMenu extends BaseContainerMenu {
     private final BlockPos pos;
     private final Direction dir;
     private final InserterAttachmentType inserterAttachmentType;
+    private final boolean fluidMode;
 
     private RedstoneMode redstoneMode;
     private BlacklistWhitelist blacklistWhitelist;
@@ -34,7 +39,9 @@ public class InserterAttachmentContainerMenu extends BaseContainerMenu {
         BlacklistWhitelist blacklistWhitelist,
         boolean exactMode,
         InserterAttachmentType type,
-        ItemStackHandler itemFilter) {
+        ItemStackHandler itemFilter,
+        FluidInventory fluidFilter,
+        boolean fluidMode) {
         super(FPipesContainerMenus.INSERTER_ATTACHMENT.get(), windowId, player);
 
         addPlayerInventory(8, 111);
@@ -42,7 +49,11 @@ public class InserterAttachmentContainerMenu extends BaseContainerMenu {
         int x = 44;
         int y = 19;
         for (int i = 1; i <= type.getFilterSlots(); ++i) {
-            addSlot(new FilterSlot(itemFilter, i - 1, x, y));
+            if (fluidMode) {
+                addSlot(new FluidFilterSlot(fluidFilter, i - 1, x, y));
+            } else {
+                addSlot(new FilterSlot(itemFilter, i - 1, x, y));
+            }
 
             if (i % 5 == 0) {
                 x = 44;
@@ -55,6 +66,7 @@ public class InserterAttachmentContainerMenu extends BaseContainerMenu {
         this.pos = pos;
         this.dir = dir;
         this.inserterAttachmentType = type;
+        this.fluidMode = fluidMode;
         this.redstoneMode = redstoneMode;
         this.blacklistWhitelist = blacklistWhitelist;
         this.exactMode = exactMode;
@@ -63,12 +75,13 @@ public class InserterAttachmentContainerMenu extends BaseContainerMenu {
     public InserterAttachmentContainerMenu(int windowId, Player player) {
         this(windowId, player, BlockPos.ZERO, Direction.NORTH,
             RedstoneMode.IGNORED, BlacklistWhitelist.BLACKLIST, false,
-            InserterAttachmentType.BASIC, new ItemStackHandler(15));
+            InserterAttachmentType.BASIC, new ItemStackHandler(15), new FluidInventory(15), false);
     }
 
     public BlockPos getPos() { return pos; }
     public Direction getDirection() { return dir; }
     public InserterAttachmentType getInserterAttachmentType() { return inserterAttachmentType; }
+    public boolean isFluidMode() { return fluidMode; }
 
     public RedstoneMode getRedstoneMode() { return redstoneMode; }
     public void setRedstoneMode(RedstoneMode redstoneMode) {
@@ -94,21 +107,33 @@ public class InserterAttachmentContainerMenu extends BaseContainerMenu {
         if (slot != null && slot.hasItem() && index < 9 * 4) {
             for (int i = 9 * 4; i < slots.size(); ++i) {
                 Slot filterSlot = slots.get(i);
-                if (filterSlot instanceof SlotItemHandler itemSlot && !itemSlot.hasItem()) {
-                    ItemStack toInsert = slot.getItem().copy();
-                    toInsert.setCount(1);
 
-                    boolean foundExistingItem = false;
-                    for (int j = 0; j < itemSlot.getItemHandler().getSlots(); ++j) {
-                        if (ItemStack.matches(itemSlot.getItemHandler().getStackInSlot(j), toInsert)) {
-                            foundExistingItem = true;
+                if (filterSlot instanceof FluidFilterSlot fluidSlot) {
+                    if (fluidSlot.getFluidInventory().getFluid(fluidSlot.getSlotIndex()).isEmpty()) {
+                        FluidStack fluidStack = FluidUtil.getFluidContained(slot.getItem()).orElse(FluidStack.EMPTY);
+                        if (!fluidStack.isEmpty()) {
+                            fluidSlot.getFluidInventory().setFluid(fluidSlot.getSlotIndex(), fluidStack);
                             break;
                         }
+                        break;
                     }
-                    if (!foundExistingItem) {
-                        itemSlot.set(toInsert);
+                } else if (filterSlot instanceof SlotItemHandler itemSlot) {
+                    if (!itemSlot.hasItem()) {
+                        ItemStack toInsert = slot.getItem().copy();
+                        toInsert.setCount(1);
+
+                        boolean foundExistingItem = false;
+                        for (int j = 0; j < itemSlot.getItemHandler().getSlots(); ++j) {
+                            if (ItemStack.matches(itemSlot.getItemHandler().getStackInSlot(j), toInsert)) {
+                                foundExistingItem = true;
+                                break;
+                            }
+                        }
+                        if (!foundExistingItem) {
+                            itemSlot.set(toInsert);
+                        }
+                        break;
                     }
-                    break;
                 }
             }
         }
