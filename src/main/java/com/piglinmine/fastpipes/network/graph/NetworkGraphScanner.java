@@ -86,7 +86,12 @@ public class NetworkGraphScanner {
             // Attachments block destinations by default (e.g. extractors).
             // Inserter attachments explicitly mark their side as a valid destination.
             Attachment att = connectedPipe.getAttachmentManager().getAttachment(request.getDirection());
-            if (att == null || att.isItemDestinationProvider()) {
+
+            // Void attachments act as destinations without requiring an adjacent block entity
+            if (att != null && att.isVoidDestination()) {
+                destinations.add(new Destination(DestinationType.ITEM_HANDLER, request.getPos(), request.getDirection(), connectedPipe));
+                destinations.add(new Destination(DestinationType.FLUID_HANDLER, request.getPos(), request.getDirection(), connectedPipe));
+            } else if (att == null || att.isItemDestinationProvider()) {
                 BlockEntity blockEntity = request.getLevel().getBlockEntity(request.getPos());
 
                 if (blockEntity != null) {

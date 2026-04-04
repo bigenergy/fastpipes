@@ -6,6 +6,7 @@ import com.piglinmine.fastpipes.network.NetworkManager;
 import com.piglinmine.fastpipes.network.pipe.attachment.Attachment;
 import com.piglinmine.fastpipes.network.pipe.attachment.extractor.ExtractorAttachment;
 import com.piglinmine.fastpipes.network.pipe.attachment.inserter.InserterAttachment;
+import com.piglinmine.fastpipes.network.pipe.attachment.void_attachment.VoidAttachment;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -52,6 +53,9 @@ public record ChangeExactModeMessage(BlockPos pos, Direction direction, boolean 
                     NetworkManager.get(blockEntity.getLevel()).setDirty();
                 } else if (attachment instanceof InserterAttachment) {
                     ((InserterAttachment) attachment).setExactMode(message.exactMode());
+                    NetworkManager.get(blockEntity.getLevel()).setDirty();
+                } else if (attachment instanceof VoidAttachment) {
+                    ((VoidAttachment) attachment).setExactMode(message.exactMode());
                     NetworkManager.get(blockEntity.getLevel()).setDirty();
                 }
             }

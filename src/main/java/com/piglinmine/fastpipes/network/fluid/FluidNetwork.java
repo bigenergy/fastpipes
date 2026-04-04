@@ -18,6 +18,8 @@ import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class FluidNetwork extends Network {
@@ -64,10 +66,28 @@ public class FluidNetwork extends Network {
             return;
         }
 
+        // Sort destinations by priority — higher priority first, void (-1000) last
+        List<Destination> sorted = new ArrayList<>(destinations);
+        sorted.sort(Comparator.comparingInt((Destination d) -> {
+            Attachment a = d.getConnectedPipe().getAttachmentManager().getAttachment(d.getIncomingDirection());
+            return a != null ? a.getInsertionPriority() : 0;
+        }).reversed());
+        destinations = sorted;
+
         for (Destination destination : destinations) {
-            // Check if the connected pipe has an inserter attachment that filters this fluid
+            // Check if the connected pipe has an inserter/void attachment that filters this fluid
             Attachment att = destination.getConnectedPipe().getAttachmentManager().getAttachment(destination.getIncomingDirection());
             if (att != null && !att.canAcceptFluid(fluidTank.getFluid())) {
+                continue;
+            }
+
+            // Void attachment — drain fluid and destroy it
+            if (att != null && att.isVoidDestination()) {
+                int toOfferAmount = Math.min(pipeType.getTransferRate(), fluidTank.getFluidAmount());
+                if (toOfferAmount <= 0) {
+                    break;
+                }
+                fluidTank.drain(toOfferAmount, IFluidHandler.FluidAction.EXECUTE);
                 continue;
             }
 

@@ -49,6 +49,9 @@ public class FPipesCreativeModeTabs {
                 output.accept(FPipesItems.ADVANCED_INSERTER_ATTACHMENT.get());
                 output.accept(FPipesItems.ELITE_INSERTER_ATTACHMENT.get());
                 output.accept(FPipesItems.ULTIMATE_INSERTER_ATTACHMENT.get());
+
+                // Special Attachments
+                output.accept(FPipesItems.VOID_ATTACHMENT.get());
             })
             .build()
     );

@@ -3,9 +3,11 @@ package com.piglinmine.fastpipes;
 import com.piglinmine.fastpipes.inventory.fluid.FluidInventory;
 import com.piglinmine.fastpipes.menu.ExtractorAttachmentContainerMenu;
 import com.piglinmine.fastpipes.menu.InserterAttachmentContainerMenu;
+import com.piglinmine.fastpipes.menu.VoidAttachmentContainerMenu;
 import com.piglinmine.fastpipes.network.pipe.attachment.extractor.*;
 import com.piglinmine.fastpipes.network.pipe.attachment.inserter.InserterAttachment;
 import com.piglinmine.fastpipes.network.pipe.attachment.inserter.InserterAttachmentType;
+import com.piglinmine.fastpipes.network.pipe.attachment.void_attachment.VoidAttachment;
 import com.piglinmine.fastpipes.util.DirectionUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -82,6 +84,36 @@ public class FPipesContainerMenus {
                 );
             } else {
                 return new InserterAttachmentContainerMenu(windowId, inv.player);
+            }
+        })
+    );
+
+    public static final DeferredHolder<MenuType<?>, MenuType<VoidAttachmentContainerMenu>> VOID_ATTACHMENT = CONTAINER_MENUS.register(
+        "void_attachment",
+        () -> IMenuTypeExtension.create((windowId, inv, data) -> {
+            if (data != null) {
+                BlockPos pos = data.readBlockPos();
+                Direction dir = DirectionUtil.safeGet(data.readByte());
+                BlacklistWhitelist bw = BlacklistWhitelist.get(data.readByte());
+                boolean exactMode = data.readBoolean();
+                boolean fluidMode = data.readBoolean();
+
+                // Read fluid filter contents from buffer
+                FluidInventory fluidFilter = VoidAttachment.createFluidFilterInventory(null);
+                for (int i = 0; i < VoidAttachment.MAX_FILTER_SLOTS; i++) {
+                    FluidStack fluid = FluidStack.OPTIONAL_STREAM_CODEC.decode(data);
+                    if (!fluid.isEmpty()) {
+                        fluidFilter.setFluid(i, fluid);
+                    }
+                }
+
+                return new VoidAttachmentContainerMenu(
+                    windowId, inv.player, pos, dir, bw, exactMode,
+                    VoidAttachment.createItemFilterInventory(null),
+                    fluidFilter, fluidMode
+                );
+            } else {
+                return new VoidAttachmentContainerMenu(windowId, inv.player);
             }
         })
     );

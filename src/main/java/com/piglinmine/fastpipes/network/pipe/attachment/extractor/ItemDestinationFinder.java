@@ -75,14 +75,13 @@ public class ItemDestinationFinder {
             return applicable;
         }
 
-        int maxPriority = 0;
+        // Find the highest priority among all applicable destinations
+        int maxPriority = Integer.MIN_VALUE;
         for (Destination d : applicable) {
             maxPriority = Math.max(maxPriority, getDestinationPriority(d));
         }
-        if (maxPriority == 0) {
-            return applicable; // no priority differentiation
-        }
 
+        // Filter to only the highest-priority group
         List<Destination> prioritized = new ArrayList<>();
         for (Destination d : applicable) {
             if (getDestinationPriority(d) >= maxPriority) {
@@ -98,6 +97,14 @@ public class ItemDestinationFinder {
     }
 
     private boolean isDestinationApplicable(BlockPos sourcePos, ItemStack extracted, Destination destination) {
+        // Check inserter/void attachment filter on the destination side.
+        Attachment att = destination.getConnectedPipe().getAttachmentManager().getAttachment(destination.getIncomingDirection());
+
+        // Void destinations accept everything — no block entity or capability needed
+        if (att != null && att.isVoidDestination()) {
+            return att.canInsert(extracted);
+        }
+
         BlockEntity blockEntity = destination.getConnectedPipe().getLevel().getBlockEntity(destination.getReceiver());
         if (blockEntity == null) {
             return false;
@@ -113,8 +120,6 @@ public class ItemDestinationFinder {
             return false;
         }
 
-        // Check inserter attachment filter on the destination side.
-        Attachment att = destination.getConnectedPipe().getAttachmentManager().getAttachment(destination.getIncomingDirection());
         if (att != null && !att.canInsert(extracted)) {
             return false;
         }

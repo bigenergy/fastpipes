@@ -2,6 +2,7 @@ package com.piglinmine.fastpipes.network.pipe.transport;
 
 import com.piglinmine.fastpipes.network.Network;
 import com.piglinmine.fastpipes.network.pipe.Pipe;
+import com.piglinmine.fastpipes.network.pipe.attachment.Attachment;
 import com.piglinmine.fastpipes.network.pipe.item.ItemPipe;
 import com.piglinmine.fastpipes.network.pipe.transport.callback.TransportCallback;
 import com.piglinmine.fastpipes.network.pipe.transport.callback.TransportCallbackFactoryRegistry;
@@ -162,8 +163,13 @@ public class ItemTransport {
 
         BlockPos nextPos = currentPipe.getPos().relative(getDirection(currentPipe));
         if (progress > 0.25 && currentPipe.getLevel().isEmptyBlock(nextPos)) {
-            currentPipe.removeTransport(this);
-            return onPipeGone(network, currentPipe.getLevel(), nextPos);
+            // Don't treat empty block as "pipe gone" if the current pipe has a void attachment facing that direction
+            Direction dir = getDirection(currentPipe);
+            Attachment att = currentPipe.getAttachmentManager().getAttachment(dir);
+            if (att == null || !att.isVoidDestination()) {
+                currentPipe.removeTransport(this);
+                return onPipeGone(network, currentPipe.getLevel(), nextPos);
+            }
         }
 
         if (progressInCurrentPipe >= getMaxTicksInPipe(currentPipe)) {

@@ -2,6 +2,9 @@ package com.piglinmine.fastpipes.network.pipe.transport.callback;
 
 import com.piglinmine.fastpipes.FastPipes;
 import com.piglinmine.fastpipes.network.Network;
+import com.piglinmine.fastpipes.network.NetworkManager;
+import com.piglinmine.fastpipes.network.pipe.Pipe;
+import com.piglinmine.fastpipes.network.pipe.attachment.Attachment;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
@@ -48,6 +51,21 @@ public class ItemInsertTransportCallback implements TransportCallback {
 
     @Override
     public void call(Network network, Level level, BlockPos currentPos, TransportCallback cancelCallback) {
+        // Check if the destination pipe has a void attachment — if so, destroy the item
+        // currentPos = last pipe in the path (the pipe with the void attachment)
+        Pipe pipe = NetworkManager.get(level).getPipe(currentPos);
+        if (pipe == null) {
+            // Fallback: compute pipe pos from destination position
+            pipe = NetworkManager.get(level).getPipe(itemHandlerPosition.relative(incomingDirection.getOpposite()));
+        }
+        if (pipe != null) {
+            Attachment att = pipe.getAttachmentManager().getAttachment(incomingDirection);
+            if (att != null && att.isVoidDestination()) {
+                // Item is voided — destroyed silently
+                return;
+            }
+        }
+
         BlockEntity blockEntity = level.getBlockEntity(itemHandlerPosition);
         if (blockEntity == null) {
             LOGGER.warn("Destination item handler is gone at " + itemHandlerPosition);

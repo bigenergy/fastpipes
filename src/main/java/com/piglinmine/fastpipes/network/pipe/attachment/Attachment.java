@@ -72,4 +72,12 @@ public abstract class Attachment {
     public int getInsertionPriority() {
         return 0;
     }
+
+    /**
+     * Whether this attachment acts as a void — destroying items/fluids that arrive.
+     * Void destinations do not require an adjacent block entity or capability.
+     */
+    public boolean isVoidDestination() {
+        return false;
+    }
 } 
