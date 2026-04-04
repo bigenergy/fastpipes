@@ -100,16 +100,16 @@ public abstract class PipeBlock extends Block implements EntityBlock {
     public InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
         ItemStack held = player.getMainHandItem();
 
-        // Wrench: shift+right-click to break pipe
-        if (held.getItem() instanceof WrenchItem && player.isCrouching()) {
+        // Wrench: shift+right-click to break pipe (supports cross-mod wrenches via ItemAbility)
+        if (WrenchItem.isWrench(held) && player.isCrouching()) {
             if (!level.isClientSide) {
                 level.destroyBlock(pos, !player.isCreative(), player);
             }
             return InteractionResult.SUCCESS;
         }
 
-        // Wrench: right-click to toggle disconnect on a side
-        if (held.getItem() instanceof WrenchItem) {
+        // Wrench: right-click to toggle disconnect on a side (supports cross-mod wrenches)
+        if (WrenchItem.isWrench(held)) {
             Direction dir = getAttachmentDirectionClicked(pos, hit.getLocation());
             if (dir == null) {
                 dir = hit.getDirection(); // fallback to the face that was clicked
