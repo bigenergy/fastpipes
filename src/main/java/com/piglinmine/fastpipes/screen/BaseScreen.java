@@ -45,7 +45,7 @@ public abstract class BaseScreen<T extends BaseContainerMenu> extends AbstractCo
         if (a == 0) a = 1.0F; // default to fully opaque
 
         RenderSystem.setShaderColor(r, g, b, a);
-        graphics.blit(x + 1, y + 1, 0, 16, 16, sprite);
+        graphics.blit(x, y, 0, 16, 16, sprite);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F); // reset color
     }
 
