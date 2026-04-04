@@ -82,5 +82,11 @@
   "jei.fastpipes.ultimate_extractor_attachment.description": "Extracts items or fluids from inventories/tanks. Ultimate extraction rate.",
   
   "config.jade.plugin_fastpipes.energy_pipe_info": "Energy Pipe Information",
-  "jade.fastpipes.transfer_rate": "Transfer Rate: %d FE/t"
+  "config.jade.plugin_fastpipes.item_pipe_info": "Item Pipe Information",
+  "config.jade.plugin_fastpipes.fluid_pipe_info": "Fluid Pipe Information",
+  "jade.fastpipes.transfer_rate": "Transfer Rate: %d FE/t",
+  "jade.fastpipes.item_speed": "Speed: %d ticks/pipe",
+  "jade.fastpipes.items_in_transit": "Items in transit: %d",
+  "jade.fastpipes.fluid_transfer_rate": "Transfer Rate: %d mB/t",
+  "jade.fastpipes.fluid_stored": "%d / %d mB (%s)"
 }

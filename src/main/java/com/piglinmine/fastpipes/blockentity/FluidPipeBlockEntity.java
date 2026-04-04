@@ -65,6 +65,10 @@ public class FluidPipeBlockEntity extends PipeBlockEntity {
         // Client-side fluid/fullness data is updated via FluidPipeMessage packets.
     }
 
+    public FluidPipeType getFluidPipeType() {
+        return type;
+    }
+
     public FluidStack getFluid() {
         return fluid;
     }
