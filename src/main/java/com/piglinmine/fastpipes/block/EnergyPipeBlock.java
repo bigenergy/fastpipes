@@ -1,11 +1,15 @@
 package com.piglinmine.fastpipes.block;
 
 import com.piglinmine.fastpipes.blockentity.EnergyPipeBlockEntity;
+import com.piglinmine.fastpipes.blockentity.PipeBlockEntity;
+import com.piglinmine.fastpipes.network.NetworkManager;
+import com.piglinmine.fastpipes.network.pipe.Pipe;
 import com.piglinmine.fastpipes.network.pipe.energy.EnergyPipeEnergyStorage;
 import com.piglinmine.fastpipes.network.pipe.energy.EnergyPipeType;
 import com.piglinmine.fastpipes.network.pipe.shape.PipeShapeCache;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.EntityBlock;
@@ -43,8 +47,21 @@ public class EnergyPipeBlock extends PipeBlock implements EntityBlock {
             if (epe.isDisconnected(direction.getOpposite())) return false;
         }
 
-        return facingState.getBlock() instanceof EnergyPipeBlock
-            && ((EnergyPipeBlock) facingState.getBlock()).getType() == type;
+        if (!(facingState.getBlock() instanceof EnergyPipeBlock epb) || epb.getType() != type) return false;
+
+        // Color check: colored pipes only connect to same color or uncolored pipes
+        // Only check on server — client trusts server-sent block state
+        if (level instanceof Level lvl && !lvl.isClientSide) {
+            Pipe myPipe = NetworkManager.get(lvl).getPipe(pos);
+            Pipe theirPipe = NetworkManager.get(lvl).getPipe(pos.relative(direction));
+            if (myPipe != null && theirPipe != null) {
+                DyeColor myColor = myPipe.getColor();
+                DyeColor theirColor = theirPipe.getColor();
+                if (myColor != null && theirColor != null && myColor != theirColor) return false;
+            }
+        }
+
+        return true;
     }
 
     @Override

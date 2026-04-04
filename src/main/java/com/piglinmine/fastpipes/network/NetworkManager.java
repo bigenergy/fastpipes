@@ -64,7 +64,8 @@ public class NetworkManager extends SavedData {
 
     public void removeNetwork(String id) {
         if (!networks.containsKey(id)) {
-            throw new RuntimeException("Network " + id + " not found");
+            LOGGER.warn("Network {} not found, skipping removal", id);
+            return;
         }
 
         networks.remove(id);
@@ -187,40 +188,44 @@ public class NetworkManager extends SavedData {
     }
 
     private void splitNetworks(Pipe originPipe) {
-        // Sanity checks
-        for (Pipe adjacent : findAdjacentPipes(originPipe.getPos(), originPipe.getNetworkType())) {
-            if (adjacent.getNetwork() == null) {
-                throw new RuntimeException("Adjacent pipe has no network");
-            }
-
-            if (adjacent.getNetwork() != originPipe.getNetwork()) {
-                throw new RuntimeException("The origin pipe network is different than the adjacent pipe network");
-            }
-        }
-
-        Pipe otherPipeInNetwork = findFirstAdjacentPipe(originPipe.getPos(), originPipe.getNetworkType());
-        if (otherPipeInNetwork == null) {
-            removeNetwork(originPipe.getNetwork().getId());
-            return;
+        // Collect all networks that the removed pipe was bridging
+        Set<Network> affectedNetworks = new HashSet<>();
+        if (originPipe.getNetwork() != null) {
+            affectedNetworks.add(originPipe.getNetwork());
         }
 
         List<Pipe> adjacentPipes = findAdjacentPipes(originPipe.getPos(), originPipe.getNetworkType());
 
-        if (adjacentPipes.size() == 1) {
-            originPipe.getNetwork().scanGraph(originPipe.getLevel(), otherPipeInNetwork.getPos());
-        } else {
-            Network originalNetwork = originPipe.getNetwork();
+        for (Pipe adjacent : adjacentPipes) {
+            if (adjacent.getNetwork() != null) {
+                affectedNetworks.add(adjacent.getNetwork());
+            }
+        }
 
-            removeNetwork(originalNetwork.getId());
+        if (adjacentPipes.isEmpty()) {
+            // No adjacent pipes — just remove the origin pipe's network if it's now empty
+            if (originPipe.getNetwork() != null) {
+                removeNetwork(originPipe.getNetwork().getId());
+            }
+            return;
+        }
 
-            for (Pipe adjacentPipe : adjacentPipes) {
+        // Remove all affected networks
+        for (Network net : affectedNetworks) {
+            removeNetwork(net.getId());
+        }
+
+        // Make all adjacent pipes leave their networks
+        for (Pipe adjacentPipe : adjacentPipes) {
+            if (adjacentPipe.getNetwork() != null) {
                 adjacentPipe.leaveNetwork();
             }
+        }
 
-            for (Pipe adjacentPipe : adjacentPipes) {
-                if (adjacentPipe.getNetwork() == null) {
-                    formNetworkAt(adjacentPipe.getLevel(), adjacentPipe.getPos(), adjacentPipe.getNetworkType());
-                }
+        // Reform networks from each adjacent pipe (scanGraph will handle color-aware connections)
+        for (Pipe adjacentPipe : adjacentPipes) {
+            if (adjacentPipe.getNetwork() == null) {
+                formNetworkAt(adjacentPipe.getLevel(), adjacentPipe.getPos(), adjacentPipe.getNetworkType());
             }
         }
     }

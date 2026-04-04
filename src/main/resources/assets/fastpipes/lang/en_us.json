@@ -109,5 +109,8 @@
   "gui.fastpipes.sensor_attachment": "Sensor Attachment",
   "tooltip.fastpipes.sensor_attachment.hint": "Emits redstone signal when matching items/fluids pass through",
   "tooltip.fastpipes.sensor_attachment.signal": "Signal lasts 1 second on detection",
-  "jei.fastpipes.sensor_attachment.description": "Place on an item or fluid pipe. Emits a redstone signal when items or fluids matching the filter pass through the pipe. Supports whitelist/blacklist filtering. Signal lasts 1 second."
+  "jei.fastpipes.sensor_attachment.description": "Place on an item or fluid pipe. Emits a redstone signal when items or fluids matching the filter pass through the pipe. Supports whitelist/blacklist filtering. Signal lasts 1 second.",
+
+  "misc.fastpipes.pipe_colored": "Pipe colored %s",
+  "misc.fastpipes.pipe_color_removed": "Pipe color removed"
 }

@@ -2,6 +2,8 @@ package com.piglinmine.fastpipes.block;
 
 import com.piglinmine.fastpipes.blockentity.PipeBlockEntity;
 import com.piglinmine.fastpipes.item.AttachmentItem;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import com.piglinmine.fastpipes.item.WrenchItem;
 import com.piglinmine.fastpipes.network.NetworkManager;
 import com.piglinmine.fastpipes.network.pipe.Pipe;
@@ -19,7 +21,10 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.DyeItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -41,6 +46,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import javax.annotation.Nullable;
 
 public abstract class PipeBlock extends Block implements EntityBlock {
+    private static final Logger LOGGER = LogManager.getLogger(PipeBlock.class);
     public static final BooleanProperty NORTH = BooleanProperty.create("north");
     public static final BooleanProperty EAST = BooleanProperty.create("east");
     public static final BooleanProperty SOUTH = BooleanProperty.create("south");
@@ -100,6 +106,107 @@ public abstract class PipeBlock extends Block implements EntityBlock {
     @SuppressWarnings("deprecation")
     public InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
         ItemStack held = player.getMainHandItem();
+
+        // Dye: right-click with dye to color pipe
+        if (held.getItem() instanceof DyeItem dyeItem) {
+            if (!level.isClientSide) {
+                Pipe pipe = NetworkManager.get(level).getPipe(pos);
+                if (pipe != null) {
+                    DyeColor newColor = dyeItem.getDyeColor();
+                    if (pipe.getColor() != newColor) {
+                        pipe.setColor(newColor);
+                        NetworkManager.get(level).setDirty();
+
+                        // Rescan network — color change may split/merge networks
+                        if (pipe.getNetwork() != null) {
+                            pipe.getNetwork().scanGraph(level, pos);
+                        }
+                        // Also rescan neighbors that might now disconnect
+                        for (Direction dir : Direction.values()) {
+                            Pipe neighbor = NetworkManager.get(level).getPipe(pos.relative(dir));
+                            if (neighbor != null && neighbor.getNetwork() != null) {
+                                neighbor.getNetwork().scanGraph(level, pos.relative(dir));
+                            }
+                        }
+
+                        // Update block states with UPDATE_KNOWN_SHAPE to prevent cascading
+                        int flags = Block.UPDATE_NEIGHBORS | Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE;
+
+                        // Update the dyed pipe itself
+                        pipe.sendBlockUpdate();
+                        BlockState newState = getState(level.getBlockState(pos), level, pos);
+                        boolean setResult = level.setBlock(pos, newState, flags);
+                        LOGGER.warn("[DYE] setBlock at {} result={} n={} s={} e={} w={}",
+                            pos, setResult, newState.getValue(NORTH), newState.getValue(SOUTH),
+                            newState.getValue(EAST), newState.getValue(WEST));
+
+                        // Update all neighbor pipe block states
+                        for (Direction dir : Direction.values()) {
+                            BlockPos neighborPos = pos.relative(dir);
+                            BlockState neighborState = level.getBlockState(neighborPos);
+                            if (neighborState.getBlock() instanceof PipeBlock neighborPipeBlock) {
+                                Pipe neighborPipe = NetworkManager.get(level).getPipe(neighborPos);
+                                if (neighborPipe != null) {
+                                    neighborPipe.sendBlockUpdate();
+                                }
+                                BlockState newNeighborState = neighborPipeBlock.getState(neighborState, level, neighborPos);
+                                boolean neighborResult = level.setBlock(neighborPos, newNeighborState, flags);
+                                LOGGER.warn("[DYE] setBlock neighbor at {} result={} n={} s={} e={} w={}",
+                                    neighborPos, neighborResult, newNeighborState.getValue(NORTH), newNeighborState.getValue(SOUTH),
+                                    newNeighborState.getValue(EAST), newNeighborState.getValue(WEST));
+                            }
+                        }
+
+                        if (!player.isCreative()) {
+                            held.shrink(1);
+                        }
+                        level.playSound(null, pos, SoundEvents.DYE_USE, SoundSource.BLOCKS, 1.0F, 1.0F);
+                    }
+                }
+            }
+            return InteractionResult.SUCCESS;
+        }
+
+        // Water bucket: right-click to remove color
+        if (held.is(Items.WATER_BUCKET)) {
+            if (!level.isClientSide) {
+                Pipe pipe = NetworkManager.get(level).getPipe(pos);
+                if (pipe != null && pipe.getColor() != null) {
+                    pipe.setColor(null);
+                    NetworkManager.get(level).setDirty();
+
+                    if (pipe.getNetwork() != null) {
+                        pipe.getNetwork().scanGraph(level, pos);
+                    }
+                    for (Direction dir : Direction.values()) {
+                        Pipe neighbor = NetworkManager.get(level).getPipe(pos.relative(dir));
+                        if (neighbor != null && neighbor.getNetwork() != null) {
+                            neighbor.getNetwork().scanGraph(level, pos.relative(dir));
+                        }
+                    }
+
+                    int flags = Block.UPDATE_NEIGHBORS | Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE;
+
+                    pipe.sendBlockUpdate();
+                    level.setBlock(pos, getState(level.getBlockState(pos), level, pos), flags);
+
+                    for (Direction dir : Direction.values()) {
+                        BlockPos neighborPos = pos.relative(dir);
+                        BlockState neighborState = level.getBlockState(neighborPos);
+                        if (neighborState.getBlock() instanceof PipeBlock neighborPipeBlock) {
+                            Pipe neighborPipe = NetworkManager.get(level).getPipe(neighborPos);
+                            if (neighborPipe != null) {
+                                neighborPipe.sendBlockUpdate();
+                            }
+                            level.setBlock(neighborPos, neighborPipeBlock.getState(neighborState, level, neighborPos), flags);
+                        }
+                    }
+
+                    level.playSound(null, pos, SoundEvents.BUCKET_EMPTY, SoundSource.BLOCKS, 1.0F, 1.0F);
+                }
+            }
+            return InteractionResult.SUCCESS;
+        }
 
         // Wrench: shift+right-click to break pipe (supports cross-mod wrenches via ItemAbility)
         if (WrenchItem.isWrench(held) && player.isCrouching()) {
@@ -235,7 +342,21 @@ public abstract class PipeBlock extends Block implements EntityBlock {
     @Override
     @SuppressWarnings("deprecation")
     public BlockState updateShape(BlockState state, Direction dir, BlockState facingState, LevelAccessor world, BlockPos pos, BlockPos facingPos) {
-        return getState(state, world, pos);
+        // On client, don't recalculate connections — trust the server-sent block state.
+        if (world instanceof Level lvl && lvl.isClientSide) {
+            return state;
+        }
+        BlockState result = getState(state, world, pos);
+        // Debug: log when server updateShape changes a state
+        if (world instanceof Level lvl2 && !lvl2.isClientSide && !result.equals(state)) {
+            LOGGER.warn("[SERVER updateShape] {} changed: north {}->{}, south {}->{}, east {}->{}, west {}->{}",
+                pos,
+                state.getValue(NORTH), result.getValue(NORTH),
+                state.getValue(SOUTH), result.getValue(SOUTH),
+                state.getValue(EAST), result.getValue(EAST),
+                state.getValue(WEST), result.getValue(WEST));
+        }
+        return result;
     }
 
     @Override
@@ -244,7 +365,7 @@ public abstract class PipeBlock extends Block implements EntityBlock {
         return shapeCache.getShape(state, world, pos, ctx);
     }
 
-    BlockState getState(BlockState currentState, LevelAccessor world, BlockPos pos) {
+    public BlockState getState(BlockState currentState, LevelAccessor world, BlockPos pos) {
         return currentState
             .setValue(NORTH, hasConnection(world, pos, Direction.NORTH))
             .setValue(EAST, hasConnection(world, pos, Direction.EAST))

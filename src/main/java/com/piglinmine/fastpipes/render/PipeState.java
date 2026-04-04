@@ -16,12 +16,19 @@ public class PipeState {
     private final ResourceLocation[] attachmentState;
     private final Direction side;
     private final RandomSource rand;
+    @Nullable
+    private final Integer colorId;
 
     public PipeState(@Nullable BlockState state, @Nullable ResourceLocation[] attachmentState, Direction side, RandomSource rand) {
+        this(state, attachmentState, side, rand, null);
+    }
+
+    public PipeState(@Nullable BlockState state, @Nullable ResourceLocation[] attachmentState, Direction side, RandomSource rand, @Nullable Integer colorId) {
         this.state = state;
         this.attachmentState = attachmentState;
         this.side = side;
         this.rand = rand;
+        this.colorId = colorId;
     }
 
     @Nullable
@@ -55,6 +62,11 @@ public class PipeState {
         return rand;
     }
 
+    @Nullable
+    public Integer getColorId() {
+        return colorId;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -62,12 +74,13 @@ public class PipeState {
         PipeState pipeState = (PipeState) o;
         return Objects.equals(state, pipeState.state) &&
             Arrays.equals(attachmentState, pipeState.attachmentState) &&
-            side == pipeState.side;
+            side == pipeState.side &&
+            Objects.equals(colorId, pipeState.colorId);
     }
 
     @Override
     public int hashCode() {
-        int result = Objects.hash(state, side);
+        int result = Objects.hash(state, side, colorId);
         result = 31 * result + Arrays.hashCode(attachmentState);
         return result;
     }

@@ -9,6 +9,7 @@ import com.piglinmine.fastpipes.network.pipe.energy.EnergyPipeEnergyStorage;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.capabilities.Capabilities;
@@ -70,6 +71,17 @@ public class NetworkGraphScanner {
                     // Skip disconnected sides - wrench can disconnect pipe sides
                     if (pipe.isDisconnected(dir)) {
                         continue;
+                    }
+
+                    // Color check: colored pipes only connect to same color or uncolored
+                    // Uncolored pipes connect to everything
+                    Pipe neighborPipe = NetworkManager.get(request.getLevel()).getPipe(request.getPos().relative(dir));
+                    if (neighborPipe != null) {
+                        DyeColor myColor = pipe.getColor();
+                        DyeColor theirColor = neighborPipe.getColor();
+                        if (myColor != null && theirColor != null && myColor != theirColor) {
+                            continue;
+                        }
                     }
 
                     addRequest(new NetworkGraphScannerRequest(

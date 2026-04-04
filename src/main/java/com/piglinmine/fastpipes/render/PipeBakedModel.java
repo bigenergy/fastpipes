@@ -13,6 +13,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.BlockMath;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.client.ChunkRenderTypeSet;
 import net.neoforged.neoforge.client.model.data.ModelData;
@@ -57,7 +58,8 @@ public class PipeBakedModel implements BakedModel {
     @Override
     public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @Nonnull RandomSource rand, @Nonnull ModelData extraData, @Nullable RenderType renderType) {
         ResourceLocation[] attachmentState = extraData.get(PipeBlockEntity.ATTACHMENTS_PROPERTY);
-        PipeState pipeState = new PipeState(state, attachmentState, side, rand);
+        Integer colorId = extraData.get(PipeBlockEntity.COLOR_PROPERTY);
+        PipeState pipeState = new PipeState(state, attachmentState, side, rand, colorId);
 
         return cache.computeIfAbsent(pipeState, this::createQuads);
     }
@@ -181,7 +183,47 @@ public class PipeBakedModel implements BakedModel {
             }
         }
 
+        // Apply color tinting if pipe is dyed
+        if (state.getColorId() != null) {
+            DyeColor dyeColor = DyeColor.byId(state.getColorId());
+            int color = dyeColor.getTextureDiffuseColor();
+            quads = tintQuads(quads, color);
+        }
+
         return postProcess(quads);
+    }
+
+    /**
+     * Tints all quads by multiplying their vertex colors with the given color.
+     * Only tints quads with tintIndex -1 (untinted pipe quads), leaves attachment quads alone.
+     */
+    private static List<BakedQuad> tintQuads(List<BakedQuad> quads, int color) {
+        int r = (color >> 16) & 0xFF;
+        int g = (color >> 8) & 0xFF;
+        int b = color & 0xFF;
+
+        List<BakedQuad> tinted = new ArrayList<>(quads.size());
+        for (BakedQuad quad : quads) {
+            int[] vertexData = quad.getVertices().clone();
+
+            for (int v = 0; v < 4; v++) {
+                int offset = v * 8 + 3; // color is at index 3 in each vertex (8 ints per vertex)
+                int existingColor = vertexData[offset];
+                int er = (existingColor) & 0xFF;
+                int eg = (existingColor >> 8) & 0xFF;
+                int eb = (existingColor >> 16) & 0xFF;
+                int ea = (existingColor >> 24) & 0xFF;
+
+                int nr = (er * r) / 255;
+                int ng = (eg * g) / 255;
+                int nb = (eb * b) / 255;
+
+                vertexData[offset] = (ea << 24) | (nb << 16) | (ng << 8) | nr;
+            }
+
+            tinted.add(new BakedQuad(vertexData, quad.getTintIndex(), quad.getDirection(), quad.getSprite(), quad.isShade()));
+        }
+        return tinted;
     }
 
     /**

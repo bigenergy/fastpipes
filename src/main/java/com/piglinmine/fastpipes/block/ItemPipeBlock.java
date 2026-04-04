@@ -1,21 +1,28 @@
 package com.piglinmine.fastpipes.block;
 
 import com.piglinmine.fastpipes.blockentity.ItemPipeBlockEntity;
+import com.piglinmine.fastpipes.blockentity.PipeBlockEntity;
+import com.piglinmine.fastpipes.network.NetworkManager;
+import com.piglinmine.fastpipes.network.pipe.Pipe;
 import com.piglinmine.fastpipes.network.pipe.item.ItemPipeType;
 import com.piglinmine.fastpipes.network.pipe.shape.PipeShapeCache;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import org.jetbrains.annotations.Nullable;
 
 public class ItemPipeBlock extends PipeBlock implements EntityBlock {
+    private static final Logger LOGGER = LogManager.getLogger(ItemPipeBlock.class);
     private final ItemPipeType type;
 
     public ItemPipeBlock(PipeShapeCache shapeCache, ItemPipeType type) {
@@ -43,13 +50,39 @@ public class ItemPipeBlock extends PipeBlock implements EntityBlock {
             if (ipe.isDisconnected(direction.getOpposite())) return false;
         }
 
-        return facingState.getBlock() instanceof ItemPipeBlock;
+        if (!(facingState.getBlock() instanceof ItemPipeBlock)) return false;
+
+        // Color check: colored pipes only connect to same color or uncolored pipes
+        // Uncolored pipes connect to everything
+        // Only check on server — client trusts server-sent block state
+        if (world instanceof Level lvl && !lvl.isClientSide) {
+            // Get color directly from Pipe objects in NetworkManager (bypasses block entity)
+            Pipe myPipe = NetworkManager.get(lvl).getPipe(pos);
+            Pipe theirPipe = NetworkManager.get(lvl).getPipe(pos.relative(direction));
+            if (myPipe != null && theirPipe != null) {
+                DyeColor myColor = myPipe.getColor();
+                DyeColor theirColor = theirPipe.getColor();
+                if (myColor != null && theirColor != null && myColor != theirColor) {
+                    LOGGER.warn("[COLOR] Blocking connection {} -> {} (my={}, their={})",
+                        pos, pos.relative(direction), myColor, theirColor);
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 
     @Override
     protected boolean hasInvConnection(LevelAccessor world, BlockPos pos, Direction direction) {
         BlockEntity be = world.getBlockEntity(pos);
         if (be instanceof ItemPipeBlockEntity ipe && ipe.isDisconnected(direction)) return false;
+
+        // Don't show inventory connection indicator toward other item pipes
+        // (pipes expose IItemHandler, which would cause false inv connections
+        //  when pipe-to-pipe connection is blocked by color)
+        BlockState facingState = world.getBlockState(pos.relative(direction));
+        if (facingState.getBlock() instanceof ItemPipeBlock) return false;
 
         if (world instanceof Level level) {
             return level.getCapability(Capabilities.ItemHandler.BLOCK, pos.relative(direction), direction.getOpposite()) != null;

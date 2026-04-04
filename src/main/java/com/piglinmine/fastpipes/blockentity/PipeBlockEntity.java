@@ -1,5 +1,6 @@
 package com.piglinmine.fastpipes.blockentity;
 
+import com.piglinmine.fastpipes.block.PipeBlock;
 import com.piglinmine.fastpipes.network.NetworkManager;
 import com.piglinmine.fastpipes.network.pipe.Pipe;
 import com.piglinmine.fastpipes.network.pipe.attachment.Attachment;
@@ -12,11 +13,14 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Containers;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.client.model.data.ModelData;
 import net.neoforged.neoforge.client.model.data.ModelProperty;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.EnumSet;
 import java.util.Set;
@@ -25,12 +29,29 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public abstract class PipeBlockEntity extends BaseBlockEntity {
+    private static final Logger LOGGER = LogManager.getLogger(PipeBlockEntity.class);
     public static final ModelProperty<ResourceLocation[]> ATTACHMENTS_PROPERTY = new ModelProperty<>();
+    public static final ModelProperty<Integer> COLOR_PROPERTY = new ModelProperty<>();
     private final AttachmentManager clientAttachmentManager = new ClientAttachmentManager();
     private final Set<Direction> clientDisconnectedSides = EnumSet.noneOf(Direction.class);
+    @Nullable
+    private DyeColor clientColor = null;
 
     protected PipeBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
+    }
+
+    @Nullable
+    public DyeColor getColor() {
+        if (level != null && level.isClientSide) {
+            return clientColor;
+        }
+
+        Pipe pipe = NetworkManager.get(level).getPipe(worldPosition);
+        if (pipe != null) {
+            return pipe.getColor();
+        }
+        return null;
     }
 
     public boolean isDisconnected(Direction dir) {
@@ -107,7 +128,13 @@ public abstract class PipeBlockEntity extends BaseBlockEntity {
     @Nonnull
     @Override
     public ModelData getModelData() {
-        return ModelData.builder().with(ATTACHMENTS_PROPERTY, getAttachmentManager().getState()).build();
+        DyeColor c = getColor();
+        ModelData.Builder builder = ModelData.builder()
+            .with(ATTACHMENTS_PROPERTY, getAttachmentManager().getState());
+        if (c != null) {
+            builder.with(COLOR_PROPERTY, c.getId());
+        }
+        return builder.build();
     }
 
     @Override
@@ -116,12 +143,17 @@ public abstract class PipeBlockEntity extends BaseBlockEntity {
 
         if (level != null && !level.isClientSide) {
             Pipe pipe = NetworkManager.get(level).getPipe(worldPosition);
-            if (pipe != null && !pipe.getDisconnectedSides().isEmpty()) {
-                int bits = 0;
-                for (Direction dir : pipe.getDisconnectedSides()) {
-                    bits |= (1 << dir.get3DDataValue());
+            if (pipe != null) {
+                if (!pipe.getDisconnectedSides().isEmpty()) {
+                    int bits = 0;
+                    for (Direction dir : pipe.getDisconnectedSides()) {
+                        bits |= (1 << dir.get3DDataValue());
+                    }
+                    tag.putByte("disc", (byte) bits);
                 }
-                tag.putByte("disc", (byte) bits);
+                if (pipe.getColor() != null) {
+                    tag.putByte("color", (byte) pipe.getColor().getId());
+                }
             }
         }
 
@@ -143,10 +175,24 @@ public abstract class PipeBlockEntity extends BaseBlockEntity {
             }
         }
 
+        if (tag != null && tag.contains("color")) {
+            clientColor = DyeColor.byId(tag.getByte("color") & 0xFF);
+        } else {
+            clientColor = null;
+        }
+
         requestModelDataUpdate();
 
         BlockState state = level.getBlockState(worldPosition);
         level.sendBlockUpdated(worldPosition, state, state, 1 | 2);
+
+        // Debug: log the client's block state after readUpdate
+        if (level != null && level.isClientSide && state.getBlock() instanceof PipeBlock) {
+            LOGGER.warn("[CLIENT readUpdate] {} color={} north={} south={} east={} west={}",
+                worldPosition, clientColor,
+                state.getValue(PipeBlock.NORTH), state.getValue(PipeBlock.SOUTH),
+                state.getValue(PipeBlock.EAST), state.getValue(PipeBlock.WEST));
+        }
     }
 
     protected abstract Pipe createPipe(Level level, BlockPos pos);

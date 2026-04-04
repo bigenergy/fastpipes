@@ -7,11 +7,13 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.annotation.Nullable;
 import java.util.EnumSet;
 import java.util.Objects;
 import java.util.Set;
@@ -22,6 +24,8 @@ public abstract class Pipe {
     protected final ServerAttachmentManager attachmentManager = new ServerAttachmentManager(this);
     private final Logger logger = LogManager.getLogger(getClass());
     private final Set<Direction> disconnectedSides = EnumSet.noneOf(Direction.class);
+    @Nullable
+    private DyeColor color = null;
     protected Network network;
 
     public Pipe(Level level, BlockPos pos) {
@@ -90,6 +94,15 @@ public abstract class Pipe {
         return disconnectedSides;
     }
 
+    @Nullable
+    public DyeColor getColor() {
+        return color;
+    }
+
+    public void setColor(@Nullable DyeColor color) {
+        this.color = color;
+    }
+
     public CompoundTag writeToNbt(CompoundTag tag) {
         tag.putLong("pos", pos.asLong());
 
@@ -101,6 +114,10 @@ public abstract class Pipe {
                 bits |= (1 << dir.get3DDataValue());
             }
             tag.putByte("disc", (byte) bits);
+        }
+
+        if (color != null) {
+            tag.putByte("color", (byte) color.getId());
         }
 
         return tag;
@@ -118,6 +135,12 @@ public abstract class Pipe {
                     disconnectedSides.add(dir);
                 }
             }
+        }
+
+        if (tag.contains("color")) {
+            color = DyeColor.byId(tag.getByte("color") & 0xFF);
+        } else {
+            color = null;
         }
     }
 
