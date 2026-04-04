@@ -3,10 +3,12 @@ package com.piglinmine.fastpipes;
 import com.piglinmine.fastpipes.inventory.fluid.FluidInventory;
 import com.piglinmine.fastpipes.menu.ExtractorAttachmentContainerMenu;
 import com.piglinmine.fastpipes.menu.InserterAttachmentContainerMenu;
+import com.piglinmine.fastpipes.menu.SensorAttachmentContainerMenu;
 import com.piglinmine.fastpipes.menu.VoidAttachmentContainerMenu;
 import com.piglinmine.fastpipes.network.pipe.attachment.extractor.*;
 import com.piglinmine.fastpipes.network.pipe.attachment.inserter.InserterAttachment;
 import com.piglinmine.fastpipes.network.pipe.attachment.inserter.InserterAttachmentType;
+import com.piglinmine.fastpipes.network.pipe.attachment.sensor.SensorAttachment;
 import com.piglinmine.fastpipes.network.pipe.attachment.void_attachment.VoidAttachment;
 import com.piglinmine.fastpipes.util.DirectionUtil;
 import net.minecraft.core.BlockPos;
@@ -114,6 +116,36 @@ public class FPipesContainerMenus {
                 );
             } else {
                 return new VoidAttachmentContainerMenu(windowId, inv.player);
+            }
+        })
+    );
+
+    public static final DeferredHolder<MenuType<?>, MenuType<SensorAttachmentContainerMenu>> SENSOR_ATTACHMENT = CONTAINER_MENUS.register(
+        "sensor_attachment",
+        () -> IMenuTypeExtension.create((windowId, inv, data) -> {
+            if (data != null) {
+                BlockPos pos = data.readBlockPos();
+                Direction dir = DirectionUtil.safeGet(data.readByte());
+                BlacklistWhitelist bw = BlacklistWhitelist.get(data.readByte());
+                boolean exactMode = data.readBoolean();
+                boolean fluidMode = data.readBoolean();
+
+                // Read fluid filter contents from buffer
+                FluidInventory fluidFilter = SensorAttachment.createFluidFilterInventory(null);
+                for (int i = 0; i < SensorAttachment.MAX_FILTER_SLOTS; i++) {
+                    FluidStack fluid = FluidStack.OPTIONAL_STREAM_CODEC.decode(data);
+                    if (!fluid.isEmpty()) {
+                        fluidFilter.setFluid(i, fluid);
+                    }
+                }
+
+                return new SensorAttachmentContainerMenu(
+                    windowId, inv.player, pos, dir, bw, exactMode,
+                    SensorAttachment.createItemFilterInventory(null),
+                    fluidFilter, fluidMode
+                );
+            } else {
+                return new SensorAttachmentContainerMenu(windowId, inv.player);
             }
         })
     );

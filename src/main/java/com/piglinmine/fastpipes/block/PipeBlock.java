@@ -8,6 +8,7 @@ import com.piglinmine.fastpipes.network.pipe.Pipe;
 import com.piglinmine.fastpipes.network.pipe.attachment.Attachment;
 import com.piglinmine.fastpipes.network.pipe.attachment.AttachmentFactory;
 import com.piglinmine.fastpipes.network.pipe.attachment.AttachmentManager;
+import com.piglinmine.fastpipes.network.pipe.attachment.sensor.SensorAttachment;
 import com.piglinmine.fastpipes.network.pipe.shape.PipeShapeCache;
 import com.piglinmine.fastpipes.network.pipe.shape.PipeShapeProps;
 import com.piglinmine.fastpipes.util.Raytracer;
@@ -301,6 +302,35 @@ public abstract class PipeBlock extends Block implements EntityBlock {
         }
 
         return null;
+    }
+
+    @Override
+    @SuppressWarnings("deprecation")
+    public boolean isSignalSource(BlockState state) {
+        return true; // Pipes can be redstone sources when sensor attachment is active
+    }
+
+    @Override
+    @SuppressWarnings("deprecation")
+    public int getSignal(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
+        BlockEntity blockEntity = level.getBlockEntity(pos);
+        if (blockEntity instanceof PipeBlockEntity pipeBlockEntity) {
+            // Check if there's an active sensor on the opposite side
+            // (direction is the side of the NEIGHBOR block querying, so we check opposite = our side facing that neighbor)
+            Attachment att = pipeBlockEntity.getAttachmentManager().getAttachment(direction.getOpposite());
+            if (att instanceof SensorAttachment sensor && sensor.isSignalActive()) {
+                return 15;
+            }
+
+            // Also emit signal from any side if any sensor on this pipe is active
+            for (Direction dir : Direction.values()) {
+                Attachment a = pipeBlockEntity.getAttachmentManager().getAttachment(dir);
+                if (a instanceof SensorAttachment s && s.isSignalActive()) {
+                    return 15;
+                }
+            }
+        }
+        return 0;
     }
 
     protected abstract boolean hasConnection(LevelAccessor world, BlockPos pos, Direction direction);

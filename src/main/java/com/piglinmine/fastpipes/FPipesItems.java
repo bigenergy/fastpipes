@@ -5,6 +5,7 @@ import com.piglinmine.fastpipes.item.BaseBlockItem;
 import com.piglinmine.fastpipes.item.WrenchItem;
 import com.piglinmine.fastpipes.network.pipe.attachment.extractor.ExtractorAttachmentType;
 import com.piglinmine.fastpipes.network.pipe.attachment.inserter.InserterAttachmentType;
+import com.piglinmine.fastpipes.network.pipe.attachment.sensor.SensorAttachmentType;
 import com.piglinmine.fastpipes.network.pipe.attachment.void_attachment.VoidAttachmentType;
 import net.minecraft.world.item.Item;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -122,5 +123,11 @@ public class FPipesItems {
     public static final DeferredHolder<Item, AttachmentItem> VOID_ATTACHMENT = ITEMS.register(
         "void_attachment",
         () -> new AttachmentItem(VoidAttachmentType.INSTANCE.getFactory())
+    );
+
+    // Sensor Attachment
+    public static final DeferredHolder<Item, AttachmentItem> SENSOR_ATTACHMENT = ITEMS.register(
+        "sensor_attachment",
+        () -> new AttachmentItem(SensorAttachmentType.INSTANCE.getFactory())
     );
 } 

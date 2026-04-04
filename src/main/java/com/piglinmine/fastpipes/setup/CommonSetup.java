@@ -12,6 +12,7 @@ import com.piglinmine.fastpipes.network.pipe.attachment.extractor.ExtractorAttac
 import com.piglinmine.fastpipes.network.pipe.attachment.extractor.ExtractorAttachmentType;
 import com.piglinmine.fastpipes.network.pipe.attachment.inserter.InserterAttachmentFactory;
 import com.piglinmine.fastpipes.network.pipe.attachment.inserter.InserterAttachmentType;
+import com.piglinmine.fastpipes.network.pipe.attachment.sensor.SensorAttachmentType;
 import com.piglinmine.fastpipes.network.pipe.attachment.void_attachment.VoidAttachmentType;
 import com.piglinmine.fastpipes.network.pipe.energy.EnergyPipe;
 import com.piglinmine.fastpipes.network.pipe.energy.EnergyPipeFactory;
@@ -120,6 +121,10 @@ public class CommonSetup {
         // Register VoidAttachment factory
         AttachmentRegistry.INSTANCE.addFactory(VoidAttachmentType.INSTANCE.getId(), VoidAttachmentType.INSTANCE.getFactory());
         LOGGER.debug("Registered VoidAttachmentFactory for type: {}", VoidAttachmentType.INSTANCE.getId());
+
+        // Register SensorAttachment factory
+        AttachmentRegistry.INSTANCE.addFactory(SensorAttachmentType.INSTANCE.getId(), SensorAttachmentType.INSTANCE.getFactory());
+        LOGGER.debug("Registered SensorAttachmentFactory for type: {}", SensorAttachmentType.INSTANCE.getId());
 
         LOGGER.debug("Attachment factories registered successfully");
     }

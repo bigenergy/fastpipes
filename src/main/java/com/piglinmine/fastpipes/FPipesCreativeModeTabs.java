@@ -52,6 +52,7 @@ public class FPipesCreativeModeTabs {
 
                 // Special Attachments
                 output.accept(FPipesItems.VOID_ATTACHMENT.get());
+                output.accept(FPipesItems.SENSOR_ATTACHMENT.get());
             })
             .build()
     );

@@ -103,5 +103,11 @@
   "gui.fastpipes.void_attachment": "Void Attachment",
   "tooltip.fastpipes.void_attachment.hint": "Destroys overflow items and fluids. Supports filtering.",
   "tooltip.fastpipes.void_attachment.priority": "Lowest priority — only receives when no other destination available",
-  "jei.fastpipes.void_attachment.description": "Place on an item or fluid pipe to destroy excess items/fluids. Acts as a lowest-priority destination — items and fluids are only voided when no other destination can accept them. Supports blacklist/whitelist filtering."
+  "jei.fastpipes.void_attachment.description": "Place on an item or fluid pipe to destroy excess items/fluids. Acts as a lowest-priority destination — items and fluids are only voided when no other destination can accept them. Supports blacklist/whitelist filtering.",
+
+  "item.fastpipes.sensor_attachment": "Sensor Attachment",
+  "gui.fastpipes.sensor_attachment": "Sensor Attachment",
+  "tooltip.fastpipes.sensor_attachment.hint": "Emits redstone signal when matching items/fluids pass through",
+  "tooltip.fastpipes.sensor_attachment.signal": "Signal lasts 1 second on detection",
+  "jei.fastpipes.sensor_attachment.description": "Place on an item or fluid pipe. Emits a redstone signal when items or fluids matching the filter pass through the pipe. Supports whitelist/blacklist filtering. Signal lasts 1 second."
 }
