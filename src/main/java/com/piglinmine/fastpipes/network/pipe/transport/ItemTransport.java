@@ -112,18 +112,23 @@ public class ItemTransport {
 
         ResourceLocation finishedCallbackId = ResourceLocation.parse(tag.getString("fcid"));
         TransportCallback finishedCallback = TransportCallbackFactoryRegistry.createCallback(
-            finishedCallbackId, tag.getCompound("fc")
+            finishedCallbackId, tag.getCompound("fc"), registries
         );
 
         ResourceLocation cancelCallbackId = ResourceLocation.parse(tag.getString("ccid"));
         TransportCallback cancelCallback = TransportCallbackFactoryRegistry.createCallback(
-            cancelCallbackId, tag.getCompound("cc")
+            cancelCallbackId, tag.getCompound("cc"), registries
         );
 
         ResourceLocation pipeGoneCallbackId = ResourceLocation.parse(tag.getString("pgcid"));
         TransportCallback pipeGoneCallback = TransportCallbackFactoryRegistry.createCallback(
-            pipeGoneCallbackId, tag.getCompound("pgc")
+            pipeGoneCallbackId, tag.getCompound("pgc"), registries
         );
+
+        if (finishedCallback == null || cancelCallback == null || pipeGoneCallback == null) {
+            LOGGER.warn("Could not deserialize transport callbacks, dropping item transport");
+            return null;
+        }
 
         boolean firstPipe = tag.getBoolean("fp");
         int progressInCurrentPipe = tag.getInt("p");
@@ -237,11 +242,11 @@ public class ItemTransport {
 
         tag.putInt("initd", initialDirection.ordinal());
 
-        tag.put("fc", finishedCallback.writeToNbt(new CompoundTag()));
+        tag.put("fc", finishedCallback.writeToNbt(new CompoundTag(), registries));
         tag.putString("fcid", finishedCallback.getId().toString());
-        tag.put("cc", cancelCallback.writeToNbt(new CompoundTag()));
+        tag.put("cc", cancelCallback.writeToNbt(new CompoundTag(), registries));
         tag.putString("ccid", cancelCallback.getId().toString());
-        tag.put("pgc", pipeGoneCallback.writeToNbt(new CompoundTag()));
+        tag.put("pgc", pipeGoneCallback.writeToNbt(new CompoundTag(), registries));
         tag.putString("pgcid", pipeGoneCallback.getId().toString());
 
         tag.putBoolean("fp", firstPipe);

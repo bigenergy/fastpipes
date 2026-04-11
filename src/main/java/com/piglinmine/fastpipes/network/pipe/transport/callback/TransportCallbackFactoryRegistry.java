@@ -20,15 +20,14 @@ public class TransportCallbackFactoryRegistry {
     private TransportCallbackFactoryRegistry() {
     }
 
-    public void initialize(HolderLookup.Provider registries) {
+    public void initialize() {
         if (initialized) {
             return;
         }
 
-        // Register standard transport callback factories
-        addFactory(ItemInsertTransportCallback.ID, new ItemInsertTransportCallbackFactory(registries));
-        addFactory(ItemPipeGoneTransportCallback.ID, new ItemPipeGoneTransportCallbackFactory(registries));
-        addFactory(ItemBounceBackTransportCallback.ID, new ItemBounceBackTransportCallbackFactory(registries));
+        addFactory(ItemInsertTransportCallback.ID, new ItemInsertTransportCallbackFactory());
+        addFactory(ItemPipeGoneTransportCallback.ID, new ItemPipeGoneTransportCallbackFactory());
+        addFactory(ItemBounceBackTransportCallback.ID, new ItemBounceBackTransportCallbackFactory());
 
         initialized = true;
         LOGGER.info("Initialized transport callback factories");
@@ -48,19 +47,19 @@ public class TransportCallbackFactoryRegistry {
     }
 
     @Nullable
-    public static TransportCallback createCallback(ResourceLocation id, CompoundTag tag) {
+    public static TransportCallback createCallback(ResourceLocation id, CompoundTag tag, HolderLookup.Provider registries) {
         TransportCallbackFactory factory = INSTANCE.getFactory(id);
         if (factory == null) {
             LOGGER.warn("Transport callback factory " + id + " no longer exists");
             return null;
         }
-        
-        TransportCallback callback = factory.create(tag);
+
+        TransportCallback callback = factory.create(tag, registries);
         if (callback == null) {
             LOGGER.warn("Transport callback factory " + id + " returned null!");
             return null;
         }
-        
+
         return callback;
     }
-} 
+}

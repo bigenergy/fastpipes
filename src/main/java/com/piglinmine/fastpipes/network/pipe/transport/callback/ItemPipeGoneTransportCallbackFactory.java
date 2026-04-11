@@ -6,15 +6,9 @@ import net.minecraft.nbt.CompoundTag;
 import javax.annotation.Nullable;
 
 public class ItemPipeGoneTransportCallbackFactory implements TransportCallbackFactory {
-    private final HolderLookup.Provider registries;
-
-    public ItemPipeGoneTransportCallbackFactory(HolderLookup.Provider registries) {
-        this.registries = registries;
-    }
-
     @Override
     @Nullable
-    public TransportCallback create(CompoundTag tag) {
+    public TransportCallback create(CompoundTag tag, HolderLookup.Provider registries) {
         return ItemPipeGoneTransportCallback.of(tag, registries);
     }
-} 
+}

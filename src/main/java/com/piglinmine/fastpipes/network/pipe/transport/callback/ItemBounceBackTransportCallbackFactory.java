@@ -6,15 +6,9 @@ import net.minecraft.nbt.CompoundTag;
 import javax.annotation.Nullable;
 
 public class ItemBounceBackTransportCallbackFactory implements TransportCallbackFactory {
-    private final HolderLookup.Provider registries;
-
-    public ItemBounceBackTransportCallbackFactory(HolderLookup.Provider registries) {
-        this.registries = registries;
-    }
-
     @Override
     @Nullable
-    public TransportCallback create(CompoundTag tag) {
+    public TransportCallback create(CompoundTag tag, HolderLookup.Provider registries) {
         return ItemBounceBackTransportCallback.of(tag, registries);
     }
-} 
+}

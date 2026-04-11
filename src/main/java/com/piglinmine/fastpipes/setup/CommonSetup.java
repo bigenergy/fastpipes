@@ -38,7 +38,7 @@ public class CommonSetup {
         LOGGER.debug("Constructing Fast Pipes mod");
         
         // Initialize transport callback registry
-        TransportCallbackFactoryRegistry.INSTANCE.initialize(null); // Will be called with proper HolderLookup.Provider when available
+        TransportCallbackFactoryRegistry.INSTANCE.initialize();
         
         // Register network factories
         registerNetworkFactories();
