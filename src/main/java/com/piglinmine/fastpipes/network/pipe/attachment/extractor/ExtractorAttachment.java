@@ -27,7 +27,7 @@ import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemStackHandler;
-import org.apache.commons.lang3.tuple.Pair;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -128,73 +128,64 @@ public class ExtractorAttachment extends Attachment {
     }
 
     private void update(ItemNetwork network, BlockPos sourcePos, IItemHandler source) {
-        if (stackSize == 0) {
+        if (stackSize == 0 || source.getSlots() <= 0) {
             return;
         }
 
-        Pair<Destination, Integer> destinationAndSourceSlot = findDestinationAndSourceSlot(sourcePos, source);
-        if (destinationAndSourceSlot == null) {
-            return;
-        }
-
-        Destination destination = destinationAndSourceSlot.getLeft();
-
-        Path<BlockPos> path = network
-            .getDestinationPathCache()
-            .getPath(pipe.getPos(), destination);
-        if (path == null) {
-            LOGGER.error("No path found from " + pipe.getPos() + " to " + destination);
-            return;
-        }
-
-        ItemStack extracted = source.extractItem(destinationAndSourceSlot.getRight(), stackSize, false);
-        if (extracted.isEmpty()) {
-            return;
-        }
-
+        int remaining = stackSize;
+        int slot = 0;
         BlockPos fromPos = pipe.getPos().relative(getDirection());
 
-        ((ItemPipe) pipe).addTransport(new ItemTransport(
-            extracted.copy(),
-            fromPos,
-            destination.getReceiver(),
-            path.toQueue(),
-            new ItemInsertTransportCallback(destination.getReceiver(), destination.getIncomingDirection(), extracted),
-            new ItemBounceBackTransportCallback(sourcePos, getDirection().getOpposite(), extracted),
-            new ItemPipeGoneTransportCallback(extracted)
-        ));
-    }
-
-    private Pair<Destination, Integer> findDestinationAndSourceSlot(BlockPos sourcePos, IItemHandler source) {
-        if (source.getSlots() <= 0) {
-            return null;
-        }
-
-        int startIndex = 0;
-
-        do {
-            ItemStack slot = source.getStackInSlot(startIndex);
-            if (slot.isEmpty() || !acceptsItem(slot)) {
-                startIndex++;
+        while (remaining > 0 && slot < source.getSlots()) {
+            ItemStack slotStack = source.getStackInSlot(slot);
+            if (slotStack.isEmpty() || !acceptsItem(slotStack)) {
+                slot++;
                 continue;
             }
 
-            ItemStack extracted = source.extractItem(startIndex, stackSize, true);
-            if (extracted.isEmpty()) {
-                startIndex++;
+            ItemStack simulated = source.extractItem(slot, remaining, true);
+            if (simulated.isEmpty()) {
+                slot++;
                 continue;
             }
 
-            Destination destination = itemDestinationFinder.find(routingMode, sourcePos, extracted);
+            Destination destination = itemDestinationFinder.find(routingMode, sourcePos, simulated);
             if (destination == null) {
-                startIndex++;
+                slot++;
                 continue;
             }
 
-            return Pair.of(destination, startIndex);
-        } while (startIndex < source.getSlots());
+            Path<BlockPos> path = network
+                .getDestinationPathCache()
+                .getPath(pipe.getPos(), destination);
+            if (path == null) {
+                slot++;
+                continue;
+            }
 
-        return null;
+            ItemStack extracted = source.extractItem(slot, remaining, false);
+            if (extracted.isEmpty()) {
+                slot++;
+                continue;
+            }
+
+            remaining -= extracted.getCount();
+
+            ((ItemPipe) pipe).addTransport(new ItemTransport(
+                extracted.copy(),
+                fromPos,
+                destination.getReceiver(),
+                path.toQueue(),
+                new ItemInsertTransportCallback(destination.getReceiver(), destination.getIncomingDirection(), extracted),
+                new ItemBounceBackTransportCallback(sourcePos, getDirection().getOpposite(), extracted),
+                new ItemPipeGoneTransportCallback(extracted)
+            ));
+
+            // If slot still has items, try it again; otherwise move to next
+            if (source.getStackInSlot(slot).isEmpty()) {
+                slot++;
+            }
+        }
     }
 
     private void update(FluidNetwork network, IFluidHandler source) {

@@ -1,4 +1,9 @@
 # Changelog
+## [1.2.2] - 2026-04-12
+
+### Fixed
+- Extractors now pull unstackable items (tools, armor, weapons) from multiple slots per operation, massively improving throughput for mob farms and similar setups
+
 ## [1.2.1] - 2026-04-12
 
 ### Fixed
