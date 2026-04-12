@@ -1,4 +1,9 @@
 # Changelog
+## [1.2.1] - 2026-04-12
+
+### Fixed
+- Fix NPE crash when deserializing item transport callbacks
+- Added russian translate
 
 ## [1.2.0] - 2026-04-04
 
