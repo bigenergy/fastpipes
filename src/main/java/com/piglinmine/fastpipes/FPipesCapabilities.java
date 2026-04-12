@@ -1,4 +1,5 @@
 package com.piglinmine.fastpipes;
+import com.piglinmine.fastpipes.barrel.TieredBarrelBlockEntity;
 import com.piglinmine.fastpipes.blockentity.EnergyPipeBlockEntity;
 import com.piglinmine.fastpipes.blockentity.FluidPipeBlockEntity;
 import com.piglinmine.fastpipes.blockentity.ItemPipeBlockEntity;
@@ -79,6 +80,13 @@ public class FPipesCapabilities {
             Capabilities.EnergyStorage.BLOCK,
             FPipesBlockEntities.ULTIMATE_ENERGY_PIPE.get(),
             EnergyPipeBlockEntity::getEnergyStorage
+        );
+
+        // Register Item Handler capability for Tiered Barrels
+        event.registerBlockEntity(
+            Capabilities.ItemHandler.BLOCK,
+            FPipesBlockEntities.TIERED_BARREL.get(),
+            TieredBarrelBlockEntity::getItemHandler
         );
     }
 } 

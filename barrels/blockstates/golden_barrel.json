@@ -1,0 +1,27 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "superbarrels:block/golden_barrel"
+    },
+    "facing=east": {
+      "model": "superbarrels:block/golden_barrel",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "superbarrels:block/golden_barrel",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "superbarrels:block/golden_barrel",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "superbarrels:block/golden_barrel",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "superbarrels:block/golden_barrel",
+      "x": 90
+    }
+  }
+}

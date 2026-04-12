@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "fastpipes:blocks/barrel_side_netherite_upsidedown",
+    "up": "fastpipes:blocks/barrel_side_netherite",
+    "north": "fastpipes:blocks/barrel_top_gold_reinforced",
+    "east": "fastpipes:blocks/barrel_side_netherite_angle",
+    "south": "fastpipes:blocks/barrel_bottom_gold",
+    "west": "fastpipes:blocks/barrel_side_netherite_left",
+    "particle": "fastpipes:blocks/barrel_side_netherite_upsidedown"
+  },
+  "render_type": "solid"
+}

@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "facing=north": {"model": "fastpipes:block/copper_barrel"},
+    "facing=east": {"model": "fastpipes:block/copper_barrel", "y": 90},
+    "facing=south": {"model": "fastpipes:block/copper_barrel", "y": 180},
+    "facing=west": {"model": "fastpipes:block/copper_barrel", "y": 270},
+    "facing=up": {"model": "fastpipes:block/copper_barrel", "x": 270},
+    "facing=down": {"model": "fastpipes:block/copper_barrel", "x": 90}
+  }
+}

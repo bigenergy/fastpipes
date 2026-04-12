@@ -1,9 +1,13 @@
 package com.piglinmine.fastpipes;
 
+import com.piglinmine.fastpipes.barrel.BarrelTier;
+import com.piglinmine.fastpipes.barrel.TieredBarrelBlockEntity;
+import com.piglinmine.fastpipes.barrel.TieredBarrelContainerMenu;
 import com.piglinmine.fastpipes.inventory.fluid.FluidInventory;
 import com.piglinmine.fastpipes.menu.ExtractorAttachmentContainerMenu;
 import com.piglinmine.fastpipes.menu.InserterAttachmentContainerMenu;
 import com.piglinmine.fastpipes.menu.SensorAttachmentContainerMenu;
+import com.piglinmine.fastpipes.menu.TerminalContainerMenu;
 import com.piglinmine.fastpipes.menu.VoidAttachmentContainerMenu;
 import com.piglinmine.fastpipes.network.pipe.attachment.extractor.*;
 import com.piglinmine.fastpipes.network.pipe.attachment.inserter.InserterAttachment;
@@ -146,6 +150,34 @@ public class FPipesContainerMenus {
                 );
             } else {
                 return new SensorAttachmentContainerMenu(windowId, inv.player);
+            }
+        })
+    );
+
+    public static final DeferredHolder<MenuType<?>, MenuType<TerminalContainerMenu>> TERMINAL = CONTAINER_MENUS.register(
+        "terminal",
+        () -> IMenuTypeExtension.create((windowId, inv, data) -> {
+            if (data != null) {
+                BlockPos pos = data.readBlockPos();
+                return new TerminalContainerMenu(windowId, inv.player, pos);
+            } else {
+                return new TerminalContainerMenu(windowId, inv.player);
+            }
+        })
+    );
+
+    public static final DeferredHolder<MenuType<?>, MenuType<TieredBarrelContainerMenu>> TIERED_BARREL = CONTAINER_MENUS.register(
+        "tiered_barrel",
+        () -> IMenuTypeExtension.create((windowId, inv, data) -> {
+            if (data != null) {
+                BlockPos pos = data.readBlockPos();
+                BarrelTier tier = BarrelTier.fromOrdinal(data.readByte());
+                if (inv.player.level().getBlockEntity(pos) instanceof TieredBarrelBlockEntity be) {
+                    return new TieredBarrelContainerMenu(windowId, inv, be);
+                }
+                return new TieredBarrelContainerMenu(windowId, inv, tier);
+            } else {
+                return new TieredBarrelContainerMenu(windowId, inv, BarrelTier.OAK);
             }
         })
     );

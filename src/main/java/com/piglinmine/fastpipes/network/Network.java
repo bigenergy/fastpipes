@@ -12,6 +12,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 
 import java.util.List;
+import java.util.Set;
 
 public abstract class Network {
     protected final NetworkGraph graph = new NetworkGraph(this);
@@ -38,6 +39,10 @@ public abstract class Network {
 
     public List<Destination> getDestinations(DestinationType type) {
         return graph.getDestinations(type);
+    }
+
+    public Set<Pipe> getPipes() {
+        return graph.getPipes();
     }
 
     public CompoundTag writeToNbt(CompoundTag tag) {

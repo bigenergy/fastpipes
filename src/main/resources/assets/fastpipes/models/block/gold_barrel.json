@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "fastpipes:blocks/barrel_side_gold_upsidedown",
+    "up": "fastpipes:blocks/barrel_side_gold",
+    "north": "fastpipes:blocks/barrel_top_gold_reinforced",
+    "east": "fastpipes:blocks/barrel_side_gold_angle",
+    "south": "fastpipes:blocks/barrel_bottom_gold",
+    "west": "fastpipes:blocks/barrel_side_gold_left",
+    "particle": "fastpipes:blocks/barrel_side_gold_upsidedown"
+  },
+  "render_type": "solid"
+}

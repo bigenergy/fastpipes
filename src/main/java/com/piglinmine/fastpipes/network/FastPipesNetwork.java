@@ -64,6 +64,55 @@ public class FastPipesNetwork {
             ChangeExactModeMessage.STREAM_CODEC,
             ChangeExactModeMessage::handleServer
         );
+
+        // Terminal messages
+        registrar.playToClient(
+            TerminalItemsSyncMessage.TYPE,
+            TerminalItemsSyncMessage.STREAM_CODEC,
+            TerminalItemsSyncMessage::handleClient
+        );
+
+        registrar.playToServer(
+            TerminalExtractMessage.TYPE,
+            TerminalExtractMessage.STREAM_CODEC,
+            TerminalExtractMessage::handleServer
+        );
+
+        registrar.playToServer(
+            TerminalInsertMessage.TYPE,
+            TerminalInsertMessage.STREAM_CODEC,
+            TerminalInsertMessage::handleServer
+        );
+
+        registrar.playToServer(
+            TerminalSearchMessage.TYPE,
+            TerminalSearchMessage.STREAM_CODEC,
+            TerminalSearchMessage::handleServer
+        );
+
+        registrar.playToServer(
+            TerminalCraftMessage.TYPE,
+            TerminalCraftMessage.STREAM_CODEC,
+            TerminalCraftMessage::handleServer
+        );
+
+        registrar.playToServer(
+            TerminalRecipeTransferMessage.TYPE,
+            TerminalRecipeTransferMessage.STREAM_CODEC,
+            TerminalRecipeTransferMessage::handleServer
+        );
+
+        registrar.playToServer(
+            TerminalSortMessage.TYPE,
+            TerminalSortMessage.STREAM_CODEC,
+            TerminalSortMessage::handleServer
+        );
+
+        registrar.playToClient(
+            TerminalStatusMessage.TYPE,
+            TerminalStatusMessage.STREAM_CODEC,
+            TerminalStatusMessage::handleClient
+        );
     }
 
     // Convenience methods for sending packets
@@ -90,6 +139,18 @@ public class FastPipesNetwork {
             PacketDistributor.sendToServer(msg);
         } else if (message instanceof ChangeExactModeMessage msg) {
             PacketDistributor.sendToServer(msg);
+        } else if (message instanceof TerminalExtractMessage msg) {
+            PacketDistributor.sendToServer(msg);
+        } else if (message instanceof TerminalInsertMessage msg) {
+            PacketDistributor.sendToServer(msg);
+        } else if (message instanceof TerminalSearchMessage msg) {
+            PacketDistributor.sendToServer(msg);
+        } else if (message instanceof TerminalCraftMessage msg) {
+            PacketDistributor.sendToServer(msg);
+        } else if (message instanceof TerminalRecipeTransferMessage msg) {
+            PacketDistributor.sendToServer(msg);
+        } else if (message instanceof TerminalSortMessage msg) {
+            PacketDistributor.sendToServer(msg);
         }
     }
 
@@ -99,6 +160,10 @@ public class FastPipesNetwork {
         } else if (message instanceof FluidPipeMessage msg) {
             PacketDistributor.sendToPlayer(player, msg);
         } else if (message instanceof FluidFilterSlotUpdateMessage msg) {
+            PacketDistributor.sendToPlayer(player, msg);
+        } else if (message instanceof TerminalItemsSyncMessage msg) {
+            PacketDistributor.sendToPlayer(player, msg);
+        } else if (message instanceof TerminalStatusMessage msg) {
             PacketDistributor.sendToPlayer(player, msg);
         }
     }

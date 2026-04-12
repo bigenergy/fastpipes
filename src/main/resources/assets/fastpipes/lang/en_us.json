@@ -112,5 +112,31 @@
   "jei.fastpipes.sensor_attachment.description": "Place on an item or fluid pipe. Emits a redstone signal when items or fluids matching the filter pass through the pipe. Supports whitelist/blacklist filtering. Signal lasts 1 second.",
 
   "misc.fastpipes.pipe_colored": "Pipe colored %s",
-  "misc.fastpipes.pipe_color_removed": "Pipe color removed"
+  "misc.fastpipes.pipe_color_removed": "Pipe color removed",
+
+  "block.fastpipes.terminal": "Pipe Terminal",
+  "gui.fastpipes.terminal": "Pipe Terminal",
+  "gui.fastpipes.terminal.search_hint": "Search... (@mod)",
+  "gui.fastpipes.terminal.network_full": "Network storage full",
+  "gui.fastpipes.terminal.no_network": "No network connected",
+  "gui.fastpipes.terminal.sort.name": "Sort: Name (A-Z)",
+  "gui.fastpipes.terminal.sort.count": "Sort: Count (most first)",
+  "gui.fastpipes.terminal.sort.mod": "Sort: Mod",
+  "tooltip.fastpipes.terminal.hint": "Place next to a pipe to access all connected inventories",
+  "jei.fastpipes.terminal.description": "Access all inventories connected to the pipe network. Supports searching, extracting, inserting, and crafting from network resources.",
+
+  "block.fastpipes.oak_barrel": "Oak Barrel",
+  "block.fastpipes.copper_barrel": "Copper Barrel",
+  "block.fastpipes.iron_barrel": "Iron Barrel",
+  "block.fastpipes.gold_barrel": "Gold Barrel",
+  "block.fastpipes.diamond_barrel": "Diamond Barrel",
+  "block.fastpipes.netherite_barrel": "Netherite Barrel",
+
+  "item.fastpipes.copper_barrel_upgrade": "Copper Barrel Upgrade",
+  "item.fastpipes.iron_barrel_upgrade": "Iron Barrel Upgrade",
+  "item.fastpipes.gold_barrel_upgrade": "Gold Barrel Upgrade",
+  "item.fastpipes.diamond_barrel_upgrade": "Diamond Barrel Upgrade",
+  "item.fastpipes.netherite_barrel_upgrade": "Netherite Barrel Upgrade",
+
+  "tooltip.fastpipes.barrel_upgrade": "Upgrades barrel to %s"
 }

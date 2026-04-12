@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "fastpipes:blocks/barrel_iron_angle",
+    "up": "fastpipes:blocks/barrel_iron_angle",
+    "north": "fastpipes:blocks/barrel_top",
+    "east": "fastpipes:blocks/barrel_side_dori_angle",
+    "south": "fastpipes:blocks/barrel_bottom",
+    "west": "fastpipes:blocks/barrel_side_dori_angle",
+    "particle": "fastpipes:blocks/barrel_iron_angle"
+  },
+  "render_type": "solid"
+}

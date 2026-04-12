@@ -53,6 +53,24 @@ public class FPipesCreativeModeTabs {
                 // Special Attachments
                 output.accept(FPipesItems.VOID_ATTACHMENT.get());
                 output.accept(FPipesItems.SENSOR_ATTACHMENT.get());
+
+                // Terminal
+                output.accept(FPipesItems.TERMINAL.get());
+
+                // Barrels
+                output.accept(FPipesItems.OAK_BARREL.get());
+                output.accept(FPipesItems.COPPER_BARREL.get());
+                output.accept(FPipesItems.IRON_BARREL.get());
+                output.accept(FPipesItems.GOLD_BARREL.get());
+                output.accept(FPipesItems.DIAMOND_BARREL.get());
+                output.accept(FPipesItems.NETHERITE_BARREL.get());
+
+                // Barrel Upgrades
+                output.accept(FPipesItems.COPPER_BARREL_UPGRADE.get());
+                output.accept(FPipesItems.IRON_BARREL_UPGRADE.get());
+                output.accept(FPipesItems.GOLD_BARREL_UPGRADE.get());
+                output.accept(FPipesItems.DIAMOND_BARREL_UPGRADE.get());
+                output.accept(FPipesItems.NETHERITE_BARREL_UPGRADE.get());
             })
             .build()
     );

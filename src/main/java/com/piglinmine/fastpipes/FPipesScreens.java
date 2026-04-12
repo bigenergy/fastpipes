@@ -1,8 +1,10 @@
 package com.piglinmine.fastpipes;
 
+import com.piglinmine.fastpipes.barrel.TieredBarrelScreen;
 import com.piglinmine.fastpipes.screen.ExtractorAttachmentScreen;
 import com.piglinmine.fastpipes.screen.InserterAttachmentScreen;
 import com.piglinmine.fastpipes.screen.SensorAttachmentScreen;
+import com.piglinmine.fastpipes.screen.TerminalScreen;
 import com.piglinmine.fastpipes.screen.VoidAttachmentScreen;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -18,5 +20,7 @@ public class FPipesScreens {
         event.register(FPipesContainerMenus.INSERTER_ATTACHMENT.get(), InserterAttachmentScreen::new);
         event.register(FPipesContainerMenus.VOID_ATTACHMENT.get(), VoidAttachmentScreen::new);
         event.register(FPipesContainerMenus.SENSOR_ATTACHMENT.get(), SensorAttachmentScreen::new);
+        event.register(FPipesContainerMenus.TERMINAL.get(), TerminalScreen::new);
+        event.register(FPipesContainerMenus.TIERED_BARREL.get(), TieredBarrelScreen::new);
     }
 } 

@@ -1,8 +1,10 @@
 package com.piglinmine.fastpipes;
 
+import com.piglinmine.fastpipes.barrel.TieredBarrelBlockEntity;
 import com.piglinmine.fastpipes.blockentity.EnergyPipeBlockEntity;
 import com.piglinmine.fastpipes.blockentity.FluidPipeBlockEntity;
 import com.piglinmine.fastpipes.blockentity.ItemPipeBlockEntity;
+import com.piglinmine.fastpipes.blockentity.TerminalBlockEntity;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -105,6 +107,29 @@ public class FPipesBlockEntities {
         () -> BlockEntityType.Builder.of(
             EnergyPipeBlockEntity::new,
             FPipesBlocks.ULTIMATE_ENERGY_PIPE.get()
+        ).build(null)
+    );
+
+    // Terminal
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TerminalBlockEntity>> TERMINAL = BLOCK_ENTITIES.register(
+        "terminal",
+        () -> BlockEntityType.Builder.of(
+            TerminalBlockEntity::new,
+            FPipesBlocks.TERMINAL.get()
+        ).build(null)
+    );
+
+    // Tiered Barrel (one BE type for all barrel blocks)
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TieredBarrelBlockEntity>> TIERED_BARREL = BLOCK_ENTITIES.register(
+        "tiered_barrel",
+        () -> BlockEntityType.Builder.of(
+            TieredBarrelBlockEntity::new,
+            FPipesBlocks.OAK_BARREL.get(),
+            FPipesBlocks.COPPER_BARREL.get(),
+            FPipesBlocks.IRON_BARREL.get(),
+            FPipesBlocks.GOLD_BARREL.get(),
+            FPipesBlocks.DIAMOND_BARREL.get(),
+            FPipesBlocks.NETHERITE_BARREL.get()
         ).build(null)
     );
 } 

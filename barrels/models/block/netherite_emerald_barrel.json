@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "superbarrels:block/barrel_side_netherite_emerald_upsidedown",
+    "up": "superbarrels:block/barrel_side_netherite_emerald",
+    "north": "superbarrels:block/barrel_top_emerald",
+    "east": "superbarrels:block/barrel_side_netherite_emerald_angle",
+    "south": "superbarrels:block/barrel_bottom",
+    "west": "superbarrels:block/barrel_side_netherite_emerald_left",
+    "particle": "superbarrels:block/barrel_side_netherite_emerald_upsidedown"
+  },
+  "render_type": "solid"
+}

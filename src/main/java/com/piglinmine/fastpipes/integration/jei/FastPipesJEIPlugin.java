@@ -4,8 +4,10 @@ import com.piglinmine.fastpipes.FastPipes;
 import com.piglinmine.fastpipes.FPipesItems;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
+import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.registration.IGuiHandlerRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
+import mezz.jei.api.registration.IRecipeTransferRegistration;
 import mezz.jei.api.registration.ISubtypeRegistration;
 import mezz.jei.api.registration.IVanillaCategoryExtensionRegistration;
 import net.minecraft.network.chat.Component;
@@ -124,9 +126,11 @@ public class FastPipesJEIPlugin implements IModPlugin {
     }
 
     @Override
+    public void registerRecipeTransferHandlers(IRecipeTransferRegistration registration) {
+        registration.addRecipeTransferHandler(new TerminalRecipeTransferHandler(), RecipeTypes.CRAFTING);
+    }
+
+    @Override
     public void registerGuiHandlers(IGuiHandlerRegistration registration) {
-        // Register GUI handlers for JEI integration
-        // This would be used for recipe transfer handlers, click areas, etc.
-        // For now, we don't need special GUI handlers for Fast Pipes
     }
 } 

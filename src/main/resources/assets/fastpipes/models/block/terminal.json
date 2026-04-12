@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/orientable",
+  "textures": {
+    "top": "fastpipes:blocks/terminal_top",
+    "front": "fastpipes:blocks/terminal_front",
+    "side": "fastpipes:blocks/terminal_side"
+  }
+}

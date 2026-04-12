@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "fastpipes:blocks/barrel_side_copper_upside",
+    "up": "fastpipes:blocks/barrel_side_copper",
+    "north": "fastpipes:blocks/barrel_top_copper",
+    "east": "fastpipes:blocks/barrel_side_copper_angle",
+    "south": "fastpipes:blocks/barrel_bottom",
+    "west": "fastpipes:blocks/barrel_side_copper_left",
+    "particle": "fastpipes:blocks/barrel_side_copper_upside"
+  },
+  "render_type": "solid"
+}

@@ -1,5 +1,7 @@
 package com.piglinmine.fastpipes;
 
+import com.piglinmine.fastpipes.barrel.BarrelTier;
+import com.piglinmine.fastpipes.barrel.BarrelUpgradeItem;
 import com.piglinmine.fastpipes.item.AttachmentItem;
 import com.piglinmine.fastpipes.item.BaseBlockItem;
 import com.piglinmine.fastpipes.item.WrenchItem;
@@ -130,4 +132,36 @@ public class FPipesItems {
         "sensor_attachment",
         () -> new AttachmentItem(SensorAttachmentType.INSTANCE.getFactory())
     );
+
+    // Terminal
+    public static final DeferredHolder<Item, BaseBlockItem> TERMINAL = ITEMS.register(
+        "terminal",
+        () -> new BaseBlockItem(FPipesBlocks.TERMINAL.get())
+    );
+
+    // Tiered Barrels
+    public static final DeferredHolder<Item, BaseBlockItem> OAK_BARREL = ITEMS.register(
+        "oak_barrel", () -> new BaseBlockItem(FPipesBlocks.OAK_BARREL.get()));
+    public static final DeferredHolder<Item, BaseBlockItem> COPPER_BARREL = ITEMS.register(
+        "copper_barrel", () -> new BaseBlockItem(FPipesBlocks.COPPER_BARREL.get()));
+    public static final DeferredHolder<Item, BaseBlockItem> IRON_BARREL = ITEMS.register(
+        "iron_barrel", () -> new BaseBlockItem(FPipesBlocks.IRON_BARREL.get()));
+    public static final DeferredHolder<Item, BaseBlockItem> GOLD_BARREL = ITEMS.register(
+        "gold_barrel", () -> new BaseBlockItem(FPipesBlocks.GOLD_BARREL.get()));
+    public static final DeferredHolder<Item, BaseBlockItem> DIAMOND_BARREL = ITEMS.register(
+        "diamond_barrel", () -> new BaseBlockItem(FPipesBlocks.DIAMOND_BARREL.get()));
+    public static final DeferredHolder<Item, BaseBlockItem> NETHERITE_BARREL = ITEMS.register(
+        "netherite_barrel", () -> new BaseBlockItem(FPipesBlocks.NETHERITE_BARREL.get()));
+
+    // Barrel Upgrades
+    public static final DeferredHolder<Item, BarrelUpgradeItem> COPPER_BARREL_UPGRADE = ITEMS.register(
+        "copper_barrel_upgrade", () -> new BarrelUpgradeItem(BarrelTier.COPPER));
+    public static final DeferredHolder<Item, BarrelUpgradeItem> IRON_BARREL_UPGRADE = ITEMS.register(
+        "iron_barrel_upgrade", () -> new BarrelUpgradeItem(BarrelTier.IRON));
+    public static final DeferredHolder<Item, BarrelUpgradeItem> GOLD_BARREL_UPGRADE = ITEMS.register(
+        "gold_barrel_upgrade", () -> new BarrelUpgradeItem(BarrelTier.GOLD));
+    public static final DeferredHolder<Item, BarrelUpgradeItem> DIAMOND_BARREL_UPGRADE = ITEMS.register(
+        "diamond_barrel_upgrade", () -> new BarrelUpgradeItem(BarrelTier.DIAMOND));
+    public static final DeferredHolder<Item, BarrelUpgradeItem> NETHERITE_BARREL_UPGRADE = ITEMS.register(
+        "netherite_barrel_upgrade", () -> new BarrelUpgradeItem(BarrelTier.NETHERITE));
 } 

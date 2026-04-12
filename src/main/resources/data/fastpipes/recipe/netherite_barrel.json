@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": ["NNN", "NBN", "NNN"],
+  "key": {
+    "N": {"tag": "c:ingots/netherite"},
+    "B": {"item": "fastpipes:diamond_barrel"}
+  },
+  "result": {"id": "fastpipes:netherite_barrel", "count": 1}
+}

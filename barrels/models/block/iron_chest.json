@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "superbarrels:block/barrel_iron_angle",
+    "up": "superbarrels:block/barrel_iron_angle",
+    "north": "superbarrels:block/barrel_top",
+    "east": "superbarrels:block/barrel_side_dori_angle",
+    "south": "superbarrels:block/barrel_bottom",
+    "west": "superbarrels:block/barrel_side_dori_angle",
+    "particle": "superbarrels:block/barrel_iron_angle"
+  },
+  "render_type": "solid"
+}
