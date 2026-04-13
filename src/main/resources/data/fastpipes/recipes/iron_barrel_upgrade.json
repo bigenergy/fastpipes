@@ -3,7 +3,7 @@
   "pattern": ["III", "ICI", "III"],
   "key": {
     "I": {"tag": "forge:ingots/iron"},
-    "C": {"tag": "forge:ingots/copper"}
+    "C": {"item": "fastpipes:copper_barrel_upgrade"}
   },
   "result": {"item": "fastpipes:iron_barrel_upgrade", "count": 1}
 }

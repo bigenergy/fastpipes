@@ -3,7 +3,7 @@
   "pattern": ["GGG", "GIG", "GGG"],
   "key": {
     "G": {"tag": "forge:ingots/gold"},
-    "I": {"tag": "forge:ingots/iron"}
+    "I": {"item": "fastpipes:iron_barrel_upgrade"}
   },
   "result": {"item": "fastpipes:gold_barrel_upgrade", "count": 1}
 }
