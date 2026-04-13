@@ -1,0 +1,48 @@
+name: Feature Request
+description: Suggest a new feature or improvement
+title: "[Feature] "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Got an idea for FastPipes? We'd love to hear it!
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Category
+      options:
+        - "New pipe type"
+        - "New attachment"
+        - "Terminal improvement"
+        - "Barrel improvement"
+        - "Recipe / balance change"
+        - "Compatibility with another mod"
+        - "Visual / UI"
+        - "Performance"
+        - "Other"
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Describe the feature
+      description: What do you want added or changed? Be as detailed as you like.
+      placeholder: "It would be great if pipes could ..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: use-case
+    attributes:
+      label: Use case
+      description: Why would this be useful? What problem does it solve?
+      placeholder: "Currently I have to ... but with this feature I could ..."
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots / Mockups
+      description: If you have any visual references, add them here.
