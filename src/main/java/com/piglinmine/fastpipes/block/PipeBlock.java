@@ -31,11 +31,15 @@ import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.world.level.block.SimpleWaterloggedBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
@@ -44,7 +48,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 import javax.annotation.Nullable;
 
-public abstract class PipeBlock extends Block implements EntityBlock {
+public abstract class PipeBlock extends Block implements EntityBlock, SimpleWaterloggedBlock {
     public static final BooleanProperty NORTH = BooleanProperty.create("north");
     public static final BooleanProperty EAST = BooleanProperty.create("east");
     public static final BooleanProperty SOUTH = BooleanProperty.create("south");
@@ -73,6 +77,7 @@ public abstract class PipeBlock extends Block implements EntityBlock {
         this.registerDefaultState(defaultBlockState()
             .setValue(NORTH, false).setValue(EAST, false).setValue(SOUTH, false).setValue(WEST, false).setValue(UP, false).setValue(DOWN, false)
             .setValue(INV_NORTH, false).setValue(INV_EAST, false).setValue(INV_SOUTH, false).setValue(INV_WEST, false).setValue(INV_UP, false).setValue(INV_DOWN, false)
+            .setValue(BlockStateProperties.WATERLOGGED, false)
         );
     }
 
@@ -82,7 +87,8 @@ public abstract class PipeBlock extends Block implements EntityBlock {
 
         builder.add(
             NORTH, EAST, SOUTH, WEST, UP, DOWN,
-            INV_NORTH, INV_EAST, INV_SOUTH, INV_WEST, INV_UP, INV_DOWN
+            INV_NORTH, INV_EAST, INV_SOUTH, INV_WEST, INV_UP, INV_DOWN,
+            BlockStateProperties.WATERLOGGED
         );
     }
 
@@ -328,12 +334,17 @@ public abstract class PipeBlock extends Block implements EntityBlock {
     @Nullable
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext ctx) {
-        return getState(defaultBlockState(), ctx.getLevel(), ctx.getClickedPos());
+        FluidState fluidState = ctx.getLevel().getFluidState(ctx.getClickedPos());
+        return getState(defaultBlockState(), ctx.getLevel(), ctx.getClickedPos())
+            .setValue(BlockStateProperties.WATERLOGGED, fluidState.getType() == Fluids.WATER);
     }
 
     @Override
     @SuppressWarnings("deprecation")
     public BlockState updateShape(BlockState state, Direction dir, BlockState facingState, LevelAccessor world, BlockPos pos, BlockPos facingPos) {
+        if (state.getValue(BlockStateProperties.WATERLOGGED)) {
+            world.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(world));
+        }
         // On client, don't recalculate connections — trust the server-sent block state.
         if (world instanceof Level lvl && lvl.isClientSide) {
             return state;
@@ -343,12 +354,21 @@ public abstract class PipeBlock extends Block implements EntityBlock {
 
     @Override
     @SuppressWarnings("deprecation")
+    public FluidState getFluidState(BlockState state) {
+        return state.getValue(BlockStateProperties.WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(state);
+    }
+
+    @Override
+    @SuppressWarnings("deprecation")
     public VoxelShape getShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext ctx) {
         return shapeCache.getShape(state, world, pos, ctx);
     }
 
     public BlockState getState(BlockState currentState, LevelAccessor world, BlockPos pos) {
+        boolean waterlogged = currentState.hasProperty(BlockStateProperties.WATERLOGGED)
+            && currentState.getValue(BlockStateProperties.WATERLOGGED);
         return currentState
+            .setValue(BlockStateProperties.WATERLOGGED, waterlogged)
             .setValue(NORTH, hasConnection(world, pos, Direction.NORTH))
             .setValue(EAST, hasConnection(world, pos, Direction.EAST))
             .setValue(SOUTH, hasConnection(world, pos, Direction.SOUTH))
