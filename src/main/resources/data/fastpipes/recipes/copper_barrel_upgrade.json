@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": ["CCC", "CBC", "CCC"],
+  "key": {
+    "C": {"tag": "forge:ingots/copper"},
+    "B": {"item": "minecraft:barrel"}
+  },
+  "result": {"item": "fastpipes:copper_barrel_upgrade", "count": 1}
+}

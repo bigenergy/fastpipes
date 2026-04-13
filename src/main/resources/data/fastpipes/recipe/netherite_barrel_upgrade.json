@@ -1,9 +1,0 @@
-{
-  "type": "minecraft:crafting_shaped",
-  "pattern": ["NNN", "NDN", "NNN"],
-  "key": {
-    "N": {"tag": "c:ingots/netherite"},
-    "D": {"tag": "c:gems/diamond"}
-  },
-  "result": {"id": "fastpipes:netherite_barrel_upgrade", "count": 1}
-}

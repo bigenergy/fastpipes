@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " I ",
+    " II",
+    "I  "
+  ],
+  "key": {
+    "I": {
+      "tag": "forge:ingots/iron"
+    }
+  },
+  "result": {
+    "item": "fastpipes:wrench",
+    "count": 1
+  }
+}

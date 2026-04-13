@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "IGI",
+    "DPD",
+    "III"
+  ],
+  "key": {
+    "I": {
+      "tag": "forge:ingots/iron"
+    },
+    "G": {
+      "tag": "forge:glass"
+    },
+    "D": {
+      "tag": "forge:gems/diamond"
+    },
+    "P": {
+      "item": "fastpipes:basic_item_pipe"
+    }
+  },
+  "result": {
+    "item": "fastpipes:terminal",
+    "count": 1
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "CCC",
+    "GPG",
+    "CRC"
+  ],
+  "key": {
+    "C": {
+      "item": "minecraft:popped_chorus_fruit"
+    },
+    "G": {
+      "tag": "forge:glass"
+    },
+    "P": {
+      "item": "minecraft:prismarine_shard"
+    },
+    "R": {
+      "tag": "forge:storage_blocks/redstone"
+    }
+  },
+  "result": {
+    "item": "fastpipes:ultimate_energy_pipe",
+    "count": 6
+  }
+} 

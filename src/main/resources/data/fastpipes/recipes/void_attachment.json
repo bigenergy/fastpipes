@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " O ",
+    "IPI",
+    "   "
+  ],
+  "key": {
+    "I": {
+      "tag": "forge:ingots/iron"
+    },
+    "O": {
+      "item": "minecraft:obsidian"
+    },
+    "P": {
+      "item": "fastpipes:basic_item_pipe"
+    }
+  },
+  "result": {
+    "item": "fastpipes:void_attachment"
+  }
+}

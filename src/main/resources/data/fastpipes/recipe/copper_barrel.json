@@ -1,9 +1,0 @@
-{
-  "type": "minecraft:crafting_shaped",
-  "pattern": ["CCC", "CBC", "CCC"],
-  "key": {
-    "C": {"tag": "c:ingots/copper"},
-    "B": {"item": "fastpipes:oak_barrel"}
-  },
-  "result": {"id": "fastpipes:copper_barrel", "count": 1}
-}

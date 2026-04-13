@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " T ",
+    "IRI",
+    "   "
+  ],
+  "key": {
+    "I": {
+      "tag": "forge:ingots/iron"
+    },
+    "T": {
+      "item": "minecraft:redstone_torch"
+    },
+    "R": {
+      "item": "fastpipes:basic_item_pipe"
+    }
+  },
+  "result": {
+    "item": "fastpipes:sensor_attachment"
+  }
+}

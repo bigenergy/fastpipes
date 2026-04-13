@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "   ",
+    "EEE",
+    "EPE"
+  ],
+  "key": {
+    "E": {
+      "tag": "forge:gems/emerald"
+    },
+    "P": {
+      "item": "fastpipes:advanced_extractor_attachment"
+    }
+  },
+  "result": {
+    "item": "fastpipes:elite_extractor_attachment"
+  }
+} 

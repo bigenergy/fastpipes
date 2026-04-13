@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "CCC",
+    "GSG",
+    "CCC"
+  ],
+  "key": {
+    "C": {
+      "tag": "forge:ingots/gold"
+    },
+    "G": {
+      "tag": "forge:glass"
+    },
+    "S": {
+      "tag": "forge:slimeballs"
+    }
+  },
+  "result": {
+    "item": "fastpipes:improved_fluid_pipe",
+    "count": 6
+  }
+} 

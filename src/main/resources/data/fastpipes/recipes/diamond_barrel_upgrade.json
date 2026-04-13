@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": ["DGD", "GDG", "DGD"],
+  "key": {
+    "D": {"tag": "forge:gems/diamond"},
+    "G": {"tag": "forge:ingots/gold"}
+  },
+  "result": {"item": "fastpipes:diamond_barrel_upgrade", "count": 1}
+}

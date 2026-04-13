@@ -65,12 +65,14 @@ repositories {
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
 
-    // JEI (compile-only to avoid SRG/Parchment mismatch in dev env)
+    // JEI (API jars are clean interfaces — no deobf needed)
     compileOnly "mezz.jei:jei-${minecraft_version}-common-api:${jei_version}"
     compileOnly "mezz.jei:jei-${minecraft_version}-forge-api:${jei_version}"
+    runtimeOnly fg.deobf("mezz.jei:jei-${minecraft_version}-forge:${jei_version}")
 
-    // Jade (compile-only: all Modrinth versions have broken mixins for 1.20.1 dev env)
-    compileOnly "maven.modrinth:jade:11.9.4+forge"
+    // Jade (compile-only — all Forge versions have broken FontMixin in dev env for 1.20.1)
+    // Works fine in production with correct Jade installed by user
+    compileOnly fg.deobf("maven.modrinth:jade:11.9.4+forge")
 }
 
 // Process resources - replace tokens in mods.toml
