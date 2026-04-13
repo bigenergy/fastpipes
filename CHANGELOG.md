@@ -3,8 +3,10 @@
 
 ### Added
 - **Forge 1.20.1 backport** — full port from NeoForge 1.21.1 to Forge 1.20.1 (Java 17, Forge 47.3.0).
+- **Pipe Terminal** — access all inventories connected to the pipe network from a single block. Supports searching, extracting, inserting, and crafting directly from network resources. Place next to any item pipe to connect.
+- **Tiered Barrels** — Oak (27 slots), Copper (45), Iron (54), Gold (72), Diamond (90), Netherite (108, blast resistant). Upgradeable in-place with barrel upgrades that preserve contents.
 - **Waterlogged pipes** — all pipes can now be placed underwater. Water flows correctly around pipe geometry.
-- **JEI descriptions** for all items — barrels (Oak through Netherite), barrel upgrades, Void Attachment, Sensor Attachment, and Terminal now have info pages in JEI.
+- **JEI descriptions** for all items — barrels, barrel upgrades, Void Attachment, Sensor Attachment, and Terminal now have info pages in JEI.
 - **JEI integration** in dev environment (`runClient`) via `fg.deobf()`.
 - **Russian translation** fully updated — all new keys including JEI descriptions, barrel items, and terminal tooltips.
 
