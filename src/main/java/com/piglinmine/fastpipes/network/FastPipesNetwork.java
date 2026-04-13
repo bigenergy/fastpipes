@@ -1,6 +1,7 @@
 package com.piglinmine.fastpipes.network;
 
 import com.piglinmine.fastpipes.network.message.*;
+import com.piglinmine.fastpipes.network.message.UpdateFilterEntryMessage;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
@@ -63,6 +64,12 @@ public class FastPipesNetwork {
             ChangeExactModeMessage.TYPE,
             ChangeExactModeMessage.STREAM_CODEC,
             ChangeExactModeMessage::handleServer
+        );
+
+        registrar.playToServer(
+            UpdateFilterEntryMessage.TYPE,
+            UpdateFilterEntryMessage.STREAM_CODEC,
+            UpdateFilterEntryMessage::handleServer
         );
 
         // Terminal messages
@@ -138,6 +145,8 @@ public class FastPipesNetwork {
         } else if (message instanceof ChangeStackSizeMessage msg) {
             PacketDistributor.sendToServer(msg);
         } else if (message instanceof ChangeExactModeMessage msg) {
+            PacketDistributor.sendToServer(msg);
+        } else if (message instanceof UpdateFilterEntryMessage msg) {
             PacketDistributor.sendToServer(msg);
         } else if (message instanceof TerminalExtractMessage msg) {
             PacketDistributor.sendToServer(msg);

@@ -69,11 +69,11 @@ public class ServerConfig {
             {
                 builder.push("inserter");
                 {
-                    basicInserterAttachment    = new InserterAttachment("basic",    0,  false, false, false, 0);
-                    improvedInserterAttachment = new InserterAttachment("improved", 4,  true,  false, false, 1);
-                    advancedInserterAttachment = new InserterAttachment("advanced", 8,  true,  true,  true,  2);
-                    eliteInserterAttachment    = new InserterAttachment("elite",    12, true,  true,  true,  3);
-                    ultimateInserterAttachment = new InserterAttachment("ultimate", 15, true,  true,  true,  4);
+                    basicInserterAttachment    = new InserterAttachment("basic",    0,  false, false, false, false, 0);
+                    improvedInserterAttachment = new InserterAttachment("improved", 4,  true,  false, false, false, 1);
+                    advancedInserterAttachment = new InserterAttachment("advanced", 8,  true,  true,  true,  true,  2);
+                    eliteInserterAttachment    = new InserterAttachment("elite",    12, true,  true,  true,  true,  3);
+                    ultimateInserterAttachment = new InserterAttachment("ultimate", 15, true,  true,  true,  true,  4);
                 }
                 builder.pop();
 
@@ -87,7 +87,8 @@ public class ServerConfig {
                         false, // redstone mode
                         false, // whitelist blacklist
                         false, // routing mode
-                        false // exact mode
+                        false, // exact mode
+                        false // tag mode
                     );
                     improvedExtractorAttachment = new ExtractorAttachment(
                         "improved",
@@ -97,7 +98,8 @@ public class ServerConfig {
                         true, // redstone mode
                         false, // whitelist blacklist
                         false, // routing mode
-                        true // exact mode
+                        true, // exact mode
+                        true // tag mode
                     );
                     advancedExtractorAttachment = new ExtractorAttachment(
                         "advanced",
@@ -107,7 +109,8 @@ public class ServerConfig {
                         true, // redstone mode
                         true, // whitelist blacklist
                         true, // routing mode
-                        true // exact mode
+                        true, // exact mode
+                        true // tag mode
                     );
                     eliteExtractorAttachment = new ExtractorAttachment(
                         "elite",
@@ -117,7 +120,8 @@ public class ServerConfig {
                         true, // redstone mode
                         true, // whitelist blacklist
                         true, // routing mode
-                        true // exact mode
+                        true, // exact mode
+                        true // tag mode
                     );
                     ultimateExtractorAttachment = new ExtractorAttachment(
                         "ultimate",
@@ -127,7 +131,8 @@ public class ServerConfig {
                         true, // redstone mode
                         true, // whitelist blacklist
                         true, // routing mode
-                        true // exact mode
+                        true, // exact mode
+                        true // tag mode
                     );
                 }
                 builder.pop();
@@ -286,16 +291,18 @@ public class ServerConfig {
         private final ModConfigSpec.BooleanValue canSetRedstoneMode;
         private final ModConfigSpec.BooleanValue canSetWhitelistBlacklist;
         private final ModConfigSpec.BooleanValue canSetExactMode;
+        private final ModConfigSpec.BooleanValue canSetTagMode;
         private final ModConfigSpec.IntValue priority;
 
         public InserterAttachment(String type, int defaultFilterSlots, boolean defaultCanSetRedstoneMode,
                                   boolean defaultCanSetWhitelistBlacklist, boolean defaultCanSetExactMode,
-                                  int defaultPriority) {
+                                  boolean defaultCanSetTagMode, int defaultPriority) {
             builder.push(type);
             filterSlots          = builder.comment("The number of filter slots.").defineInRange("filterSlots", defaultFilterSlots, 0, 15);
             canSetRedstoneMode   = builder.comment("Whether the redstone mode can be configured.").define("canSetRedstoneMode", defaultCanSetRedstoneMode);
             canSetWhitelistBlacklist = builder.comment("Whether the inserter can toggle between whitelist and blacklist.").define("canSetWhitelistBlacklist", defaultCanSetWhitelistBlacklist);
             canSetExactMode      = builder.comment("Whether the inserter can toggle exact mode.").define("canSetExactMode", defaultCanSetExactMode);
+            canSetTagMode        = builder.comment("Whether the inserter can toggle tag mode.").define("canSetTagMode", defaultCanSetTagMode);
             priority             = builder.comment("Insertion priority. Items are routed to higher-priority inserters first.").defineInRange("priority", defaultPriority, 0, Integer.MAX_VALUE);
             builder.pop();
         }
@@ -304,6 +311,7 @@ public class ServerConfig {
         public boolean getCanSetRedstoneMode() { return canSetRedstoneMode.get(); }
         public boolean getCanSetWhitelistBlacklist() { return canSetWhitelistBlacklist.get(); }
         public boolean getCanSetExactMode() { return canSetExactMode.get(); }
+        public boolean getCanSetTagMode() { return canSetTagMode.get(); }
         public int getPriority() { return priority.get(); }
     }
 
@@ -317,6 +325,7 @@ public class ServerConfig {
         private final ModConfigSpec.BooleanValue canSetWhitelistBlacklist;
         private final ModConfigSpec.BooleanValue canSetRoutingMode;
         private final ModConfigSpec.BooleanValue canSetExactMode;
+        private final ModConfigSpec.BooleanValue canSetTagMode;
 
         public ExtractorAttachment(
             String type,
@@ -328,7 +337,8 @@ public class ServerConfig {
             boolean defaultCanSetRedstoneMode,
             boolean defaultCanSetWhitelistBlacklist,
             boolean defaultCanSetRoutingMode,
-            boolean defaultCanSetExactMode) {
+            boolean defaultCanSetExactMode,
+            boolean defaultCanSetTagMode) {
             builder.push(type);
 
             itemTickInterval = builder.comment("The interval between item extractions in ticks. Lower is faster.").defineInRange("itemTickInterval", defaultItemTickInterval, 0, Integer.MAX_VALUE);
@@ -340,6 +350,7 @@ public class ServerConfig {
             canSetWhitelistBlacklist = builder.comment("Whether the extractor can be toggled between whitelist and blacklist.").define("canSetWhitelistBlacklist", defaultCanSetWhitelistBlacklist);
             canSetRoutingMode = builder.comment("Whether the extractor can be toggled between routing modes.").define("canSetRoutingMode", defaultCanSetRoutingMode);
             canSetExactMode = builder.comment("Whether the extractor can toggle exact mode.").define("canSetExactMode", defaultCanSetExactMode);
+            canSetTagMode = builder.comment("Whether the extractor can toggle tag mode.").define("canSetTagMode", defaultCanSetTagMode);
 
             builder.pop();
         }
@@ -378,6 +389,10 @@ public class ServerConfig {
 
         public boolean getCanSetExactMode() {
             return canSetExactMode.get();
+        }
+
+        public boolean getCanSetTagMode() {
+            return canSetTagMode.get();
         }
     }
 } 

@@ -6,6 +6,7 @@ import com.piglinmine.fastpipes.menu.slot.FilterSlot;
 import com.piglinmine.fastpipes.menu.slot.FluidFilterSlot;
 import com.piglinmine.fastpipes.network.FastPipesNetwork;
 import com.piglinmine.fastpipes.network.message.*;
+import com.piglinmine.fastpipes.network.message.UpdateFilterEntryMessage;
 import com.piglinmine.fastpipes.network.pipe.attachment.extractor.BlacklistWhitelist;
 import com.piglinmine.fastpipes.network.pipe.attachment.extractor.ExtractorAttachmentType;
 import com.piglinmine.fastpipes.network.pipe.attachment.extractor.RedstoneMode;
@@ -20,6 +21,8 @@ import net.neoforged.neoforge.fluids.FluidUtil;
 import net.neoforged.neoforge.items.ItemStackHandler;
 import net.neoforged.neoforge.items.SlotItemHandler;
 
+import java.util.Arrays;
+
 public class ExtractorAttachmentContainerMenu extends BaseContainerMenu {
     private final BlockPos pos;
     private final Direction dir;
@@ -31,6 +34,7 @@ public class ExtractorAttachmentContainerMenu extends BaseContainerMenu {
     private RoutingMode routingMode = RoutingMode.NEAREST;
     private int stackSize;
     private boolean exactMode;
+    private final String[] tagOverrides = new String[15];
 
     public ExtractorAttachmentContainerMenu(
         int windowId,
@@ -45,7 +49,8 @@ public class ExtractorAttachmentContainerMenu extends BaseContainerMenu {
         ExtractorAttachmentType type,
         ItemStackHandler itemFilter,
         FluidInventory fluidFilter,
-        boolean fluidMode) {
+        boolean fluidMode,
+        String[] tagOverrides) {
         super(FPipesContainerMenus.EXTRACTOR_ATTACHMENT.get(), windowId, player);
 
         addPlayerInventory(8, 111);
@@ -77,14 +82,18 @@ public class ExtractorAttachmentContainerMenu extends BaseContainerMenu {
         this.routingMode = routingMode;
         this.stackSize = stackSize;
         this.exactMode = exactMode;
+        Arrays.fill(this.tagOverrides, "");
+        if (tagOverrides != null) {
+            System.arraycopy(tagOverrides, 0, this.tagOverrides, 0, Math.min(tagOverrides.length, 15));
+        }
     }
 
     // Client constructor for NeoForge
     public ExtractorAttachmentContainerMenu(int windowId, Player player) {
-        this(windowId, player, BlockPos.ZERO, Direction.NORTH, 
+        this(windowId, player, BlockPos.ZERO, Direction.NORTH,
              RedstoneMode.IGNORED, BlacklistWhitelist.BLACKLIST, RoutingMode.NEAREST,
              ExtractorAttachmentType.BASIC.getItemsToExtract(), false, ExtractorAttachmentType.BASIC,
-             new ItemStackHandler(15), new FluidInventory(15), false);
+             new ItemStackHandler(15), new FluidInventory(15), false, new String[15]);
     }
 
     public BlockPos getPos() {
@@ -146,6 +155,20 @@ public class ExtractorAttachmentContainerMenu extends BaseContainerMenu {
     public void setExactMode(boolean exactMode) {
         this.exactMode = exactMode;
         FastPipesNetwork.sendToServer(new ChangeExactModeMessage(pos, dir, exactMode));
+    }
+
+    public String getTagOverride(int slot) {
+        if (slot < 0 || slot >= tagOverrides.length) return "";
+        return tagOverrides[slot];
+    }
+
+    public void setTagOverride(int slot, String value) {
+        tagOverrides[slot] = value != null ? value : "";
+        FastPipesNetwork.sendToServer(new UpdateFilterEntryMessage(pos, dir, slot, tagOverrides[slot]));
+    }
+
+    public String[] getTagOverrides() {
+        return tagOverrides;
     }
 
     @Override

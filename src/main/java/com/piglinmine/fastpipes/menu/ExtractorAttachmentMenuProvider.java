@@ -30,19 +30,12 @@ public class ExtractorAttachmentMenuProvider implements MenuProvider {
     @Override
     public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player player) {
         return new ExtractorAttachmentContainerMenu(
-            windowId,
-            player,
-            pipe.getPos(),
-            attachment.getDirection(),
-            attachment.getRedstoneMode(),
-            attachment.getBlacklistWhitelist(),
-            attachment.getRoutingMode(),
-            attachment.getStackSize(),
-            attachment.isExactMode(),
-            attachment.getType(),
-            attachment.getItemFilter(),
-            attachment.getFluidFilter(),
-            attachment.isFluidMode()
+            windowId, player, pipe.getPos(), attachment.getDirection(),
+            attachment.getRedstoneMode(), attachment.getBlacklistWhitelist(),
+            attachment.getRoutingMode(), attachment.getStackSize(),
+            attachment.isExactMode(), attachment.getType(),
+            attachment.getItemFilter(), attachment.getFluidFilter(),
+            attachment.isFluidMode(), attachment.getTagOverrides()
         );
     }
 
@@ -61,6 +54,11 @@ public class ExtractorAttachmentMenuProvider implements MenuProvider {
             // Sync fluid filter contents to client
             for (int i = 0; i < ExtractorAttachment.MAX_FILTER_SLOTS; i++) {
                 FluidStack.OPTIONAL_STREAM_CODEC.encode(buf, attachment.getFluidFilter().getFluid(i));
+            }
+
+            // Sync tag overrides to client
+            for (int i = 0; i < ExtractorAttachment.MAX_FILTER_SLOTS; i++) {
+                buf.writeUtf(attachment.getTagOverride(i));
             }
         });
     }

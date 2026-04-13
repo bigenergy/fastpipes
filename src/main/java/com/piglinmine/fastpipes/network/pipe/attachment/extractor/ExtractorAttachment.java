@@ -28,6 +28,12 @@ import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemStackHandler;
 
+import net.minecraft.core.registries.Registries;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.material.Fluid;
+import java.util.Arrays;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -48,6 +54,7 @@ public class ExtractorAttachment extends Attachment {
     private RoutingMode routingMode = RoutingMode.NEAREST;
     private int stackSize;
     private boolean exactMode = true;
+    private final String[] tagOverrides = new String[MAX_FILTER_SLOTS];
 
     public ExtractorAttachment(Pipe pipe, Direction direction, ExtractorAttachmentType type) {
         super(pipe, direction);
@@ -56,6 +63,7 @@ public class ExtractorAttachment extends Attachment {
         this.stackSize = type.getItemsToExtract();
         this.itemFilter = createItemFilterInventory(this);
         this.fluidFilter = createFluidFilterInventory(this);
+        Arrays.fill(this.tagOverrides, "");
     }
 
     public static ItemStackHandler createItemFilterInventory(@Nullable ExtractorAttachment attachment) {
@@ -216,35 +224,56 @@ public class ExtractorAttachment extends Attachment {
         if (blacklistWhitelist == BlacklistWhitelist.WHITELIST) {
             for (int i = 0; i < itemFilter.getSlots(); ++i) {
                 ItemStack filtered = itemFilter.getStackInSlot(i);
+                String override = tagOverrides[i];
 
-                boolean equals = filtered.is(stack.getItem());
-                if (exactMode) {
-                    equals = equals && ItemStack.isSameItemSameComponents(filtered, stack);
+                boolean equals;
+                if (!override.isEmpty() && override.startsWith("#")) {
+                    ResourceLocation tagId = ResourceLocation.tryParse(override.substring(1));
+                    if (tagId != null) {
+                        TagKey<Item> tag = TagKey.create(Registries.ITEM, tagId);
+                        equals = stack.is(tag);
+                    } else {
+                        equals = false;
+                    }
+                } else if (filtered.isEmpty()) {
+                    continue;
+                } else {
+                    equals = filtered.is(stack.getItem());
+                    if (exactMode) {
+                        equals = equals && ItemStack.isSameItemSameComponents(filtered, stack);
+                    }
                 }
 
-                if (equals) {
-                    return true;
-                }
+                if (equals) return true;
             }
-
             return false;
         } else if (blacklistWhitelist == BlacklistWhitelist.BLACKLIST) {
             for (int i = 0; i < itemFilter.getSlots(); ++i) {
                 ItemStack filtered = itemFilter.getStackInSlot(i);
+                String override = tagOverrides[i];
 
-                boolean equals = filtered.is(stack.getItem());
-                if (exactMode) {
-                    equals = equals && ItemStack.isSameItemSameComponents(filtered, stack);
+                boolean equals;
+                if (!override.isEmpty() && override.startsWith("#")) {
+                    ResourceLocation tagId = ResourceLocation.tryParse(override.substring(1));
+                    if (tagId != null) {
+                        TagKey<Item> tag = TagKey.create(Registries.ITEM, tagId);
+                        equals = stack.is(tag);
+                    } else {
+                        equals = false;
+                    }
+                } else if (filtered.isEmpty()) {
+                    continue;
+                } else {
+                    equals = filtered.is(stack.getItem());
+                    if (exactMode) {
+                        equals = equals && ItemStack.isSameItemSameComponents(filtered, stack);
+                    }
                 }
 
-                if (equals) {
-                    return false;
-                }
+                if (equals) return false;
             }
-
             return true;
         }
-
         return false;
     }
 
@@ -252,35 +281,56 @@ public class ExtractorAttachment extends Attachment {
         if (blacklistWhitelist == BlacklistWhitelist.WHITELIST) {
             for (int i = 0; i < fluidFilter.getSlots(); ++i) {
                 FluidStack filtered = fluidFilter.getFluid(i);
+                String override = tagOverrides[i];
 
-                boolean equals = filtered.getFluid() == stack.getFluid();
-                if (exactMode) {
-                    equals = equals && FluidStack.isSameFluidSameComponents(filtered, stack);
+                boolean equals;
+                if (!override.isEmpty() && override.startsWith("#")) {
+                    ResourceLocation tagId = ResourceLocation.tryParse(override.substring(1));
+                    if (tagId != null) {
+                        TagKey<Fluid> tag = TagKey.create(Registries.FLUID, tagId);
+                        equals = stack.getFluid().builtInRegistryHolder().is(tag);
+                    } else {
+                        equals = false;
+                    }
+                } else if (filtered.isEmpty()) {
+                    continue;
+                } else {
+                    equals = filtered.getFluid() == stack.getFluid();
+                    if (exactMode) {
+                        equals = equals && FluidStack.isSameFluidSameComponents(filtered, stack);
+                    }
                 }
 
-                if (equals) {
-                    return true;
-                }
+                if (equals) return true;
             }
-
             return false;
         } else if (blacklistWhitelist == BlacklistWhitelist.BLACKLIST) {
             for (int i = 0; i < fluidFilter.getSlots(); ++i) {
                 FluidStack filtered = fluidFilter.getFluid(i);
+                String override = tagOverrides[i];
 
-                boolean equals = filtered.getFluid() == stack.getFluid();
-                if (exactMode) {
-                    equals = equals && FluidStack.isSameFluidSameComponents(filtered, stack);
+                boolean equals;
+                if (!override.isEmpty() && override.startsWith("#")) {
+                    ResourceLocation tagId = ResourceLocation.tryParse(override.substring(1));
+                    if (tagId != null) {
+                        TagKey<Fluid> tag = TagKey.create(Registries.FLUID, tagId);
+                        equals = stack.getFluid().builtInRegistryHolder().is(tag);
+                    } else {
+                        equals = false;
+                    }
+                } else if (filtered.isEmpty()) {
+                    continue;
+                } else {
+                    equals = filtered.getFluid() == stack.getFluid();
+                    if (exactMode) {
+                        equals = equals && FluidStack.isSameFluidSameComponents(filtered, stack);
+                    }
                 }
 
-                if (equals) {
-                    return false;
-                }
+                if (equals) return false;
             }
-
             return true;
         }
-
         return false;
     }
 
@@ -311,6 +361,15 @@ public class ExtractorAttachment extends Attachment {
         tag.putInt("stacksi", stackSize);
         tag.putBoolean("exa", exactMode);
         tag.put("fluidfilter", fluidFilter.writeToNbt(pipe.getLevel().registryAccess()));
+        CompoundTag overridesTag = new CompoundTag();
+        for (int i = 0; i < MAX_FILTER_SLOTS; i++) {
+            if (!tagOverrides[i].isEmpty()) {
+                overridesTag.putString("s" + i, tagOverrides[i]);
+            }
+        }
+        if (!overridesTag.isEmpty()) {
+            tag.put("tagov", overridesTag);
+        }
 
         return super.writeToNbt(tag);
     }
@@ -393,5 +452,19 @@ public class ExtractorAttachment extends Attachment {
         }
 
         this.exactMode = exactMode;
+    }
+
+    public String getTagOverride(int slot) {
+        if (slot < 0 || slot >= MAX_FILTER_SLOTS) return "";
+        return tagOverrides[slot];
+    }
+
+    public void setTagOverride(int slot, String value) {
+        if (slot < 0 || slot >= MAX_FILTER_SLOTS) return;
+        tagOverrides[slot] = value != null ? value : "";
+    }
+
+    public String[] getTagOverrides() {
+        return tagOverrides;
     }
 } 

@@ -65,6 +65,9 @@
   "misc.fastpipes.exact_mode": "Точное совпадение",
   "misc.fastpipes.exact_mode.on": "Вкл.",
   "misc.fastpipes.exact_mode.off": "Выкл.",
+  "misc.fastpipes.tag_mode": "Режим тегов",
+  "misc.fastpipes.tag_mode.on": "Вкл.",
+  "misc.fastpipes.tag_mode.off": "Выкл.",
 
   "jei.fastpipes.basic_item_pipe.description": "Перемещает предметы между инвентарями. Базовая скорость и вместимость.",
   "jei.fastpipes.improved_item_pipe.description": "Перемещает предметы между инвентарями. Улучшенная скорость и вместимость.",
@@ -138,5 +141,10 @@
   "item.fastpipes.diamond_barrel_upgrade": "Улучшение до алмазной бочки",
   "item.fastpipes.netherite_barrel_upgrade": "Улучшение до незеритовой бочки",
 
-  "tooltip.fastpipes.barrel_upgrade": "Улучшает бочку до %s"
+  "tooltip.fastpipes.barrel_upgrade": "Улучшает бочку до %s",
+
+  "gui.fastpipes.filter_editor.item_tag": "Предмет / Тег",
+  "gui.fastpipes.filter_editor.tags": "Теги",
+  "gui.fastpipes.filter_editor.submit": "Применить",
+  "gui.fastpipes.filter_editor.cancel": "Отмена"
 }

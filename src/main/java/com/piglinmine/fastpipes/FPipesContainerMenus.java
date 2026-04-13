@@ -50,11 +50,16 @@ public class FPipesContainerMenus {
                     }
                 }
 
+                String[] tagOverrides = new String[ExtractorAttachment.MAX_FILTER_SLOTS];
+                for (int i = 0; i < ExtractorAttachment.MAX_FILTER_SLOTS; i++) {
+                    tagOverrides[i] = data.readUtf();
+                }
+
                 return new ExtractorAttachmentContainerMenu(
                     windowId, inv.player, pos, dir, rm, bw, routingMode,
                     stackSize, exactMode, type,
                     ExtractorAttachment.createItemFilterInventory(null),
-                    fluidFilter, fluidMode
+                    fluidFilter, fluidMode, tagOverrides
                 );
             } else {
                 return new ExtractorAttachmentContainerMenu(windowId, inv.player);
@@ -83,10 +88,15 @@ public class FPipesContainerMenus {
                     }
                 }
 
+                String[] tagOverrides = new String[InserterAttachment.MAX_FILTER_SLOTS];
+                for (int i = 0; i < InserterAttachment.MAX_FILTER_SLOTS; i++) {
+                    tagOverrides[i] = data.readUtf();
+                }
+
                 return new InserterAttachmentContainerMenu(
                     windowId, inv.player, pos, dir, rm, bw, exactMode, type,
                     InserterAttachment.createItemFilterInventory(null),
-                    fluidFilter, fluidMode
+                    fluidFilter, fluidMode, tagOverrides
                 );
             } else {
                 return new InserterAttachmentContainerMenu(windowId, inv.player);

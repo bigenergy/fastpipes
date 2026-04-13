@@ -73,6 +73,10 @@ public enum ExtractorAttachmentType {
         return getConfig().getCanSetExactMode();
     }
 
+    public boolean getCanSetTagMode() {
+        return getConfig().getCanSetTagMode();
+    }
+
     private ServerConfig.ExtractorAttachment getConfig() {
         switch (this) {
             case BASIC:

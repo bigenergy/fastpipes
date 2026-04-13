@@ -10,12 +10,17 @@ import com.piglinmine.fastpipes.network.pipe.attachment.extractor.BlacklistWhite
 import com.piglinmine.fastpipes.network.pipe.attachment.extractor.RedstoneMode;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.items.ItemStackHandler;
 
+import java.util.Arrays;
 import javax.annotation.Nullable;
 
 public class InserterAttachment extends Attachment {
@@ -28,12 +33,14 @@ public class InserterAttachment extends Attachment {
     private RedstoneMode redstoneMode = RedstoneMode.IGNORED;
     private BlacklistWhitelist blacklistWhitelist = BlacklistWhitelist.BLACKLIST;
     private boolean exactMode = false;
+    private final String[] tagOverrides = new String[MAX_FILTER_SLOTS];
 
     public InserterAttachment(Pipe pipe, Direction direction, InserterAttachmentType type) {
         super(pipe, direction);
         this.type = type;
         this.itemFilter = createItemFilterInventory(this);
         this.fluidFilter = createFluidFilterInventory(this);
+        Arrays.fill(this.tagOverrides, "");
     }
 
     public static ItemStackHandler createItemFilterInventory(@Nullable InserterAttachment attachment) {
@@ -80,33 +87,60 @@ public class InserterAttachment extends Attachment {
             return false;
         }
 
-        // Check if any filter slots are filled
         boolean hasFilter = false;
         for (int i = 0; i < itemFilter.getSlots(); ++i) {
-            if (!itemFilter.getStackInSlot(i).isEmpty()) {
+            if (!itemFilter.getStackInSlot(i).isEmpty() || !tagOverrides[i].isEmpty()) {
                 hasFilter = true;
                 break;
             }
         }
-        if (!hasFilter) {
-            return true; // no filter = accept everything
-        }
+        if (!hasFilter) return true;
 
         if (blacklistWhitelist == BlacklistWhitelist.WHITELIST) {
             for (int i = 0; i < itemFilter.getSlots(); ++i) {
                 ItemStack filtered = itemFilter.getStackInSlot(i);
-                if (filtered.isEmpty()) continue;
-                boolean equals = filtered.is(stack.getItem());
-                if (exactMode) equals = equals && ItemStack.isSameItemSameComponents(filtered, stack);
+                String override = tagOverrides[i];
+
+                boolean equals;
+                if (!override.isEmpty() && override.startsWith("#")) {
+                    ResourceLocation tagId = ResourceLocation.tryParse(override.substring(1));
+                    if (tagId != null) {
+                        TagKey<Item> tag = TagKey.create(Registries.ITEM, tagId);
+                        equals = stack.is(tag);
+                    } else {
+                        equals = false;
+                    }
+                } else if (filtered.isEmpty()) {
+                    continue;
+                } else {
+                    equals = filtered.is(stack.getItem());
+                    if (exactMode) equals = equals && ItemStack.isSameItemSameComponents(filtered, stack);
+                }
+
                 if (equals) return true;
             }
             return false;
         } else {
             for (int i = 0; i < itemFilter.getSlots(); ++i) {
                 ItemStack filtered = itemFilter.getStackInSlot(i);
-                if (filtered.isEmpty()) continue;
-                boolean equals = filtered.is(stack.getItem());
-                if (exactMode) equals = equals && ItemStack.isSameItemSameComponents(filtered, stack);
+                String override = tagOverrides[i];
+
+                boolean equals;
+                if (!override.isEmpty() && override.startsWith("#")) {
+                    ResourceLocation tagId = ResourceLocation.tryParse(override.substring(1));
+                    if (tagId != null) {
+                        TagKey<Item> tag = TagKey.create(Registries.ITEM, tagId);
+                        equals = stack.is(tag);
+                    } else {
+                        equals = false;
+                    }
+                } else if (filtered.isEmpty()) {
+                    continue;
+                } else {
+                    equals = filtered.is(stack.getItem());
+                    if (exactMode) equals = equals && ItemStack.isSameItemSameComponents(filtered, stack);
+                }
+
                 if (equals) return false;
             }
             return true;
@@ -119,33 +153,60 @@ public class InserterAttachment extends Attachment {
             return false;
         }
 
-        // Check if any fluid filter slots are filled
         boolean hasFilter = false;
         for (int i = 0; i < fluidFilter.getSlots(); ++i) {
-            if (!fluidFilter.getFluid(i).isEmpty()) {
+            if (!fluidFilter.getFluid(i).isEmpty() || !tagOverrides[i].isEmpty()) {
                 hasFilter = true;
                 break;
             }
         }
-        if (!hasFilter) {
-            return true; // no filter = accept everything
-        }
+        if (!hasFilter) return true;
 
         if (blacklistWhitelist == BlacklistWhitelist.WHITELIST) {
             for (int i = 0; i < fluidFilter.getSlots(); ++i) {
                 FluidStack filtered = fluidFilter.getFluid(i);
-                if (filtered.isEmpty()) continue;
-                boolean equals = filtered.getFluid() == stack.getFluid();
-                if (exactMode) equals = equals && FluidStack.isSameFluidSameComponents(filtered, stack);
+                String override = tagOverrides[i];
+
+                boolean equals;
+                if (!override.isEmpty() && override.startsWith("#")) {
+                    ResourceLocation tagId = ResourceLocation.tryParse(override.substring(1));
+                    if (tagId != null) {
+                        TagKey<Fluid> tag = TagKey.create(Registries.FLUID, tagId);
+                        equals = stack.getFluid().builtInRegistryHolder().is(tag);
+                    } else {
+                        equals = false;
+                    }
+                } else if (filtered.isEmpty()) {
+                    continue;
+                } else {
+                    equals = filtered.getFluid() == stack.getFluid();
+                    if (exactMode) equals = equals && FluidStack.isSameFluidSameComponents(filtered, stack);
+                }
+
                 if (equals) return true;
             }
             return false;
         } else {
             for (int i = 0; i < fluidFilter.getSlots(); ++i) {
                 FluidStack filtered = fluidFilter.getFluid(i);
-                if (filtered.isEmpty()) continue;
-                boolean equals = filtered.getFluid() == stack.getFluid();
-                if (exactMode) equals = equals && FluidStack.isSameFluidSameComponents(filtered, stack);
+                String override = tagOverrides[i];
+
+                boolean equals;
+                if (!override.isEmpty() && override.startsWith("#")) {
+                    ResourceLocation tagId = ResourceLocation.tryParse(override.substring(1));
+                    if (tagId != null) {
+                        TagKey<Fluid> tag = TagKey.create(Registries.FLUID, tagId);
+                        equals = stack.getFluid().builtInRegistryHolder().is(tag);
+                    } else {
+                        equals = false;
+                    }
+                } else if (filtered.isEmpty()) {
+                    continue;
+                } else {
+                    equals = filtered.getFluid() == stack.getFluid();
+                    if (exactMode) equals = equals && FluidStack.isSameFluidSameComponents(filtered, stack);
+                }
+
                 if (equals) return false;
             }
             return true;
@@ -180,6 +241,15 @@ public class InserterAttachment extends Attachment {
         tag.putBoolean("exa", exactMode);
         tag.put("itemfilter", itemFilter.serializeNBT(pipe.getLevel().registryAccess()));
         tag.put("fluidfilter", fluidFilter.writeToNbt(pipe.getLevel().registryAccess()));
+        CompoundTag overridesTag = new CompoundTag();
+        for (int i = 0; i < MAX_FILTER_SLOTS; i++) {
+            if (!tagOverrides[i].isEmpty()) {
+                overridesTag.putString("s" + i, tagOverrides[i]);
+            }
+        }
+        if (!overridesTag.isEmpty()) {
+            tag.put("tagov", overridesTag);
+        }
         return super.writeToNbt(tag);
     }
 
@@ -203,5 +273,19 @@ public class InserterAttachment extends Attachment {
     public void setExactMode(boolean exactMode) {
         if (!type.getCanSetExactMode()) return;
         this.exactMode = exactMode;
+    }
+
+    public String getTagOverride(int slot) {
+        if (slot < 0 || slot >= MAX_FILTER_SLOTS) return "";
+        return tagOverrides[slot];
+    }
+
+    public void setTagOverride(int slot, String value) {
+        if (slot < 0 || slot >= MAX_FILTER_SLOTS) return;
+        tagOverrides[slot] = value != null ? value : "";
+    }
+
+    public String[] getTagOverrides() {
+        return tagOverrides;
     }
 }

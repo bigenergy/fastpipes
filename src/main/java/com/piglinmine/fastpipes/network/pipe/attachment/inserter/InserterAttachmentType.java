@@ -35,6 +35,7 @@ public enum InserterAttachmentType {
     public boolean getCanSetRedstoneMode() { return getConfig().getCanSetRedstoneMode(); }
     public boolean getCanSetWhitelistBlacklist() { return getConfig().getCanSetWhitelistBlacklist(); }
     public boolean getCanSetExactMode() { return getConfig().getCanSetExactMode(); }
+    public boolean getCanSetTagMode() { return getConfig().getCanSetTagMode(); }
     public int getPriority() { return getConfig().getPriority(); }
 
     private ServerConfig.InserterAttachment getConfig() {

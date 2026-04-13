@@ -6,6 +6,7 @@ import com.piglinmine.fastpipes.menu.slot.FilterSlot;
 import com.piglinmine.fastpipes.menu.slot.FluidFilterSlot;
 import com.piglinmine.fastpipes.network.FastPipesNetwork;
 import com.piglinmine.fastpipes.network.message.*;
+import com.piglinmine.fastpipes.network.message.UpdateFilterEntryMessage;
 import com.piglinmine.fastpipes.network.pipe.attachment.extractor.BlacklistWhitelist;
 import com.piglinmine.fastpipes.network.pipe.attachment.extractor.RedstoneMode;
 import com.piglinmine.fastpipes.network.pipe.attachment.inserter.InserterAttachment;
@@ -20,6 +21,8 @@ import net.neoforged.neoforge.fluids.FluidUtil;
 import net.neoforged.neoforge.items.ItemStackHandler;
 import net.neoforged.neoforge.items.SlotItemHandler;
 
+import java.util.Arrays;
+
 public class InserterAttachmentContainerMenu extends BaseContainerMenu {
     private final BlockPos pos;
     private final Direction dir;
@@ -29,6 +32,7 @@ public class InserterAttachmentContainerMenu extends BaseContainerMenu {
     private RedstoneMode redstoneMode;
     private BlacklistWhitelist blacklistWhitelist;
     private boolean exactMode;
+    private final String[] tagOverrides = new String[15];
 
     public InserterAttachmentContainerMenu(
         int windowId,
@@ -41,7 +45,8 @@ public class InserterAttachmentContainerMenu extends BaseContainerMenu {
         InserterAttachmentType type,
         ItemStackHandler itemFilter,
         FluidInventory fluidFilter,
-        boolean fluidMode) {
+        boolean fluidMode,
+        String[] tagOverrides) {
         super(FPipesContainerMenus.INSERTER_ATTACHMENT.get(), windowId, player);
 
         addPlayerInventory(8, 111);
@@ -70,12 +75,16 @@ public class InserterAttachmentContainerMenu extends BaseContainerMenu {
         this.redstoneMode = redstoneMode;
         this.blacklistWhitelist = blacklistWhitelist;
         this.exactMode = exactMode;
+        Arrays.fill(this.tagOverrides, "");
+        if (tagOverrides != null) {
+            System.arraycopy(tagOverrides, 0, this.tagOverrides, 0, Math.min(tagOverrides.length, 15));
+        }
     }
 
     public InserterAttachmentContainerMenu(int windowId, Player player) {
         this(windowId, player, BlockPos.ZERO, Direction.NORTH,
             RedstoneMode.IGNORED, BlacklistWhitelist.BLACKLIST, false,
-            InserterAttachmentType.BASIC, new ItemStackHandler(15), new FluidInventory(15), false);
+            InserterAttachmentType.BASIC, new ItemStackHandler(15), new FluidInventory(15), false, new String[15]);
     }
 
     public BlockPos getPos() { return pos; }
@@ -99,6 +108,20 @@ public class InserterAttachmentContainerMenu extends BaseContainerMenu {
     public void setExactMode(boolean exactMode) {
         this.exactMode = exactMode;
         FastPipesNetwork.sendToServer(new ChangeExactModeMessage(pos, dir, exactMode));
+    }
+
+    public String getTagOverride(int slot) {
+        if (slot < 0 || slot >= tagOverrides.length) return "";
+        return tagOverrides[slot];
+    }
+
+    public void setTagOverride(int slot, String value) {
+        tagOverrides[slot] = value != null ? value : "";
+        FastPipesNetwork.sendToServer(new UpdateFilterEntryMessage(pos, dir, slot, tagOverrides[slot]));
+    }
+
+    public String[] getTagOverrides() {
+        return tagOverrides;
     }
 
     @Override

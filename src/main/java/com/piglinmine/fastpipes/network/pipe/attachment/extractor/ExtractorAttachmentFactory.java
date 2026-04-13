@@ -61,6 +61,16 @@ public class ExtractorAttachmentFactory implements AttachmentFactory {
             attachment.getFluidFilter().readFromNbt(tag.getCompound("fluidfilter"), pipe.getLevel().registryAccess());
         }
 
+        if (tag.contains("tagov")) {
+            CompoundTag overrides = tag.getCompound("tagov");
+            for (int i = 0; i < ExtractorAttachment.MAX_FILTER_SLOTS; i++) {
+                String key = "s" + i;
+                if (overrides.contains(key)) {
+                    attachment.setTagOverride(i, overrides.getString(key));
+                }
+            }
+        }
+
         return attachment;
     }
 
