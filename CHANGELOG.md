@@ -1,4 +1,24 @@
 # Changelog
+## [1.3.0] - 2026-04-13
+
+### Added
+- **Forge 1.20.1 backport** — full port from NeoForge 1.21.1 to Forge 1.20.1 (Java 17, Forge 47.3.0).
+- **Waterlogged pipes** — all pipes can now be placed underwater. Water flows correctly around pipe geometry.
+- **JEI descriptions** for all items — barrels (Oak through Netherite), barrel upgrades, Void Attachment, Sensor Attachment, and Terminal now have info pages in JEI.
+- **JEI integration** in dev environment (`runClient`) via `fg.deobf()`.
+- **Russian translation** fully updated — all new keys including JEI descriptions, barrel items, and terminal tooltips.
+
+### Changed
+- **Pipe crafting recipes reworked** — tier 2+ pipes now require the previous tier pipe as an ingredient (e.g. Improved Item Pipe = 4× Gold + Basic Item Pipe). More logical progression.
+- **Terminal "in network" tooltip** externalized to translation key (`gui.fastpipes.terminal.in_network`) for proper localization support.
+- Recipe format updated for Forge 1.20.1 (`recipes/` directory, `forge:` tags, `"item"` result keys).
+- Loot table format updated for Forge 1.20.1 (`loot_tables/` directory).
+
+### Fixed
+- **Invisible pipes** — fixed model registration using plain `ResourceLocation` instead of `ModelResourceLocation` for Forge 1.20.1.
+- **Missing crafting recipes** — fixed directory names, tag namespaces (`c:` → `forge:`), and result format for 1.20.1.
+- **Pipes not connecting to Terminal** — Terminal now exposes `IItemHandler` capability so adjacent item pipes auto-connect.
+
 ## [1.2.2] - 2026-04-12
 
 ### Fixed
