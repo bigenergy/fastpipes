@@ -1,4 +1,17 @@
 # Changelog
+## [1.3.0] - 2026-04-13
+
+### Added
+- **Pipe Terminal** — access all inventories connected to the pipe network from a single block. Supports searching, extracting, inserting, and crafting directly from network resources. Place next to any item pipe to connect.
+- **Tiered Barrels** — Oak (27 slots), Copper (45), Iron (54), Gold (72), Diamond (90), Netherite (108, blast resistant). Upgradeable in-place with barrel upgrades that preserve contents.
+- **Waterlogged pipes** — all pipes can now be placed underwater. Water flows correctly around pipe geometry.
+
+### Changed
+- **Pipe crafting recipes reworked** — tier 2+ pipes now require the previous tier pipe as an ingredient (e.g. Improved Item Pipe = 4× Gold Ingots + Basic Item Pipe). More logical tier progression.
+
+### Fixed
+- **Pipes not connecting to Terminal** — Terminal now exposes `IItemHandler` capability so adjacent item pipes auto-connect.
+
 ## [1.2.2] - 2026-04-12
 
 ### Fixed
