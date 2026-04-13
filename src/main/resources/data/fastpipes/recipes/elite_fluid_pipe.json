@@ -1,26 +1,19 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "EEE",
-    "GBG",
-    "ESE"
+    " E ",
+    "EPE",
+    " E "
   ],
   "key": {
     "E": {
       "tag": "forge:gems/emerald"
     },
-    "G": {
-      "tag": "forge:glass"
-    },
-    "B": {
-      "item": "minecraft:blaze_rod"
-    },
-    "S": {
-      "tag": "forge:slimeballs"
+    "P": {
+      "item": "fastpipes:advanced_fluid_pipe"
     }
   },
   "result": {
-    "item": "fastpipes:elite_fluid_pipe",
-    "count": 6
+    "item": "fastpipes:elite_fluid_pipe"
   }
-} 
+}

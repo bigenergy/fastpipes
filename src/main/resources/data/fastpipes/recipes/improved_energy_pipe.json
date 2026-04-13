@@ -1,23 +1,19 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "CCC",
-    "GRG",
-    "CCC"
+    " G ",
+    "GPG",
+    " G "
   ],
   "key": {
-    "C": {
+    "G": {
       "tag": "forge:ingots/gold"
     },
-    "G": {
-      "tag": "forge:glass"
-    },
-    "R": {
-      "tag": "forge:storage_blocks/redstone"
+    "P": {
+      "item": "fastpipes:basic_energy_pipe"
     }
   },
   "result": {
-    "item": "fastpipes:improved_energy_pipe",
-    "count": 6
+    "item": "fastpipes:improved_energy_pipe"
   }
-} 
+}

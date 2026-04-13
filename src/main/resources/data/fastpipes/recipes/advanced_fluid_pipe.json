@@ -1,26 +1,19 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "DDD",
-    "GQG",
-    "DSD"
+    " D ",
+    "DPD",
+    " D "
   ],
   "key": {
     "D": {
       "tag": "forge:gems/diamond"
     },
-    "G": {
-      "tag": "forge:glass"
-    },
-    "Q": {
-      "item": "minecraft:quartz"
-    },
-    "S": {
-      "tag": "forge:slimeballs"
+    "P": {
+      "item": "fastpipes:improved_fluid_pipe"
     }
   },
   "result": {
-    "item": "fastpipes:advanced_fluid_pipe",
-    "count": 6
+    "item": "fastpipes:advanced_fluid_pipe"
   }
-} 
+}
