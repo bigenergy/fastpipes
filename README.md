@@ -1,6 +1,6 @@
 # Fast Pipes
 
-A modern, high-performance pipe system for items, fluids, and energy — optimized for low overhead on servers and clients. Built for **NeoForge 1.21.1** with optional JEI and Jade integration.
+A modern, high-performance pipe system for items, fluids, and energy — optimized for low overhead on servers and clients. Built for **Forge 1.20.1** with optional JEI and Jade integration.
 
 ---
 
@@ -151,9 +151,48 @@ Compatible with other mods' wrenches that support `wrench_rotate`.
 
 ---
 
+## Pipe Terminal
+
+A centralized access point for all inventories connected to the pipe network.
+
+- **Search** items across the entire network (supports `@mod` filter)
+- **Extract** items by clicking — pulls directly from connected inventories
+- **Insert** items by placing them in the player inventory area
+- **Craft** using network resources — built-in 3x3 crafting grid that pulls ingredients from connected storage
+- **Sort** by name, count, or mod
+
+Place the Terminal next to any item pipe — it auto-connects to the network.
+
+---
+
+## Tiered Barrels
+
+Expanded storage barrels with upgradeable capacity. Works seamlessly with pipe networks.
+
+| Tier | Slots | Upgrade Item |
+|------|-------|-------------|
+| Oak | 27 | — |
+| Copper | 45 | Copper Barrel Upgrade |
+| Iron | 54 | Iron Barrel Upgrade |
+| Gold | 72 | Gold Barrel Upgrade |
+| Diamond | 90 | Diamond Barrel Upgrade |
+| Netherite | 108 | Netherite Barrel Upgrade |
+
+- Right-click a barrel with an upgrade item to upgrade it in-place (contents preserved)
+- Netherite barrel is blast resistant
+- All barrels connect to pipes via extractors/inserters
+
+---
+
+## Waterlogging
+
+All pipes support waterlogging — they can be placed underwater and water flows correctly around pipe geometry.
+
+---
+
 ## Compatibility
 
-- **JEI** — item descriptions for all pipes and attachments
+- **JEI** — item descriptions for all pipes, attachments, barrels, upgrades, and terminal
 - **Jade** — tooltip overlays showing pipe stats (transfer rate, items in transit, fluid stored)
 
 ---
@@ -165,3 +204,4 @@ All values are fully configurable in the server config file. You can adjust:
 - Pipe speeds, capacities, and transfer rates per tier
 - Extractor extraction rates, intervals, and feature flags per tier
 - Inserter filter slots, priorities, and feature flags per tier
+- Barrel slot counts per tier
