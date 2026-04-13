@@ -138,5 +138,20 @@
   "item.fastpipes.diamond_barrel_upgrade": "Diamond Barrel Upgrade",
   "item.fastpipes.netherite_barrel_upgrade": "Netherite Barrel Upgrade",
 
-  "tooltip.fastpipes.barrel_upgrade": "Upgrades barrel to %s"
+  "tooltip.fastpipes.barrel_upgrade": "Upgrades barrel to %s",
+
+  "gui.fastpipes.terminal.in_network": "%s in network",
+
+  "jei.fastpipes.oak_barrel.description": "A basic barrel with 27 slots of storage. Can be upgraded with barrel upgrades.",
+  "jei.fastpipes.copper_barrel.description": "An upgraded barrel with 45 slots of storage. Can be upgraded further.",
+  "jei.fastpipes.iron_barrel.description": "An upgraded barrel with 54 slots of storage. Can be upgraded further.",
+  "jei.fastpipes.gold_barrel.description": "An upgraded barrel with 72 slots of storage. Can be upgraded further.",
+  "jei.fastpipes.diamond_barrel.description": "An upgraded barrel with 90 slots of storage. Can be upgraded further.",
+  "jei.fastpipes.netherite_barrel.description": "The ultimate barrel with 108 slots of storage. Blast resistant.",
+
+  "jei.fastpipes.copper_barrel_upgrade.description": "Right-click a barrel to upgrade it to Copper tier (45 slots). Preserves contents.",
+  "jei.fastpipes.iron_barrel_upgrade.description": "Right-click a barrel to upgrade it to Iron tier (54 slots). Preserves contents.",
+  "jei.fastpipes.gold_barrel_upgrade.description": "Right-click a barrel to upgrade it to Gold tier (72 slots). Preserves contents.",
+  "jei.fastpipes.diamond_barrel_upgrade.description": "Right-click a barrel to upgrade it to Diamond tier (90 slots). Preserves contents.",
+  "jei.fastpipes.netherite_barrel_upgrade.description": "Right-click a barrel to upgrade it to Netherite tier (108 slots). Preserves contents."
 }

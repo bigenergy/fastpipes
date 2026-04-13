@@ -138,5 +138,20 @@
   "item.fastpipes.diamond_barrel_upgrade": "Улучшение до алмазной бочки",
   "item.fastpipes.netherite_barrel_upgrade": "Улучшение до незеритовой бочки",
 
-  "tooltip.fastpipes.barrel_upgrade": "Улучшает бочку до %s"
+  "tooltip.fastpipes.barrel_upgrade": "Улучшает бочку до %s",
+
+  "gui.fastpipes.terminal.in_network": "%s шт. в сети",
+
+  "jei.fastpipes.oak_barrel.description": "Базовая бочка с 27 слотами хранения. Можно улучшить с помощью улучшений для бочек.",
+  "jei.fastpipes.copper_barrel.description": "Улучшенная бочка с 45 слотами хранения. Можно улучшить дальше.",
+  "jei.fastpipes.iron_barrel.description": "Улучшенная бочка с 54 слотами хранения. Можно улучшить дальше.",
+  "jei.fastpipes.gold_barrel.description": "Улучшенная бочка с 72 слотами хранения. Можно улучшить дальше.",
+  "jei.fastpipes.diamond_barrel.description": "Улучшенная бочка с 90 слотами хранения. Можно улучшить дальше.",
+  "jei.fastpipes.netherite_barrel.description": "Максимальная бочка с 108 слотами хранения. Устойчива к взрывам.",
+
+  "jei.fastpipes.copper_barrel_upgrade.description": "ПКМ по бочке для улучшения до медного уровня (45 слотов). Содержимое сохраняется.",
+  "jei.fastpipes.iron_barrel_upgrade.description": "ПКМ по бочке для улучшения до железного уровня (54 слотов). Содержимое сохраняется.",
+  "jei.fastpipes.gold_barrel_upgrade.description": "ПКМ по бочке для улучшения до золотого уровня (72 слотов). Содержимое сохраняется.",
+  "jei.fastpipes.diamond_barrel_upgrade.description": "ПКМ по бочке для улучшения до алмазного уровня (90 слотов). Содержимое сохраняется.",
+  "jei.fastpipes.netherite_barrel_upgrade.description": "ПКМ по бочке для улучшения до незеритового уровня (108 слотов). Содержимое сохраняется."
 }

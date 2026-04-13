@@ -231,7 +231,7 @@ public class TerminalScreen extends BaseScreen<TerminalContainerMenu> {
                 if (idx < visible.size()) {
                     ItemStack stack = visible.get(idx);
                     List<Component> tooltip = Screen.getTooltipFromItem(this.minecraft, stack);
-                    tooltip.add(Component.literal(String.format("%,d", stack.getCount()) + " in network")
+                    tooltip.add(Component.translatable("gui.fastpipes.terminal.in_network", String.format("%,d", stack.getCount()))
                         .withStyle(net.minecraft.ChatFormatting.GRAY));
                     graphics.renderComponentTooltip(font, tooltip, mouseX - leftPos, mouseY - topPos);
                 }

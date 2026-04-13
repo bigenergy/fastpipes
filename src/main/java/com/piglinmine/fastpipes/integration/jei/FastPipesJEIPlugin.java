@@ -73,6 +73,24 @@ public class FastPipesJEIPlugin implements IModPlugin {
 
         addInfo(registration, FPipesItems.WRENCH.get(), "jei.fastpipes.wrench.description");
 
+        addInfo(registration, FPipesItems.VOID_ATTACHMENT.get(), "jei.fastpipes.void_attachment.description");
+        addInfo(registration, FPipesItems.SENSOR_ATTACHMENT.get(), "jei.fastpipes.sensor_attachment.description");
+
+        addInfo(registration, FPipesItems.TERMINAL.get(), "jei.fastpipes.terminal.description");
+
+        addInfo(registration, FPipesItems.OAK_BARREL.get(), "jei.fastpipes.oak_barrel.description");
+        addInfo(registration, FPipesItems.COPPER_BARREL.get(), "jei.fastpipes.copper_barrel.description");
+        addInfo(registration, FPipesItems.IRON_BARREL.get(), "jei.fastpipes.iron_barrel.description");
+        addInfo(registration, FPipesItems.GOLD_BARREL.get(), "jei.fastpipes.gold_barrel.description");
+        addInfo(registration, FPipesItems.DIAMOND_BARREL.get(), "jei.fastpipes.diamond_barrel.description");
+        addInfo(registration, FPipesItems.NETHERITE_BARREL.get(), "jei.fastpipes.netherite_barrel.description");
+
+        addInfo(registration, FPipesItems.COPPER_BARREL_UPGRADE.get(), "jei.fastpipes.copper_barrel_upgrade.description");
+        addInfo(registration, FPipesItems.IRON_BARREL_UPGRADE.get(), "jei.fastpipes.iron_barrel_upgrade.description");
+        addInfo(registration, FPipesItems.GOLD_BARREL_UPGRADE.get(), "jei.fastpipes.gold_barrel_upgrade.description");
+        addInfo(registration, FPipesItems.DIAMOND_BARREL_UPGRADE.get(), "jei.fastpipes.diamond_barrel_upgrade.description");
+        addInfo(registration, FPipesItems.NETHERITE_BARREL_UPGRADE.get(), "jei.fastpipes.netherite_barrel_upgrade.description");
+
         LOGGER.debug("Finished registering Fast Pipes ingredient information with JEI");
     }
 
