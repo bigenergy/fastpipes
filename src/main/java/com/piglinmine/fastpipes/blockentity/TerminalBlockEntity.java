@@ -8,9 +8,15 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 
+import net.minecraft.core.Direction;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemStackHandler;
+
+import javax.annotation.Nullable;
 import java.util.Arrays;
 
 public class TerminalBlockEntity extends BaseBlockEntity {
+    private final ItemStackHandler emptyHandler = new ItemStackHandler(0);
     private final ItemStack[] craftGrid = new ItemStack[9];
 
     public TerminalBlockEntity(BlockPos pos, BlockState state) {
@@ -54,5 +60,9 @@ public class TerminalBlockEntity extends BaseBlockEntity {
             craftGrid[slot] = stack;
             setChanged();
         }
+    }
+
+    public IItemHandler getItemHandler(@Nullable Direction side) {
+        return emptyHandler;
     }
 }

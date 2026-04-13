@@ -1,26 +1,19 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "DDD",
-    "GQG",
-    "DRD"
+    " D ",
+    "DPD",
+    " D "
   ],
   "key": {
     "D": {
       "tag": "c:gems/diamond"
     },
-    "G": {
-      "tag": "c:glass_blocks"
-    },
-    "Q": {
-      "item": "minecraft:quartz"
-    },
-    "R": {
-      "tag": "c:storage_blocks/redstone"
+    "P": {
+      "item": "fastpipes:improved_energy_pipe"
     }
   },
   "result": {
-    "id": "fastpipes:advanced_energy_pipe",
-    "count": 6
+    "id": "fastpipes:advanced_energy_pipe"
   }
-} 
+}

@@ -1,23 +1,19 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "DDD",
-    "GQG",
-    "DDD"
+    " D ",
+    "DPD",
+    " D "
   ],
   "key": {
     "D": {
       "tag": "c:gems/diamond"
     },
-    "G": {
-      "tag": "c:glass_blocks"
-    },
-    "Q": {
-      "item": "minecraft:quartz"
+    "P": {
+      "item": "fastpipes:improved_item_pipe"
     }
   },
   "result": {
-    "id": "fastpipes:advanced_item_pipe",
-    "count": 6
+    "id": "fastpipes:advanced_item_pipe"
   }
-} 
+}

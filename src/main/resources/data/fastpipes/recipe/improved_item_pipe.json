@@ -1,20 +1,19 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "CCC",
-    "GGG",
-    "CCC"
+    " G ",
+    "GPG",
+    " G "
   ],
   "key": {
-    "C": {
+    "G": {
       "tag": "c:ingots/gold"
     },
-    "G": {
-      "tag": "c:glass_blocks"
+    "P": {
+      "item": "fastpipes:basic_item_pipe"
     }
   },
   "result": {
-    "id": "fastpipes:improved_item_pipe",
-    "count": 6
+    "id": "fastpipes:improved_item_pipe"
   }
-} 
+}

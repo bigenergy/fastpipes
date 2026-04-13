@@ -3,6 +3,7 @@ import com.piglinmine.fastpipes.barrel.TieredBarrelBlockEntity;
 import com.piglinmine.fastpipes.blockentity.EnergyPipeBlockEntity;
 import com.piglinmine.fastpipes.blockentity.FluidPipeBlockEntity;
 import com.piglinmine.fastpipes.blockentity.ItemPipeBlockEntity;
+import com.piglinmine.fastpipes.blockentity.TerminalBlockEntity;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
@@ -87,6 +88,13 @@ public class FPipesCapabilities {
             Capabilities.ItemHandler.BLOCK,
             FPipesBlockEntities.TIERED_BARREL.get(),
             TieredBarrelBlockEntity::getItemHandler
+        );
+
+        // Register Item Handler capability for Terminal (so item pipes connect to it)
+        event.registerBlockEntity(
+            Capabilities.ItemHandler.BLOCK,
+            FPipesBlockEntities.TERMINAL.get(),
+            TerminalBlockEntity::getItemHandler
         );
     }
 } 

@@ -1,26 +1,19 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "EEE",
-    "GBG",
-    "ERE"
+    " E ",
+    "EPE",
+    " E "
   ],
   "key": {
     "E": {
       "tag": "c:gems/emerald"
     },
-    "G": {
-      "tag": "c:glass_blocks"
-    },
-    "B": {
-      "item": "minecraft:blaze_rod"
-    },
-    "R": {
-      "tag": "c:storage_blocks/redstone"
+    "P": {
+      "item": "fastpipes:advanced_energy_pipe"
     }
   },
   "result": {
-    "id": "fastpipes:elite_energy_pipe",
-    "count": 6
+    "id": "fastpipes:elite_energy_pipe"
   }
-} 
+}
