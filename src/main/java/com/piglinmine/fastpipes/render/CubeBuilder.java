@@ -230,11 +230,12 @@ public class CubeBuilder {
     }
 
     private void putVertex(VertexConsumer builder, PoseStack poseStack, int r, int g, int b, int a, int light, float x, float y, float z, float u, float v) {
-        builder.addVertex(poseStack.last(), x, y, z)
-                .setColor(r, g, b, a)
-                .setUv(u, v)
-                .setLight(light)
-                .setNormal(poseStack.last(), 0, 1, 0);
+        builder.vertex(poseStack.last().pose(), x, y, z)
+                .color(r, g, b, a)
+                .uv(u, v)
+                .uv2(light)
+                .normal(poseStack.last().normal(), 0, 1, 0)
+                .endVertex();
     }
 
     private static final class UvVector {

@@ -68,13 +68,10 @@ public class ClientAttachmentManager implements AttachmentManager {
             String pickBlockKey = "pb_" + dir.ordinal();
 
             if (tag.contains(attachmentKey)) {
-                attachmentState[dir.ordinal()] = ResourceLocation.parse(tag.getString(attachmentKey));
+                attachmentState[dir.ordinal()] = new ResourceLocation(tag.getString(attachmentKey));
                 
                 if (tag.contains(pickBlockKey)) {
-                    pickBlocks[dir.ordinal()] = ItemStack.parseOptional(
-                        Minecraft.getInstance().level.registryAccess(),
-                        tag.getCompound(pickBlockKey)
-                    );
+                    pickBlocks[dir.ordinal()] = ItemStack.of(tag.getCompound(pickBlockKey));
                 }
             } else {
                 attachmentState[dir.ordinal()] = null;

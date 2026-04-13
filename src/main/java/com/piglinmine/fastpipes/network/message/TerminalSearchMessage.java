@@ -1,36 +1,30 @@
 package com.piglinmine.fastpipes.network.message;
 
-import com.piglinmine.fastpipes.FastPipes;
 import com.piglinmine.fastpipes.menu.TerminalContainerMenu;
-import io.netty.buffer.ByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.network.NetworkEvent;
 
-public record TerminalSearchMessage(String query) implements CustomPacketPayload {
+import java.util.function.Supplier;
 
-    public static final Type<TerminalSearchMessage> TYPE =
-        new Type<>(ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "terminal_search"));
+public record TerminalSearchMessage(String query) {
 
-    public static final StreamCodec<ByteBuf, TerminalSearchMessage> STREAM_CODEC = StreamCodec.composite(
-        ByteBufCodecs.STRING_UTF8,
-        TerminalSearchMessage::query,
-        TerminalSearchMessage::new
-    );
-
-    @Override
-    public Type<? extends CustomPacketPayload> type() {
-        return TYPE;
+    public void encode(FriendlyByteBuf buf) {
+        buf.writeUtf(query);
     }
 
-    public static void handleServer(final TerminalSearchMessage message, final IPayloadContext context) {
-        context.enqueueWork(() -> {
-            if (context.player() == null) return;
-            if (context.player().containerMenu instanceof TerminalContainerMenu terminal) {
-                terminal.setSearchText(message.query());
+    public static TerminalSearchMessage decode(FriendlyByteBuf buf) {
+        String query = buf.readUtf();
+        return new TerminalSearchMessage(query);
+    }
+
+    public void handle(Supplier<NetworkEvent.Context> ctx) {
+        ctx.get().enqueueWork(() -> {
+            var player = ctx.get().getSender();
+            if (player == null) return;
+            if (player.containerMenu instanceof TerminalContainerMenu terminal) {
+                terminal.setSearchText(query);
             }
         });
+        ctx.get().setPacketHandled(true);
     }
 }

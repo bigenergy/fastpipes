@@ -8,7 +8,6 @@ import com.piglinmine.fastpipes.network.pipe.attachment.ClientAttachmentManager;
 import com.piglinmine.fastpipes.network.pipe.attachment.DummyAttachmentManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Containers;
@@ -16,8 +15,8 @@ import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.client.model.data.ModelData;
-import net.neoforged.neoforge.client.model.data.ModelProperty;
+import net.minecraftforge.client.model.data.ModelData;
+import net.minecraftforge.client.model.data.ModelProperty;
 import java.util.EnumSet;
 import java.util.Set;
 
@@ -133,7 +132,7 @@ public abstract class PipeBlockEntity extends BaseBlockEntity {
     }
 
     @Override
-    public CompoundTag writeUpdate(CompoundTag tag, HolderLookup.Provider registries) {
+    public CompoundTag writeUpdate(CompoundTag tag) {
         getAttachmentManager().writeUpdate(tag);
 
         if (level != null && !level.isClientSide) {
@@ -152,12 +151,12 @@ public abstract class PipeBlockEntity extends BaseBlockEntity {
             }
         }
 
-        return super.writeUpdate(tag, registries);
+        return super.writeUpdate(tag);
     }
 
     @Override
-    public void readUpdate(@Nullable CompoundTag tag, HolderLookup.Provider registries) {
-        super.readUpdate(tag, registries);
+    public void readUpdate(@Nullable CompoundTag tag) {
+        super.readUpdate(tag);
         getAttachmentManager().readUpdate(tag);
 
         clientDisconnectedSides.clear();

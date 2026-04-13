@@ -6,7 +6,6 @@ import com.piglinmine.fastpipes.network.pipe.Destination;
 import com.piglinmine.fastpipes.network.pipe.DestinationType;
 import com.piglinmine.fastpipes.network.pipe.Pipe;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
@@ -52,9 +51,6 @@ public abstract class Network {
         return tag;
     }
 
-    public CompoundTag writeToNbt(CompoundTag tag, HolderLookup.Provider provider) {
-        return writeToNbt(tag);
-    }
 
     public void update(Level level) {
         if (!didDoInitialScan) {

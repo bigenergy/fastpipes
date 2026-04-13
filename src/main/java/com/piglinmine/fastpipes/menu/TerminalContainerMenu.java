@@ -1,4 +1,5 @@
 package com.piglinmine.fastpipes.menu;
+import com.piglinmine.fastpipes.util.CapabilityUtil;
 
 import com.piglinmine.fastpipes.FPipesContainerMenus;
 import com.piglinmine.fastpipes.block.TerminalBlock;
@@ -6,7 +7,6 @@ import com.piglinmine.fastpipes.network.NetworkManager;
 import com.piglinmine.fastpipes.network.pipe.Pipe;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.CraftingContainer;
@@ -16,15 +16,14 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.inventory.TransientCraftingContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingRecipe;
-import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeType;
-import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.ItemHandlerHelper;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.*;
+import java.util.Objects;
 
 import com.piglinmine.fastpipes.blockentity.TerminalBlockEntity;
 import com.piglinmine.fastpipes.network.FastPipesNetwork;
@@ -181,7 +180,7 @@ public class TerminalContainerMenu extends BaseContainerMenu {
                 // Search by mod id
                 String modQuery = searchText.substring(1);
                 for (ItemStack stack : networkItems) {
-                    String namespace = BuiltInRegistries.ITEM.getKey(stack.getItem()).getNamespace();
+                    String namespace = ForgeRegistries.ITEMS.getKey(stack.getItem()).getNamespace();
                     if (namespace.contains(modQuery)) {
                         filteredItems.add(stack);
                     }
@@ -201,7 +200,7 @@ public class TerminalContainerMenu extends BaseContainerMenu {
             case NAME -> networkItems.sort(Comparator.comparing(s -> s.getHoverName().getString()));
             case COUNT -> networkItems.sort(Comparator.comparingInt(s -> ((ItemStack) s).getCount()).reversed());
             case MOD -> networkItems.sort(Comparator.comparing((ItemStack s) ->
-                    net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(s.getItem()).getNamespace())
+                    net.minecraftforge.registries.ForgeRegistries.ITEMS.getKey(s.getItem()).getNamespace())
                 .thenComparing(s -> s.getHoverName().getString()));
         }
     }
@@ -270,7 +269,7 @@ public class TerminalContainerMenu extends BaseContainerMenu {
 
             for (int i = 0; i < inv.handler().getSlots() && remaining > 0; i++) {
                 ItemStack slotStack = inv.handler().getStackInSlot(i);
-                if (slotStack.isEmpty() || !ItemStack.isSameItemSameComponents(slotStack, stack)) continue;
+                if (slotStack.isEmpty() || !ItemStack.isSameItemSameTags(slotStack, stack)) continue;
 
                 ItemStack extracted = inv.handler().extractItem(i, remaining, false);
                 if (!extracted.isEmpty()) {
@@ -278,7 +277,7 @@ public class TerminalContainerMenu extends BaseContainerMenu {
                         ItemStack carried = getCarried();
                         if (carried.isEmpty()) {
                             setCarried(extracted);
-                        } else if (ItemStack.isSameItemSameComponents(carried, extracted)) {
+                        } else if (ItemStack.isSameItemSameTags(carried, extracted)) {
                             int canAdd = Math.min(extracted.getCount(), carried.getMaxStackSize() - carried.getCount());
                             carried.grow(canAdd);
                             if (canAdd < extracted.getCount()) {
@@ -348,15 +347,14 @@ public class TerminalContainerMenu extends BaseContainerMenu {
         if (player.level().isClientSide) return;
 
         Level level = player.level();
-        CraftingInput input = craftMatrix.asCraftInput();
-        Optional<RecipeHolder<CraftingRecipe>> recipeOpt = level.getServer()
+        Optional<CraftingRecipe> recipeOpt = level.getServer()
             .getRecipeManager()
-            .getRecipeFor(RecipeType.CRAFTING, input, level);
+            .getRecipeFor(RecipeType.CRAFTING, craftMatrix, level);
 
         if (recipeOpt.isEmpty()) return;
 
-        CraftingRecipe recipe = recipeOpt.get().value();
-        ItemStack result = recipe.assemble(input, level.registryAccess());
+        CraftingRecipe recipe = recipeOpt.get();
+        ItemStack result = recipe.assemble(craftMatrix, level.registryAccess());
         if (result.isEmpty()) return;
 
         int maxCrafts = craftAll ? 64 : 1;
@@ -364,20 +362,19 @@ public class TerminalContainerMenu extends BaseContainerMenu {
 
         for (int c = 0; c < maxCrafts; c++) {
             // Check we can still craft
-            input = craftMatrix.asCraftInput();
-            if (!recipe.matches(input, level)) break;
+            if (!recipe.matches(craftMatrix, level)) break;
 
-            result = recipe.assemble(input, level.registryAccess());
+            result = recipe.assemble(craftMatrix, level.registryAccess());
 
             // Check player can hold the result
             ItemStack carried = getCarried();
             if (!carried.isEmpty()) {
-                if (!ItemStack.isSameItemSameComponents(carried, result)) break;
+                if (!ItemStack.isSameItemSameTags(carried, result)) break;
                 if (carried.getCount() + result.getCount() > carried.getMaxStackSize()) break;
             }
 
             // Consume ingredients from craft grid
-            List<ItemStack> remainders = recipe.getRemainingItems(input);
+            List<ItemStack> remainders = recipe.getRemainingItems(craftMatrix);
             for (int i = 0; i < craftMatrix.getContainerSize(); i++) {
                 ItemStack ingredient = craftMatrix.getItem(i);
                 if (!ingredient.isEmpty()) {
@@ -482,7 +479,7 @@ public class TerminalContainerMenu extends BaseContainerMenu {
     private ItemStack findAndExtractFromPlayerInventory(ItemStack wanted, int amount) {
         for (int i = 0; i < player.getInventory().items.size(); i++) {
             ItemStack invStack = player.getInventory().items.get(i);
-            if (!invStack.isEmpty() && ItemStack.isSameItemSameComponents(invStack, wanted)) {
+            if (!invStack.isEmpty() && ItemStack.isSameItemSameTags(invStack, wanted)) {
                 return player.getInventory().removeItem(i, amount);
             }
         }
@@ -495,7 +492,7 @@ public class TerminalContainerMenu extends BaseContainerMenu {
         for (ConnectedInventory inv : handlers) {
             for (int i = 0; i < inv.handler().getSlots(); i++) {
                 ItemStack slotStack = inv.handler().getStackInSlot(i);
-                if (!slotStack.isEmpty() && ItemStack.isSameItemSameComponents(slotStack, wanted)) {
+                if (!slotStack.isEmpty() && ItemStack.isSameItemSameTags(slotStack, wanted)) {
                     ItemStack extracted = inv.handler().extractItem(i, amount, false);
                     if (!extracted.isEmpty()) return extracted;
                 }
@@ -576,14 +573,13 @@ public class TerminalContainerMenu extends BaseContainerMenu {
     private void updateCraftResult() {
         if (player.level().isClientSide) return;
         Level level = player.level();
-        CraftingInput input = craftMatrix.asCraftInput();
 
-        Optional<RecipeHolder<CraftingRecipe>> recipe = level.getServer()
+        Optional<CraftingRecipe> recipe = level.getServer()
             .getRecipeManager()
-            .getRecipeFor(RecipeType.CRAFTING, input, level);
+            .getRecipeFor(RecipeType.CRAFTING, craftMatrix, level);
 
         if (recipe.isPresent()) {
-            craftResult.setItem(0, recipe.get().value().assemble(input, level.registryAccess()));
+            craftResult.setItem(0, recipe.get().assemble(craftMatrix, level.registryAccess()));
         } else {
             craftResult.setItem(0, ItemStack.EMPTY);
         }
@@ -618,9 +614,7 @@ public class TerminalContainerMenu extends BaseContainerMenu {
                 // Skip positions that are pipes themselves
                 if (NetworkManager.get(level).getPipe(neighborPos) != null) continue;
 
-                IItemHandler handler = level.getCapability(
-                    Capabilities.ItemHandler.BLOCK, neighborPos, dir.getOpposite()
-                );
+                IItemHandler handler = CapabilityUtil.getItemHandler(level, neighborPos, dir.getOpposite());
                 if (handler != null) {
                     result.add(new ConnectedInventory(neighborPos, dir.getOpposite(), handler));
                 }
@@ -635,12 +629,12 @@ public class TerminalContainerMenu extends BaseContainerMenu {
         public boolean equals(Object o) {
             if (this == o) return true;
             if (!(o instanceof ItemStackKey other)) return false;
-            return ItemStack.isSameItemSameComponents(stack, other.stack);
+            return ItemStack.isSameItemSameTags(stack, other.stack);
         }
 
         @Override
         public int hashCode() {
-            return ItemStack.hashItemAndComponents(stack);
+            return Objects.hash(ForgeRegistries.ITEMS.getKey(stack.getItem()), stack.getTag());
         }
     }
 
@@ -668,7 +662,7 @@ public class TerminalContainerMenu extends BaseContainerMenu {
             if (stack.isEmpty()) return ItemStack.EMPTY;
 
             if (!existing.isEmpty()) {
-                if (!ItemStack.isSameItemSameComponents(existing, stack)) return stack;
+                if (!ItemStack.isSameItemSameTags(existing, stack)) return stack;
                 int canAdd = Math.min(stack.getCount(), existing.getMaxStackSize() - existing.getCount());
                 if (canAdd <= 0) return stack;
                 if (!simulate) existing.grow(canAdd);

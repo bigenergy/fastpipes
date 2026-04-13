@@ -4,7 +4,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraftforge.common.ForgeMod;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
@@ -29,8 +29,7 @@ public class Raytracer {
         float f6 = f1 * f3;
         double d3 = 5.0D;
         if (entity instanceof ServerPlayer serverPlayer) {
-            // Use NeoForge's attribute system instead of ForgeMod.REACH_DISTANCE
-            d3 = serverPlayer.getAttributeValue(Attributes.BLOCK_INTERACTION_RANGE);
+            d3 = serverPlayer.getAttributeValue(ForgeMod.BLOCK_REACH.get());
         }
         Vec3 end = start.add(f5 * d3, f4 * d3, f6 * d3);
         return Pair.of(start, end);

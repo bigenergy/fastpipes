@@ -16,14 +16,13 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingRecipe;
-import net.minecraft.world.item.crafting.RecipeHolder;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class TerminalRecipeTransferHandler implements IRecipeTransferHandler<TerminalContainerMenu, RecipeHolder<CraftingRecipe>> {
+public class TerminalRecipeTransferHandler implements IRecipeTransferHandler<TerminalContainerMenu, CraftingRecipe> {
 
     @Override
     public Class<TerminalContainerMenu> getContainerClass() {
@@ -36,13 +35,13 @@ public class TerminalRecipeTransferHandler implements IRecipeTransferHandler<Ter
     }
 
     @Override
-    public RecipeType<RecipeHolder<CraftingRecipe>> getRecipeType() {
+    public RecipeType<CraftingRecipe> getRecipeType() {
         return RecipeTypes.CRAFTING;
     }
 
     @Override
     @Nullable
-    public IRecipeTransferError transferRecipe(TerminalContainerMenu container, RecipeHolder<CraftingRecipe> recipe,
+    public IRecipeTransferError transferRecipe(TerminalContainerMenu container, CraftingRecipe recipe,
                                                 IRecipeSlotsView recipeSlotsView, Player player,
                                                 boolean maxTransfer, boolean doTransfer) {
         if (!doTransfer) {

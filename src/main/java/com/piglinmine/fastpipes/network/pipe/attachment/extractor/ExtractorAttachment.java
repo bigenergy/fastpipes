@@ -1,4 +1,5 @@
 package com.piglinmine.fastpipes.network.pipe.attachment.extractor;
+import com.piglinmine.fastpipes.util.CapabilityUtil;
 
 import com.piglinmine.fastpipes.inventory.fluid.FluidInventory;
 import com.piglinmine.fastpipes.menu.ExtractorAttachmentMenuProvider;
@@ -22,11 +23,10 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.ItemStackHandler;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.ItemStackHandler;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -115,12 +115,12 @@ public class ExtractorAttachment extends Attachment {
         }
 
         if (network instanceof ItemNetwork) {
-            IItemHandler itemHandler = blockEntity.getLevel().getCapability(Capabilities.ItemHandler.BLOCK, destinationPos, getDirection().getOpposite());
+            IItemHandler itemHandler = CapabilityUtil.getItemHandler(blockEntity.getLevel(), destinationPos, getDirection().getOpposite());
             if (itemHandler != null) {
                 update((ItemNetwork) network, destinationPos, itemHandler);
             }
         } else if (network instanceof FluidNetwork) {
-            IFluidHandler fluidHandler = blockEntity.getLevel().getCapability(Capabilities.FluidHandler.BLOCK, destinationPos, getDirection().getOpposite());
+            IFluidHandler fluidHandler = CapabilityUtil.getFluidHandler(blockEntity.getLevel(), destinationPos, getDirection().getOpposite());
             if (fluidHandler != null) {
                 update((FluidNetwork) network, fluidHandler);
             }
@@ -219,7 +219,7 @@ public class ExtractorAttachment extends Attachment {
 
                 boolean equals = filtered.is(stack.getItem());
                 if (exactMode) {
-                    equals = equals && ItemStack.isSameItemSameComponents(filtered, stack);
+                    equals = equals && ItemStack.isSameItemSameTags(filtered, stack);
                 }
 
                 if (equals) {
@@ -234,7 +234,7 @@ public class ExtractorAttachment extends Attachment {
 
                 boolean equals = filtered.is(stack.getItem());
                 if (exactMode) {
-                    equals = equals && ItemStack.isSameItemSameComponents(filtered, stack);
+                    equals = equals && ItemStack.isSameItemSameTags(filtered, stack);
                 }
 
                 if (equals) {
@@ -255,7 +255,7 @@ public class ExtractorAttachment extends Attachment {
 
                 boolean equals = filtered.getFluid() == stack.getFluid();
                 if (exactMode) {
-                    equals = equals && FluidStack.isSameFluidSameComponents(filtered, stack);
+                    equals = equals && filtered.isFluidEqual(stack);
                 }
 
                 if (equals) {
@@ -270,7 +270,7 @@ public class ExtractorAttachment extends Attachment {
 
                 boolean equals = filtered.getFluid() == stack.getFluid();
                 if (exactMode) {
-                    equals = equals && FluidStack.isSameFluidSameComponents(filtered, stack);
+                    equals = equals && filtered.isFluidEqual(stack);
                 }
 
                 if (equals) {
@@ -304,13 +304,13 @@ public class ExtractorAttachment extends Attachment {
     @Override
     public CompoundTag writeToNbt(CompoundTag tag) {
         tag.putByte("rm", (byte) redstoneMode.ordinal());
-        tag.put("itemfilter", itemFilter.serializeNBT(pipe.getLevel().registryAccess()));
+        tag.put("itemfilter", itemFilter.serializeNBT());
         tag.putByte("bw", (byte) blacklistWhitelist.ordinal());
         tag.putInt("rr", itemDestinationFinder.getRoundRobinIndex());
         tag.putByte("routingm", (byte) routingMode.ordinal());
         tag.putInt("stacksi", stackSize);
         tag.putBoolean("exa", exactMode);
-        tag.put("fluidfilter", fluidFilter.writeToNbt(pipe.getLevel().registryAccess()));
+        tag.put("fluidfilter", fluidFilter.writeToNbt());
 
         return super.writeToNbt(tag);
     }

@@ -34,10 +34,10 @@ public class InserterAttachmentFactory implements AttachmentFactory {
         if (tag.contains("bw")) attachment.setBlacklistWhitelist(BlacklistWhitelist.get(tag.getByte("bw")));
         if (tag.contains("exa")) attachment.setExactMode(tag.getBoolean("exa"));
         if (tag.contains("itemfilter")) {
-            attachment.getItemFilter().deserializeNBT(pipe.getLevel().registryAccess(), tag.getCompound("itemfilter"));
+            attachment.getItemFilter().deserializeNBT(tag.getCompound("itemfilter"));
         }
         if (tag.contains("fluidfilter")) {
-            attachment.getFluidFilter().readFromNbt(tag.getCompound("fluidfilter"), pipe.getLevel().registryAccess());
+            attachment.getFluidFilter().readFromNbt(tag.getCompound("fluidfilter"));
         }
 
         return attachment;

@@ -1,4 +1,5 @@
 package com.piglinmine.fastpipes.blockentity;
+import com.piglinmine.fastpipes.util.CapabilityUtil;
 
 import com.piglinmine.fastpipes.FPipesBlockEntities;
 import com.piglinmine.fastpipes.FPipesBlocks;
@@ -21,9 +22,11 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
+import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraft.world.Containers;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -121,7 +124,7 @@ public class ItemPipeBlockEntity extends PipeBlockEntity {
         if (d.getReceiver().equals(sourcePos)) return false;
         BlockEntity be = level.getBlockEntity(d.getReceiver());
         if (be == null) return false;
-        IItemHandler handler = level.getCapability(Capabilities.ItemHandler.BLOCK, d.getReceiver(), d.getIncomingDirection().getOpposite());
+        IItemHandler handler = CapabilityUtil.getItemHandler(level, d.getReceiver(), d.getIncomingDirection().getOpposite());
         if (handler == null) return false;
         Attachment att = d.getConnectedPipe().getAttachmentManager().getAttachment(d.getIncomingDirection());
         if (att != null && !att.canInsert(stack)) return false;
@@ -136,6 +139,17 @@ public class ItemPipeBlockEntity extends PipeBlockEntity {
                 Containers.dropItemStack(level, worldPosition.getX(), worldPosition.getY(), worldPosition.getZ(), transport.getStack());
             }
         }
+    }
+
+    @Override
+    public <T> LazyOptional<T> getCapability(Capability<T> cap, @javax.annotation.Nullable Direction side) {
+        if (cap == ForgeCapabilities.ITEM_HANDLER && side != null) {
+            IItemHandler handler = getItemHandler(side);
+            if (handler != null) {
+                return LazyOptional.of(() -> handler).cast();
+            }
+        }
+        return super.getCapability(cap, side);
     }
 
     protected Pipe createPipe(Level level, BlockPos pos) {

@@ -15,8 +15,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.items.ItemStackHandler;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.items.ItemStackHandler;
 
 import javax.annotation.Nullable;
 
@@ -140,7 +140,7 @@ public class SensorAttachment extends Attachment {
                 ItemStack filtered = itemFilter.getStackInSlot(i);
                 if (filtered.isEmpty()) continue;
                 boolean equals = filtered.is(stack.getItem());
-                if (exactMode) equals = equals && ItemStack.isSameItemSameComponents(filtered, stack);
+                if (exactMode) equals = equals && ItemStack.isSameItemSameTags(filtered, stack);
                 if (equals) return true;
             }
             return false;
@@ -149,7 +149,7 @@ public class SensorAttachment extends Attachment {
                 ItemStack filtered = itemFilter.getStackInSlot(i);
                 if (filtered.isEmpty()) continue;
                 boolean equals = filtered.is(stack.getItem());
-                if (exactMode) equals = equals && ItemStack.isSameItemSameComponents(filtered, stack);
+                if (exactMode) equals = equals && ItemStack.isSameItemSameTags(filtered, stack);
                 if (equals) return false;
             }
             return true;
@@ -173,7 +173,7 @@ public class SensorAttachment extends Attachment {
                 FluidStack filtered = fluidFilter.getFluid(i);
                 if (filtered.isEmpty()) continue;
                 boolean equals = filtered.getFluid() == stack.getFluid();
-                if (exactMode) equals = equals && FluidStack.isSameFluidSameComponents(filtered, stack);
+                if (exactMode) equals = equals && filtered.isFluidEqual(stack);
                 if (equals) return true;
             }
             return false;
@@ -182,7 +182,7 @@ public class SensorAttachment extends Attachment {
                 FluidStack filtered = fluidFilter.getFluid(i);
                 if (filtered.isEmpty()) continue;
                 boolean equals = filtered.getFluid() == stack.getFluid();
-                if (exactMode) equals = equals && FluidStack.isSameFluidSameComponents(filtered, stack);
+                if (exactMode) equals = equals && filtered.isFluidEqual(stack);
                 if (equals) return false;
             }
             return true;
@@ -221,8 +221,8 @@ public class SensorAttachment extends Attachment {
         tag.putByte("bw", (byte) blacklistWhitelist.ordinal());
         tag.putBoolean("exa", exactMode);
         tag.putInt("sticks", signalTicks);
-        tag.put("itemfilter", itemFilter.serializeNBT(pipe.getLevel().registryAccess()));
-        tag.put("fluidfilter", fluidFilter.writeToNbt(pipe.getLevel().registryAccess()));
+        tag.put("itemfilter", itemFilter.serializeNBT());
+        tag.put("fluidfilter", fluidFilter.writeToNbt());
         return super.writeToNbt(tag);
     }
 

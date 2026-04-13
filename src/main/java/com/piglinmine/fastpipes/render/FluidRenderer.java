@@ -2,7 +2,6 @@ package com.piglinmine.fastpipes.render;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.BufferUploader;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
@@ -11,8 +10,8 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.level.material.Fluid;
-import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
 
 import javax.annotation.Nonnull;
 
@@ -62,12 +61,13 @@ public class FluidRenderer {
         vMax = vMax - (maskTop / 16.0 * (vMax - vMin));
 
         Tesselator tessellator = Tesselator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
-        bufferBuilder.addVertex((float) xCoord, (float) (yCoord + 16), (float) zLevel).setUv((float) uMin, (float) vMax);
-        bufferBuilder.addVertex((float) (xCoord + 16 - maskRight), (float) (yCoord + 16), (float) zLevel).setUv((float) uMax, (float) vMax);
-        bufferBuilder.addVertex((float) (xCoord + 16 - maskRight), (float) (yCoord + maskTop), (float) zLevel).setUv((float) uMax, (float) vMin);
-        bufferBuilder.addVertex((float) xCoord, (float) (yCoord + maskTop), (float) zLevel).setUv((float) uMin, (float) vMin);
-        BufferUploader.drawWithShader(bufferBuilder.buildOrThrow());
+        BufferBuilder bufferBuilder = tessellator.getBuilder();
+        bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+        bufferBuilder.vertex((float) xCoord, (float) (yCoord + 16), (float) zLevel).uv((float) uMin, (float) vMax).endVertex();
+        bufferBuilder.vertex((float) (xCoord + 16 - maskRight), (float) (yCoord + 16), (float) zLevel).uv((float) uMax, (float) vMax).endVertex();
+        bufferBuilder.vertex((float) (xCoord + 16 - maskRight), (float) (yCoord + maskTop), (float) zLevel).uv((float) uMax, (float) vMin).endVertex();
+        bufferBuilder.vertex((float) xCoord, (float) (yCoord + maskTop), (float) zLevel).uv((float) uMin, (float) vMin).endVertex();
+        tessellator.end();
     }
 
     public void render(final int xPosition, final int yPosition, @Nonnull FluidStack fluidStack) {

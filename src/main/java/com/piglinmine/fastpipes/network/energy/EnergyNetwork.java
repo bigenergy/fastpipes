@@ -1,4 +1,5 @@
 package com.piglinmine.fastpipes.network.energy;
+import com.piglinmine.fastpipes.util.CapabilityUtil;
 
 import com.piglinmine.fastpipes.network.Network;
 import com.piglinmine.fastpipes.network.graph.NetworkGraphScannerResult;
@@ -10,8 +11,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.energy.IEnergyStorage;
+import net.minecraftforge.energy.IEnergyStorage;
 
 import java.util.List;
 
@@ -67,7 +67,7 @@ public class EnergyNetwork extends Network {
                     continue;
                 }
 
-                IEnergyStorage handler = blockEntity.getLevel().getCapability(Capabilities.EnergyStorage.BLOCK, destination.getReceiver(), destination.getIncomingDirection().getOpposite());
+                IEnergyStorage handler = CapabilityUtil.getEnergyStorage(blockEntity.getLevel(), destination.getReceiver(), destination.getIncomingDirection().getOpposite());
                 if (handler == null) {
                     continue;
                 }

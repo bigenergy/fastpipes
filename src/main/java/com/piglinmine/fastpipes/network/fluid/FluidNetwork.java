@@ -1,4 +1,5 @@
 package com.piglinmine.fastpipes.network.fluid;
+import com.piglinmine.fastpipes.util.CapabilityUtil;
 
 import com.piglinmine.fastpipes.network.Network;
 import com.piglinmine.fastpipes.network.graph.NetworkGraphScannerResult;
@@ -8,15 +9,13 @@ import com.piglinmine.fastpipes.network.pipe.attachment.Attachment;
 import com.piglinmine.fastpipes.network.pipe.fluid.FluidPipe;
 import com.piglinmine.fastpipes.network.pipe.fluid.FluidPipeType;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.minecraftforge.fluids.capability.templates.FluidTank;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -96,7 +95,7 @@ public class FluidNetwork extends Network {
                 continue;
             }
 
-            IFluidHandler handler = blockEntity.getLevel().getCapability(Capabilities.FluidHandler.BLOCK, destination.getReceiver(), destination.getIncomingDirection().getOpposite());
+            IFluidHandler handler = CapabilityUtil.getFluidHandler(blockEntity.getLevel(), destination.getReceiver(), destination.getIncomingDirection().getOpposite());
             if (handler == null) {
                 continue;
             }
@@ -138,9 +137,9 @@ public class FluidNetwork extends Network {
     }
 
     @Override
-    public CompoundTag writeToNbt(CompoundTag tag, HolderLookup.Provider provider) {
-        tag = super.writeToNbt(tag, provider);
-        tag.put("tank", fluidTank.writeToNBT(provider, new CompoundTag()));
+    public CompoundTag writeToNbt(CompoundTag tag) {
+        tag = super.writeToNbt(tag);
+        tag.put("tank", fluidTank.writeToNBT(new CompoundTag()));
         return tag;
     }
 } 

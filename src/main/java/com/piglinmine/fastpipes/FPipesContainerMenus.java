@@ -17,19 +17,19 @@ import com.piglinmine.fastpipes.network.pipe.attachment.void_attachment.VoidAtta
 import com.piglinmine.fastpipes.util.DirectionUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.world.inventory.MenuType;
-import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
-import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.registries.DeferredRegister;
+import net.minecraftforge.common.extensions.IForgeMenuType;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.RegistryObject;
 
 public class FPipesContainerMenus {
-    public static final DeferredRegister<MenuType<?>> CONTAINER_MENUS = DeferredRegister.create(Registries.MENU, FastPipes.MOD_ID);
+    public static final DeferredRegister<MenuType<?>> CONTAINER_MENUS = DeferredRegister.create(ForgeRegistries.MENU_TYPES, FastPipes.MOD_ID);
 
-    public static final DeferredHolder<MenuType<?>, MenuType<ExtractorAttachmentContainerMenu>> EXTRACTOR_ATTACHMENT = CONTAINER_MENUS.register(
+    public static final RegistryObject<MenuType<ExtractorAttachmentContainerMenu>> EXTRACTOR_ATTACHMENT = CONTAINER_MENUS.register(
         "extractor_attachment",
-        () -> IMenuTypeExtension.create((windowId, inv, data) -> {
+        () -> IForgeMenuType.create((windowId, inv, data) -> {
             if (data != null) {
                 BlockPos pos = data.readBlockPos();
                 Direction dir = DirectionUtil.safeGet(data.readByte());
@@ -44,7 +44,7 @@ public class FPipesContainerMenus {
                 // Read fluid filter contents from buffer
                 FluidInventory fluidFilter = ExtractorAttachment.createFluidFilterInventory(null);
                 for (int i = 0; i < ExtractorAttachment.MAX_FILTER_SLOTS; i++) {
-                    FluidStack fluid = FluidStack.OPTIONAL_STREAM_CODEC.decode(data);
+                    FluidStack fluid = FluidStack.readFromPacket(data);
                     if (!fluid.isEmpty()) {
                         fluidFilter.setFluid(i, fluid);
                     }
@@ -62,9 +62,9 @@ public class FPipesContainerMenus {
         })
     );
 
-    public static final DeferredHolder<MenuType<?>, MenuType<InserterAttachmentContainerMenu>> INSERTER_ATTACHMENT = CONTAINER_MENUS.register(
+    public static final RegistryObject<MenuType<InserterAttachmentContainerMenu>> INSERTER_ATTACHMENT = CONTAINER_MENUS.register(
         "inserter_attachment",
-        () -> IMenuTypeExtension.create((windowId, inv, data) -> {
+        () -> IForgeMenuType.create((windowId, inv, data) -> {
             if (data != null) {
                 BlockPos pos = data.readBlockPos();
                 Direction dir = DirectionUtil.safeGet(data.readByte());
@@ -77,7 +77,7 @@ public class FPipesContainerMenus {
                 // Read fluid filter contents from buffer
                 FluidInventory fluidFilter = InserterAttachment.createFluidFilterInventory(null);
                 for (int i = 0; i < InserterAttachment.MAX_FILTER_SLOTS; i++) {
-                    FluidStack fluid = FluidStack.OPTIONAL_STREAM_CODEC.decode(data);
+                    FluidStack fluid = FluidStack.readFromPacket(data);
                     if (!fluid.isEmpty()) {
                         fluidFilter.setFluid(i, fluid);
                     }
@@ -94,9 +94,9 @@ public class FPipesContainerMenus {
         })
     );
 
-    public static final DeferredHolder<MenuType<?>, MenuType<VoidAttachmentContainerMenu>> VOID_ATTACHMENT = CONTAINER_MENUS.register(
+    public static final RegistryObject<MenuType<VoidAttachmentContainerMenu>> VOID_ATTACHMENT = CONTAINER_MENUS.register(
         "void_attachment",
-        () -> IMenuTypeExtension.create((windowId, inv, data) -> {
+        () -> IForgeMenuType.create((windowId, inv, data) -> {
             if (data != null) {
                 BlockPos pos = data.readBlockPos();
                 Direction dir = DirectionUtil.safeGet(data.readByte());
@@ -107,7 +107,7 @@ public class FPipesContainerMenus {
                 // Read fluid filter contents from buffer
                 FluidInventory fluidFilter = VoidAttachment.createFluidFilterInventory(null);
                 for (int i = 0; i < VoidAttachment.MAX_FILTER_SLOTS; i++) {
-                    FluidStack fluid = FluidStack.OPTIONAL_STREAM_CODEC.decode(data);
+                    FluidStack fluid = FluidStack.readFromPacket(data);
                     if (!fluid.isEmpty()) {
                         fluidFilter.setFluid(i, fluid);
                     }
@@ -124,9 +124,9 @@ public class FPipesContainerMenus {
         })
     );
 
-    public static final DeferredHolder<MenuType<?>, MenuType<SensorAttachmentContainerMenu>> SENSOR_ATTACHMENT = CONTAINER_MENUS.register(
+    public static final RegistryObject<MenuType<SensorAttachmentContainerMenu>> SENSOR_ATTACHMENT = CONTAINER_MENUS.register(
         "sensor_attachment",
-        () -> IMenuTypeExtension.create((windowId, inv, data) -> {
+        () -> IForgeMenuType.create((windowId, inv, data) -> {
             if (data != null) {
                 BlockPos pos = data.readBlockPos();
                 Direction dir = DirectionUtil.safeGet(data.readByte());
@@ -137,7 +137,7 @@ public class FPipesContainerMenus {
                 // Read fluid filter contents from buffer
                 FluidInventory fluidFilter = SensorAttachment.createFluidFilterInventory(null);
                 for (int i = 0; i < SensorAttachment.MAX_FILTER_SLOTS; i++) {
-                    FluidStack fluid = FluidStack.OPTIONAL_STREAM_CODEC.decode(data);
+                    FluidStack fluid = FluidStack.readFromPacket(data);
                     if (!fluid.isEmpty()) {
                         fluidFilter.setFluid(i, fluid);
                     }
@@ -154,9 +154,9 @@ public class FPipesContainerMenus {
         })
     );
 
-    public static final DeferredHolder<MenuType<?>, MenuType<TerminalContainerMenu>> TERMINAL = CONTAINER_MENUS.register(
+    public static final RegistryObject<MenuType<TerminalContainerMenu>> TERMINAL = CONTAINER_MENUS.register(
         "terminal",
-        () -> IMenuTypeExtension.create((windowId, inv, data) -> {
+        () -> IForgeMenuType.create((windowId, inv, data) -> {
             if (data != null) {
                 BlockPos pos = data.readBlockPos();
                 return new TerminalContainerMenu(windowId, inv.player, pos);
@@ -166,9 +166,9 @@ public class FPipesContainerMenus {
         })
     );
 
-    public static final DeferredHolder<MenuType<?>, MenuType<TieredBarrelContainerMenu>> TIERED_BARREL = CONTAINER_MENUS.register(
+    public static final RegistryObject<MenuType<TieredBarrelContainerMenu>> TIERED_BARREL = CONTAINER_MENUS.register(
         "tiered_barrel",
-        () -> IMenuTypeExtension.create((windowId, inv, data) -> {
+        () -> IForgeMenuType.create((windowId, inv, data) -> {
             if (data != null) {
                 BlockPos pos = data.readBlockPos();
                 BarrelTier tier = BarrelTier.fromOrdinal(data.readByte());

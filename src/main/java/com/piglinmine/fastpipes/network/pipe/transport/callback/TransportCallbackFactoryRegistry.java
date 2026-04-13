@@ -1,6 +1,5 @@
 package com.piglinmine.fastpipes.network.pipe.transport.callback;
 
-import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import org.apache.logging.log4j.LogManager;
@@ -47,14 +46,14 @@ public class TransportCallbackFactoryRegistry {
     }
 
     @Nullable
-    public static TransportCallback createCallback(ResourceLocation id, CompoundTag tag, HolderLookup.Provider registries) {
+    public static TransportCallback createCallback(ResourceLocation id, CompoundTag tag) {
         TransportCallbackFactory factory = INSTANCE.getFactory(id);
         if (factory == null) {
             LOGGER.warn("Transport callback factory " + id + " no longer exists");
             return null;
         }
 
-        TransportCallback callback = factory.create(tag, registries);
+        TransportCallback callback = factory.create(tag);
         if (callback == null) {
             LOGGER.warn("Transport callback factory " + id + " returned null!");
             return null;

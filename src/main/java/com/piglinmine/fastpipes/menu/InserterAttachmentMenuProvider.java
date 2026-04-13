@@ -8,7 +8,8 @@ import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.neoforged.neoforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.network.NetworkHooks;
 
 import javax.annotation.Nullable;
 
@@ -45,7 +46,7 @@ public class InserterAttachmentMenuProvider implements MenuProvider {
     }
 
     public static void open(Pipe pipe, InserterAttachment attachment, ServerPlayer player) {
-        player.openMenu(new InserterAttachmentMenuProvider(pipe, attachment), buf -> {
+        NetworkHooks.openScreen(player, new InserterAttachmentMenuProvider(pipe, attachment), buf -> {
             buf.writeBlockPos(pipe.getPos());
             buf.writeByte(attachment.getDirection().ordinal());
             buf.writeByte(attachment.getRedstoneMode().ordinal());
@@ -56,7 +57,7 @@ public class InserterAttachmentMenuProvider implements MenuProvider {
 
             // Sync fluid filter contents to client
             for (int i = 0; i < InserterAttachment.MAX_FILTER_SLOTS; i++) {
-                FluidStack.OPTIONAL_STREAM_CODEC.encode(buf, attachment.getFluidFilter().getFluid(i));
+                buf.writeFluidStack(attachment.getFluidFilter().getFluid(i));
             }
         });
     }

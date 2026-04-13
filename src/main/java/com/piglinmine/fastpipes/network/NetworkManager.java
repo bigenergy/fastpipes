@@ -7,7 +7,6 @@ import com.piglinmine.fastpipes.network.pipe.PipeRegistry;
 import com.piglinmine.fastpipes.network.pipe.item.ItemPipe;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -38,14 +37,12 @@ public class NetworkManager extends SavedData {
 
     public static NetworkManager get(ServerLevel level) {
         return level.getDataStorage().computeIfAbsent(
-            new SavedData.Factory<>(
-                () -> new NetworkManager(level),
-                (tag, provider) -> {
-                    NetworkManager networkManager = new NetworkManager(level);
-                    networkManager.load(tag, provider);
-                    return networkManager;
-                }
-            ),
+            (tag) -> {
+                NetworkManager networkManager = new NetworkManager(level);
+                networkManager.load(tag);
+                return networkManager;
+            },
+            () -> new NetworkManager(level),
             NAME
         );
     }
@@ -252,13 +249,13 @@ public class NetworkManager extends SavedData {
         return networks.values();
     }
 
-    public void load(CompoundTag tag, HolderLookup.Provider provider) {
+    public void load(CompoundTag tag) {
         ListTag pipes = tag.getList("pipes", Tag.TAG_COMPOUND);
         for (Tag pipeTag : pipes) {
             CompoundTag pipeTagCompound = (CompoundTag) pipeTag;
 
             // @BC
-            ResourceLocation factoryId = pipeTagCompound.contains("id") ? ResourceLocation.parse(pipeTagCompound.getString("id")) : ItemPipe.ID;
+            ResourceLocation factoryId = pipeTagCompound.contains("id") ? new ResourceLocation(pipeTagCompound.getString("id")) : ItemPipe.ID;
 
             PipeFactory factory = PipeRegistry.INSTANCE.getFactory(factoryId);
             if (factory == null) {
@@ -279,7 +276,7 @@ public class NetworkManager extends SavedData {
                 continue;
             }
 
-            ResourceLocation type = ResourceLocation.parse(netTagCompound.getString("type"));
+            ResourceLocation type = new ResourceLocation(netTagCompound.getString("type"));
 
             NetworkFactory factory = NetworkRegistry.INSTANCE.getFactory(type);
             if (factory == null) {
@@ -287,7 +284,7 @@ public class NetworkManager extends SavedData {
                 continue;
             }
 
-            Network network = factory.create(netTagCompound, provider);
+            Network network = factory.create(netTagCompound);
 
             networks.put(network.getId(), network);
         }
@@ -297,7 +294,7 @@ public class NetworkManager extends SavedData {
     }
 
     @Override
-    public CompoundTag save(CompoundTag tag, HolderLookup.Provider provider) {
+    public CompoundTag save(CompoundTag tag) {
         ListTag pipes = new ListTag();
         this.pipes.values().forEach(p -> {
             CompoundTag pipeTag = new CompoundTag();
@@ -310,7 +307,7 @@ public class NetworkManager extends SavedData {
         this.networks.values().forEach(n -> {
             CompoundTag networkTag = new CompoundTag();
             networkTag.putString("type", n.getType().toString());
-            networks.add(n.writeToNbt(networkTag, provider));
+            networks.add(n.writeToNbt(networkTag));
         });
         tag.put("networks", networks);
 

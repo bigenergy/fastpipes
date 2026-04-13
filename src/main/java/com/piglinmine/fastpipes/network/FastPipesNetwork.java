@@ -1,170 +1,79 @@
 package com.piglinmine.fastpipes.network;
 
+import com.piglinmine.fastpipes.FastPipes;
 import com.piglinmine.fastpipes.network.message.*;
 import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.network.PacketDistributor;
-import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
-import net.neoforged.neoforge.network.registration.PayloadRegistrar;
+import net.minecraftforge.network.NetworkDirection;
+import net.minecraftforge.network.NetworkRegistry;
+import net.minecraftforge.network.PacketDistributor;
+import net.minecraftforge.network.simple.SimpleChannel;
 
 public class FastPipesNetwork {
     private static final String PROTOCOL_VERSION = "1";
 
-    @SubscribeEvent
-    public static void register(final RegisterPayloadHandlersEvent event) {
-        final PayloadRegistrar registrar = event.registrar(PROTOCOL_VERSION);
+    public static final SimpleChannel INSTANCE = NetworkRegistry.newSimpleChannel(
+        new ResourceLocation(FastPipes.MOD_ID, "main"),
+        () -> PROTOCOL_VERSION,
+        PROTOCOL_VERSION::equals,
+        PROTOCOL_VERSION::equals
+    );
 
-        // Register all payloads
-        registrar.playToClient(
-            ItemTransportMessage.TYPE,
-            ItemTransportMessage.STREAM_CODEC,
-            ItemTransportMessage::handleClient
-        );
+    private static int id = 0;
 
-        registrar.playToClient(
-            FluidPipeMessage.TYPE,
-            FluidPipeMessage.STREAM_CODEC,
-            FluidPipeMessage::handleClient
-        );
+    public static void register() {
+        // Client-bound messages
+        INSTANCE.registerMessage(id++, ItemTransportMessage.class,
+            ItemTransportMessage::encode, ItemTransportMessage::decode, ItemTransportMessage::handle);
+        INSTANCE.registerMessage(id++, FluidPipeMessage.class,
+            FluidPipeMessage::encode, FluidPipeMessage::decode, FluidPipeMessage::handle);
+        INSTANCE.registerMessage(id++, FluidFilterSlotUpdateMessage.class,
+            FluidFilterSlotUpdateMessage::encode, FluidFilterSlotUpdateMessage::decode, FluidFilterSlotUpdateMessage::handle);
+        INSTANCE.registerMessage(id++, TerminalItemsSyncMessage.class,
+            TerminalItemsSyncMessage::encode, TerminalItemsSyncMessage::decode, TerminalItemsSyncMessage::handle);
+        INSTANCE.registerMessage(id++, TerminalStatusMessage.class,
+            TerminalStatusMessage::encode, TerminalStatusMessage::decode, TerminalStatusMessage::handle);
 
-        registrar.playToClient(
-            FluidFilterSlotUpdateMessage.TYPE,
-            FluidFilterSlotUpdateMessage.STREAM_CODEC,
-            FluidFilterSlotUpdateMessage::handleClient
-        );
-
-        registrar.playToServer(
-            ChangeRedstoneModeMessage.TYPE,
-            ChangeRedstoneModeMessage.STREAM_CODEC,
-            ChangeRedstoneModeMessage::handleServer
-        );
-
-        registrar.playToServer(
-            ChangeBlacklistWhitelistMessage.TYPE,
-            ChangeBlacklistWhitelistMessage.STREAM_CODEC,
-            ChangeBlacklistWhitelistMessage::handleServer
-        );
-
-        registrar.playToServer(
-            ChangeRoutingModeMessage.TYPE,
-            ChangeRoutingModeMessage.STREAM_CODEC,
-            ChangeRoutingModeMessage::handleServer
-        );
-
-        registrar.playToServer(
-            ChangeStackSizeMessage.TYPE,
-            ChangeStackSizeMessage.STREAM_CODEC,
-            ChangeStackSizeMessage::handleServer
-        );
-
-        registrar.playToServer(
-            ChangeExactModeMessage.TYPE,
-            ChangeExactModeMessage.STREAM_CODEC,
-            ChangeExactModeMessage::handleServer
-        );
-
-        // Terminal messages
-        registrar.playToClient(
-            TerminalItemsSyncMessage.TYPE,
-            TerminalItemsSyncMessage.STREAM_CODEC,
-            TerminalItemsSyncMessage::handleClient
-        );
-
-        registrar.playToServer(
-            TerminalExtractMessage.TYPE,
-            TerminalExtractMessage.STREAM_CODEC,
-            TerminalExtractMessage::handleServer
-        );
-
-        registrar.playToServer(
-            TerminalInsertMessage.TYPE,
-            TerminalInsertMessage.STREAM_CODEC,
-            TerminalInsertMessage::handleServer
-        );
-
-        registrar.playToServer(
-            TerminalSearchMessage.TYPE,
-            TerminalSearchMessage.STREAM_CODEC,
-            TerminalSearchMessage::handleServer
-        );
-
-        registrar.playToServer(
-            TerminalCraftMessage.TYPE,
-            TerminalCraftMessage.STREAM_CODEC,
-            TerminalCraftMessage::handleServer
-        );
-
-        registrar.playToServer(
-            TerminalRecipeTransferMessage.TYPE,
-            TerminalRecipeTransferMessage.STREAM_CODEC,
-            TerminalRecipeTransferMessage::handleServer
-        );
-
-        registrar.playToServer(
-            TerminalSortMessage.TYPE,
-            TerminalSortMessage.STREAM_CODEC,
-            TerminalSortMessage::handleServer
-        );
-
-        registrar.playToClient(
-            TerminalStatusMessage.TYPE,
-            TerminalStatusMessage.STREAM_CODEC,
-            TerminalStatusMessage::handleClient
-        );
+        // Server-bound messages
+        INSTANCE.registerMessage(id++, ChangeRedstoneModeMessage.class,
+            ChangeRedstoneModeMessage::encode, ChangeRedstoneModeMessage::decode, ChangeRedstoneModeMessage::handle);
+        INSTANCE.registerMessage(id++, ChangeBlacklistWhitelistMessage.class,
+            ChangeBlacklistWhitelistMessage::encode, ChangeBlacklistWhitelistMessage::decode, ChangeBlacklistWhitelistMessage::handle);
+        INSTANCE.registerMessage(id++, ChangeRoutingModeMessage.class,
+            ChangeRoutingModeMessage::encode, ChangeRoutingModeMessage::decode, ChangeRoutingModeMessage::handle);
+        INSTANCE.registerMessage(id++, ChangeStackSizeMessage.class,
+            ChangeStackSizeMessage::encode, ChangeStackSizeMessage::decode, ChangeStackSizeMessage::handle);
+        INSTANCE.registerMessage(id++, ChangeExactModeMessage.class,
+            ChangeExactModeMessage::encode, ChangeExactModeMessage::decode, ChangeExactModeMessage::handle);
+        INSTANCE.registerMessage(id++, TerminalExtractMessage.class,
+            TerminalExtractMessage::encode, TerminalExtractMessage::decode, TerminalExtractMessage::handle);
+        INSTANCE.registerMessage(id++, TerminalInsertMessage.class,
+            TerminalInsertMessage::encode, TerminalInsertMessage::decode, TerminalInsertMessage::handle);
+        INSTANCE.registerMessage(id++, TerminalSearchMessage.class,
+            TerminalSearchMessage::encode, TerminalSearchMessage::decode, TerminalSearchMessage::handle);
+        INSTANCE.registerMessage(id++, TerminalCraftMessage.class,
+            TerminalCraftMessage::encode, TerminalCraftMessage::decode, TerminalCraftMessage::handle);
+        INSTANCE.registerMessage(id++, TerminalRecipeTransferMessage.class,
+            TerminalRecipeTransferMessage::encode, TerminalRecipeTransferMessage::decode, TerminalRecipeTransferMessage::handle);
+        INSTANCE.registerMessage(id++, TerminalSortMessage.class,
+            TerminalSortMessage::encode, TerminalSortMessage::decode, TerminalSortMessage::handle);
     }
 
-    // Convenience methods for sending packets
     public static void sendInArea(Level level, BlockPos pos, int radius, Object message) {
         if (level.isClientSide) return;
-
-        if (message instanceof ItemTransportMessage msg) {
-            PacketDistributor.sendToPlayersNear((net.minecraft.server.level.ServerLevel) level, null, 
-                pos.getX(), pos.getY(), pos.getZ(), radius, msg);
-        } else if (message instanceof FluidPipeMessage msg) {
-            PacketDistributor.sendToPlayersNear((net.minecraft.server.level.ServerLevel) level, null, 
-                pos.getX(), pos.getY(), pos.getZ(), radius, msg);
-        }
+        INSTANCE.send(PacketDistributor.NEAR.with(
+            () -> new PacketDistributor.TargetPoint(pos.getX(), pos.getY(), pos.getZ(), radius, level.dimension())
+        ), message);
     }
 
     public static void sendToServer(Object message) {
-        if (message instanceof ChangeRedstoneModeMessage msg) {
-            PacketDistributor.sendToServer(msg);
-        } else if (message instanceof ChangeBlacklistWhitelistMessage msg) {
-            PacketDistributor.sendToServer(msg);
-        } else if (message instanceof ChangeRoutingModeMessage msg) {
-            PacketDistributor.sendToServer(msg);
-        } else if (message instanceof ChangeStackSizeMessage msg) {
-            PacketDistributor.sendToServer(msg);
-        } else if (message instanceof ChangeExactModeMessage msg) {
-            PacketDistributor.sendToServer(msg);
-        } else if (message instanceof TerminalExtractMessage msg) {
-            PacketDistributor.sendToServer(msg);
-        } else if (message instanceof TerminalInsertMessage msg) {
-            PacketDistributor.sendToServer(msg);
-        } else if (message instanceof TerminalSearchMessage msg) {
-            PacketDistributor.sendToServer(msg);
-        } else if (message instanceof TerminalCraftMessage msg) {
-            PacketDistributor.sendToServer(msg);
-        } else if (message instanceof TerminalRecipeTransferMessage msg) {
-            PacketDistributor.sendToServer(msg);
-        } else if (message instanceof TerminalSortMessage msg) {
-            PacketDistributor.sendToServer(msg);
-        }
+        INSTANCE.sendToServer(message);
     }
 
     public static void sendToClient(ServerPlayer player, Object message) {
-        if (message instanceof ItemTransportMessage msg) {
-            PacketDistributor.sendToPlayer(player, msg);
-        } else if (message instanceof FluidPipeMessage msg) {
-            PacketDistributor.sendToPlayer(player, msg);
-        } else if (message instanceof FluidFilterSlotUpdateMessage msg) {
-            PacketDistributor.sendToPlayer(player, msg);
-        } else if (message instanceof TerminalItemsSyncMessage msg) {
-            PacketDistributor.sendToPlayer(player, msg);
-        } else if (message instanceof TerminalStatusMessage msg) {
-            PacketDistributor.sendToPlayer(player, msg);
-        }
+        INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), message);
     }
-} 
+}

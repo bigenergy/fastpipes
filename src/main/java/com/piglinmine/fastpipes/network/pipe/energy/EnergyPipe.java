@@ -12,7 +12,7 @@ import net.minecraft.world.level.Level;
 import javax.annotation.Nullable;
 
 public class EnergyPipe extends Pipe {
-    public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "energy");
+    public static final ResourceLocation ID = new ResourceLocation(FastPipes.MOD_ID, "energy");
 
     private final EnergyPipeType type;
     @Nullable

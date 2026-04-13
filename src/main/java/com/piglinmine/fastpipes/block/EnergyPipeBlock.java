@@ -1,4 +1,5 @@
 package com.piglinmine.fastpipes.block;
+import com.piglinmine.fastpipes.util.CapabilityUtil;
 
 import com.piglinmine.fastpipes.blockentity.EnergyPipeBlockEntity;
 import com.piglinmine.fastpipes.blockentity.PipeBlockEntity;
@@ -15,8 +16,7 @@ import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.energy.IEnergyStorage;
+import net.minecraftforge.energy.IEnergyStorage;
 import org.jetbrains.annotations.Nullable;
 
 public class EnergyPipeBlock extends PipeBlock implements EntityBlock {
@@ -70,7 +70,7 @@ public class EnergyPipeBlock extends PipeBlock implements EntityBlock {
         if (be instanceof EnergyPipeBlockEntity epe && epe.isDisconnected(direction)) return false;
 
         if (world instanceof Level level) {
-            IEnergyStorage energyStorage = level.getCapability(Capabilities.EnergyStorage.BLOCK, pos.relative(direction), direction.getOpposite());
+            IEnergyStorage energyStorage = CapabilityUtil.getEnergyStorage(level, pos.relative(direction), direction.getOpposite());
             if (energyStorage == null) {
                 return false;
             }

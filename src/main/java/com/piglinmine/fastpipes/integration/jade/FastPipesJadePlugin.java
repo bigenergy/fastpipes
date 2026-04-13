@@ -16,9 +16,9 @@ import snownee.jade.api.WailaPlugin;
 @WailaPlugin
 public class FastPipesJadePlugin implements IWailaPlugin {
 
-    public static final ResourceLocation ENERGY_PIPE_INFO = ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "energy_pipe_info");
-    public static final ResourceLocation ITEM_PIPE_INFO = ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "item_pipe_info");
-    public static final ResourceLocation FLUID_PIPE_INFO = ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "fluid_pipe_info");
+    public static final ResourceLocation ENERGY_PIPE_INFO = new ResourceLocation(FastPipes.MOD_ID, "energy_pipe_info");
+    public static final ResourceLocation ITEM_PIPE_INFO = new ResourceLocation(FastPipes.MOD_ID, "item_pipe_info");
+    public static final ResourceLocation FLUID_PIPE_INFO = new ResourceLocation(FastPipes.MOD_ID, "fluid_pipe_info");
 
     @Override
     public void register(IWailaCommonRegistration registration) {

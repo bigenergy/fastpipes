@@ -8,7 +8,7 @@ import com.piglinmine.fastpipes.network.pipe.fluid.FluidPipe;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidStack;
 
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IBlockComponentProvider;
@@ -49,7 +49,7 @@ public enum FluidPipeComponentProvider implements IBlockComponentProvider, IServ
                 data.putInt("TransferRate", fluidPipe.getType().getTransferRate());
                 data.putInt("FluidStored", tank.getFluidAmount());
                 data.putInt("FluidCapacity", tank.getCapacity());
-                data.putString("FluidName", fluid.isEmpty() ? "" : fluid.getHoverName().getString());
+                data.putString("FluidName", fluid.isEmpty() ? "" : fluid.getDisplayName().getString());
             } else {
                 data.putInt("TransferRate", fluidPipeBlockEntity.getFluidPipeType().getTransferRate());
                 data.putInt("FluidStored", 0);

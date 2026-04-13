@@ -1,53 +1,43 @@
 package com.piglinmine.fastpipes.network.message;
 
-import com.piglinmine.fastpipes.FastPipes;
 import com.piglinmine.fastpipes.blockentity.FluidPipeBlockEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.network.NetworkEvent;
 
-public record FluidPipeMessage(BlockPos pos, FluidStack fluid, float fullness) implements CustomPacketPayload {
-    
-    public static final CustomPacketPayload.Type<FluidPipeMessage> TYPE = 
-        new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "fluid_pipe"));
+import java.util.function.Supplier;
 
-    public static final StreamCodec<RegistryFriendlyByteBuf, FluidPipeMessage> STREAM_CODEC = StreamCodec.composite(
-        BlockPos.STREAM_CODEC,
-        FluidPipeMessage::pos,
-        FluidStack.OPTIONAL_STREAM_CODEC,
-        FluidPipeMessage::fluid,
-        ByteBufCodecs.FLOAT,
-        FluidPipeMessage::fullness,
-        FluidPipeMessage::new
-    );
+public record FluidPipeMessage(BlockPos pos, FluidStack fluid, float fullness) {
 
-    @Override
-    public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
-        return TYPE;
+    public void encode(FriendlyByteBuf buf) {
+        buf.writeBlockPos(pos);
+        fluid.writeToPacket(buf);
+        buf.writeFloat(fullness);
     }
 
-    public static void handleClient(final FluidPipeMessage message, final IPayloadContext context) {
-        context.enqueueWork(() -> {
+    public static FluidPipeMessage decode(FriendlyByteBuf buf) {
+        BlockPos pos = buf.readBlockPos();
+        FluidStack fluid = FluidStack.readFromPacket(buf);
+        float fullness = buf.readFloat();
+        return new FluidPipeMessage(pos, fluid, fullness);
+    }
+
+    public void handle(Supplier<NetworkEvent.Context> ctx) {
+        ctx.get().enqueueWork(() -> {
             if (Minecraft.getInstance().level == null) {
                 return;
             }
 
-            BlockEntity blockEntity = Minecraft.getInstance().level.getBlockEntity(message.pos());
+            BlockEntity blockEntity = Minecraft.getInstance().level.getBlockEntity(pos);
 
             if (blockEntity instanceof FluidPipeBlockEntity fluidPipeBlockEntity) {
-                fluidPipeBlockEntity.setFluid(message.fluid());
-                fluidPipeBlockEntity.setFullness(message.fullness());
+                fluidPipeBlockEntity.setFluid(fluid);
+                fluidPipeBlockEntity.setFullness(fullness);
             }
-        }).exceptionally(e -> {
-            context.disconnect(net.minecraft.network.chat.Component.literal("Failed to handle FluidPipeMessage: " + e.getMessage()));
-            return null;
         });
+        ctx.get().setPacketHandled(true);
     }
-} 
+}

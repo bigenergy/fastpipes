@@ -12,7 +12,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.energy.IEnergyStorage;
+import net.minecraftforge.energy.IEnergyStorage;
 
 import javax.annotation.Nullable;
 
@@ -77,6 +77,17 @@ public class EnergyPipeBlockEntity extends PipeBlockEntity {
             }
         }
         return clientEnergyStorage;
+    }
+
+    @Override
+    public <T> net.minecraftforge.common.util.LazyOptional<T> getCapability(net.minecraftforge.common.capabilities.Capability<T> cap, @javax.annotation.Nullable Direction side) {
+        if (cap == net.minecraftforge.common.capabilities.ForgeCapabilities.ENERGY) {
+            IEnergyStorage storage = getEnergyStorage(side);
+            if (storage != null) {
+                return net.minecraftforge.common.util.LazyOptional.of(() -> storage).cast();
+            }
+        }
+        return super.getCapability(cap, side);
     }
 
     @Override

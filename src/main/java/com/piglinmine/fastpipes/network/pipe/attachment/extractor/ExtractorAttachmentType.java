@@ -93,15 +93,15 @@ public enum ExtractorAttachmentType {
     public ResourceLocation getId() {
         switch (this) {
             case BASIC:
-                return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "basic_extractor");
+                return new ResourceLocation(FastPipes.MOD_ID, "basic_extractor");
             case IMPROVED:
-                return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "improved_extractor");
+                return new ResourceLocation(FastPipes.MOD_ID, "improved_extractor");
             case ADVANCED:
-                return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "advanced_extractor");
+                return new ResourceLocation(FastPipes.MOD_ID, "advanced_extractor");
             case ELITE:
-                return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "elite_extractor");
+                return new ResourceLocation(FastPipes.MOD_ID, "elite_extractor");
             case ULTIMATE:
-                return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "ultimate_extractor");
+                return new ResourceLocation(FastPipes.MOD_ID, "ultimate_extractor");
             default:
                 throw new RuntimeException("?");
         }
@@ -110,15 +110,15 @@ public enum ExtractorAttachmentType {
     ResourceLocation getItemId() {
         switch (this) {
             case BASIC:
-                return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "basic_extractor_attachment");
+                return new ResourceLocation(FastPipes.MOD_ID, "basic_extractor_attachment");
             case IMPROVED:
-                return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "improved_extractor_attachment");
+                return new ResourceLocation(FastPipes.MOD_ID, "improved_extractor_attachment");
             case ADVANCED:
-                return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "advanced_extractor_attachment");
+                return new ResourceLocation(FastPipes.MOD_ID, "advanced_extractor_attachment");
             case ELITE:
-                return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "elite_extractor_attachment");
+                return new ResourceLocation(FastPipes.MOD_ID, "elite_extractor_attachment");
             case ULTIMATE:
-                return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "ultimate_extractor_attachment");
+                return new ResourceLocation(FastPipes.MOD_ID, "ultimate_extractor_attachment");
             default:
                 throw new RuntimeException("?");
         }
@@ -144,15 +144,15 @@ public enum ExtractorAttachmentType {
     ResourceLocation getModelLocation() {
         switch (this) {
             case BASIC:
-                return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "block/pipe/attachment/extractor/basic");
+                return new ResourceLocation(FastPipes.MOD_ID, "block/pipe/attachment/extractor/basic");
             case IMPROVED:
-                return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "block/pipe/attachment/extractor/improved");
+                return new ResourceLocation(FastPipes.MOD_ID, "block/pipe/attachment/extractor/improved");
             case ADVANCED:
-                return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "block/pipe/attachment/extractor/advanced");
+                return new ResourceLocation(FastPipes.MOD_ID, "block/pipe/attachment/extractor/advanced");
             case ELITE:
-                return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "block/pipe/attachment/extractor/elite");
+                return new ResourceLocation(FastPipes.MOD_ID, "block/pipe/attachment/extractor/elite");
             case ULTIMATE:
-                return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "block/pipe/attachment/extractor/ultimate");
+                return new ResourceLocation(FastPipes.MOD_ID, "block/pipe/attachment/extractor/ultimate");
             default:
                 throw new RuntimeException("?");
         }

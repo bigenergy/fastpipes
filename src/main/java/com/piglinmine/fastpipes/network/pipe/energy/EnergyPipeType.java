@@ -51,21 +51,21 @@ public enum EnergyPipeType {
     public ResourceLocation getId() {
         switch (this) {
             case BASIC:
-                return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "basic_energy_pipe");
+                return new ResourceLocation(FastPipes.MOD_ID, "basic_energy_pipe");
             case IMPROVED:
-                return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "improved_energy_pipe");
+                return new ResourceLocation(FastPipes.MOD_ID, "improved_energy_pipe");
             case ADVANCED:
-                return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "advanced_energy_pipe");
+                return new ResourceLocation(FastPipes.MOD_ID, "advanced_energy_pipe");
             case ELITE:
-                return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "elite_energy_pipe");
+                return new ResourceLocation(FastPipes.MOD_ID, "elite_energy_pipe");
             case ULTIMATE:
-                return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "ultimate_energy_pipe");
+                return new ResourceLocation(FastPipes.MOD_ID, "ultimate_energy_pipe");
             default:
                 throw new RuntimeException("Unknown EnergyPipeType: " + this);
         }
     }
 
     public ResourceLocation getNetworkType() {
-        return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "energy_" + name().toLowerCase());
+        return new ResourceLocation(FastPipes.MOD_ID, "energy_" + name().toLowerCase());
     }
 } 

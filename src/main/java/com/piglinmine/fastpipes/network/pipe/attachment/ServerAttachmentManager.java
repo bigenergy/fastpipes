@@ -93,7 +93,7 @@ public class ServerAttachmentManager implements AttachmentManager {
         for (Tag item : attch) {
             CompoundTag attchTag = (CompoundTag) item;
 
-            AttachmentFactory factory = AttachmentRegistry.INSTANCE.getFactory(ResourceLocation.parse(attchTag.getString("typ")));
+            AttachmentFactory factory = AttachmentRegistry.INSTANCE.getFactory(new ResourceLocation(attchTag.getString("typ")));
             if (factory != null) {
                 Attachment attachment = factory.createFromNbt(pipe, attchTag);
                 setAttachment(attachment.getDirection(), attachment);
@@ -113,7 +113,7 @@ public class ServerAttachmentManager implements AttachmentManager {
         for (Direction dir : Direction.values()) {
             if (hasAttachment(dir)) {
                 tag.putString("attch_" + dir.ordinal(), getAttachment(dir).getId().toString());
-                tag.put("pb_" + dir.ordinal(), getAttachment(dir).getDrop().saveOptional(pipe.getLevel().registryAccess()));
+                tag.put("pb_" + dir.ordinal(), getAttachment(dir).getDrop().save(new CompoundTag()));
             }
         }
     }

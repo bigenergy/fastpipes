@@ -30,7 +30,7 @@ public class ExtractorAttachmentFactory implements AttachmentFactory {
         ExtractorAttachment attachment = new ExtractorAttachment(pipe, dir, type);
 
         if (tag.contains("itemfilter")) {
-            attachment.getItemFilter().deserializeNBT(pipe.getLevel().registryAccess(), tag.getCompound("itemfilter"));
+            attachment.getItemFilter().deserializeNBT(tag.getCompound("itemfilter"));
         }
 
         if (tag.contains("rm")) {
@@ -58,7 +58,7 @@ public class ExtractorAttachmentFactory implements AttachmentFactory {
         }
 
         if (tag.contains("fluidfilter")) {
-            attachment.getFluidFilter().readFromNbt(tag.getCompound("fluidfilter"), pipe.getLevel().registryAccess());
+            attachment.getFluidFilter().readFromNbt(tag.getCompound("fluidfilter"));
         }
 
         return attachment;

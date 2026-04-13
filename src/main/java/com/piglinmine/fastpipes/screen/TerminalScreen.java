@@ -241,7 +241,7 @@ public class TerminalScreen extends BaseScreen<TerminalContainerMenu> {
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        this.renderBackground(graphics, mouseX, mouseY, partialTick);
+        this.renderBackground(graphics);
         super.render(graphics, mouseX, mouseY, partialTick);
         this.renderTooltip(graphics, mouseX, mouseY);
     }
@@ -291,8 +291,8 @@ public class TerminalScreen extends BaseScreen<TerminalContainerMenu> {
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
-        menu.setScrollOffset(menu.getScrollOffset() - (int) scrollY);
+    public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
+        menu.setScrollOffset(menu.getScrollOffset() - (int) delta);
         return true;
     }
 

@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ItemPipe extends Pipe {
-    public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "item");
+    public static final ResourceLocation ID = new ResourceLocation(FastPipes.MOD_ID, "item");
 
     private final List<ItemTransport> transports = new ArrayList<>();
     private final List<ItemTransport> transportsToAdd = new ArrayList<>();
@@ -42,7 +42,7 @@ public class ItemPipe extends Pipe {
 
         ListTag transports = new ListTag();
         for (ItemTransport transport : this.transports) {
-            transports.add(transport.writeToNbt(new CompoundTag(), level.registryAccess()));
+            transports.add(transport.writeToNbt(new CompoundTag()));
         }
         tag.put("transports", transports);
 
@@ -57,7 +57,7 @@ public class ItemPipe extends Pipe {
         if (tag.contains("transports")) {
             ListTag transportList = tag.getList("transports", Tag.TAG_COMPOUND);
             for (Tag transportTag : transportList) {
-                ItemTransport transport = ItemTransport.of((CompoundTag) transportTag, level.registryAccess());
+                ItemTransport transport = ItemTransport.of((CompoundTag) transportTag);
                 if (transport != null) {
                     transports.add(transport);
                 }

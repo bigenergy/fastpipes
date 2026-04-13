@@ -1,4 +1,5 @@
 package com.piglinmine.fastpipes.network.pipe.transport.callback;
+import com.piglinmine.fastpipes.util.CapabilityUtil;
 
 import com.piglinmine.fastpipes.FastPipes;
 import com.piglinmine.fastpipes.network.Network;
@@ -7,22 +8,20 @@ import com.piglinmine.fastpipes.network.pipe.Pipe;
 import com.piglinmine.fastpipes.network.pipe.attachment.Attachment;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.ItemHandlerHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
 
 public class ItemInsertTransportCallback implements TransportCallback {
-    public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "item_insert");
+    public static final ResourceLocation ID = new ResourceLocation(FastPipes.MOD_ID, "item_insert");
     private static final Logger LOGGER = LogManager.getLogger(ItemInsertTransportCallback.class);
     
     private final BlockPos itemHandlerPosition;
@@ -36,9 +35,9 @@ public class ItemInsertTransportCallback implements TransportCallback {
     }
 
     @Nullable
-    public static ItemInsertTransportCallback of(CompoundTag tag, HolderLookup.Provider registries) {
+    public static ItemInsertTransportCallback of(CompoundTag tag) {
         BlockPos itemHandlerPosition = BlockPos.of(tag.getLong("ihpos"));
-        ItemStack toInsert = ItemStack.parseOptional(registries, tag.getCompound("s"));
+        ItemStack toInsert = ItemStack.of(tag.getCompound("s"));
         Direction incomingDirection = Direction.values()[tag.getInt("incdir")];
 
         if (toInsert.isEmpty()) {
@@ -74,7 +73,7 @@ public class ItemInsertTransportCallback implements TransportCallback {
         }
 
         // Use NeoForge Capabilities API instead of Forge CapabilityItemHandler
-        IItemHandler itemHandler = level.getCapability(Capabilities.ItemHandler.BLOCK, itemHandlerPosition, incomingDirection.getOpposite());
+        IItemHandler itemHandler = CapabilityUtil.getItemHandler(level, itemHandlerPosition, incomingDirection.getOpposite());
         if (itemHandler == null) {
             LOGGER.warn("Destination item handler is no longer exposing a capability at " + itemHandlerPosition);
             cancelCallback.call(network, level, currentPos, cancelCallback);
@@ -96,17 +95,8 @@ public class ItemInsertTransportCallback implements TransportCallback {
 
     @Override
     public CompoundTag writeToNbt(CompoundTag tag) {
-        // Legacy method for compatibility - use empty CompoundTag as placeholder
         tag.putLong("ihpos", itemHandlerPosition.asLong());
-        tag.put("s", new CompoundTag()); // Placeholder - proper serialization needs HolderLookup.Provider
-        tag.putInt("incdir", incomingDirection.ordinal());
-        return tag;
-    }
-
-    @Override
-    public CompoundTag writeToNbt(CompoundTag tag, HolderLookup.Provider registries) {
-        tag.putLong("ihpos", itemHandlerPosition.asLong());
-        tag.put("s", toInsert.saveOptional(registries));
+        tag.put("s", toInsert.save(new CompoundTag()));
         tag.putInt("incdir", incomingDirection.ordinal());
 
         return tag;

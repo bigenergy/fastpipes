@@ -8,12 +8,11 @@ import com.piglinmine.fastpipes.network.pipe.Pipe;
 import com.piglinmine.fastpipes.network.pipe.fluid.FluidPipe;
 import com.piglinmine.fastpipes.network.pipe.fluid.FluidPipeType;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidStack;
 
 import javax.annotation.Nullable;
 
@@ -98,24 +97,24 @@ public class FluidPipeBlockEntity extends PipeBlockEntity {
     }
 
     @Override
-    public CompoundTag writeUpdate(CompoundTag tag, HolderLookup.Provider registries) {
+    public CompoundTag writeUpdate(CompoundTag tag) {
         if (level != null && !level.isClientSide()) {
             Pipe pipe = NetworkManager.get(level).getPipe(worldPosition);
             if (pipe instanceof FluidPipe fluidPipe && fluidPipe.getNetwork() instanceof FluidNetwork fluidNetwork) {
                 FluidStack fluid = fluidNetwork.getFluidTank().getFluid();
                 if (!fluid.isEmpty()) {
-                    tag.put("fluid", fluid.save(registries, new CompoundTag()));
+                    tag.put("fluid", fluid.writeToNBT(new CompoundTag()));
                 }
                 tag.putFloat("fullness", fluidPipe.getFullness());
             }
         }
-        return super.writeUpdate(tag, registries);
+        return super.writeUpdate(tag);
     }
 
     @Override
-    public void readUpdate(@Nullable CompoundTag tag, HolderLookup.Provider registries) {
+    public void readUpdate(@Nullable CompoundTag tag) {
         if (tag != null && tag.contains("fluid")) {
-            fluid = FluidStack.parseOptional(registries, tag.getCompound("fluid"));
+            fluid = FluidStack.loadFluidStackFromNBT(tag.getCompound("fluid"));
         } else {
             fluid = FluidStack.EMPTY;
         }
@@ -128,7 +127,7 @@ public class FluidPipeBlockEntity extends PipeBlockEntity {
             renderFullness = 0;
         }
 
-        super.readUpdate(tag, registries);
+        super.readUpdate(tag);
     }
 
     public float getFullness() {
@@ -140,13 +139,24 @@ public class FluidPipeBlockEntity extends PipeBlockEntity {
     }
 
     // NeoForge Capability Handler
-    public net.neoforged.neoforge.fluids.capability.IFluidHandler getFluidHandler(net.minecraft.core.Direction side) {
+    public net.minecraftforge.fluids.capability.IFluidHandler getFluidHandler(net.minecraft.core.Direction side) {
         if (level == null || level.isClientSide()) return null;
         Pipe pipe = NetworkManager.get(level).getPipe(worldPosition);
         if (pipe != null && pipe.getNetwork() instanceof FluidNetwork fluidNetwork) {
             return fluidNetwork.getFluidTank();
         }
         return null;
+    }
+
+    @Override
+    public <T> net.minecraftforge.common.util.LazyOptional<T> getCapability(net.minecraftforge.common.capabilities.Capability<T> cap, @javax.annotation.Nullable net.minecraft.core.Direction side) {
+        if (cap == net.minecraftforge.common.capabilities.ForgeCapabilities.FLUID_HANDLER && side != null) {
+            net.minecraftforge.fluids.capability.IFluidHandler handler = getFluidHandler(side);
+            if (handler != null) {
+                return net.minecraftforge.common.util.LazyOptional.of(() -> handler).cast();
+            }
+        }
+        return super.getCapability(cap, side);
     }
 
     protected Pipe createPipe(Level level, BlockPos pos) {

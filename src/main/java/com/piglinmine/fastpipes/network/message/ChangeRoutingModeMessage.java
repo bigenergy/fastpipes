@@ -1,62 +1,53 @@
 package com.piglinmine.fastpipes.network.message;
 
-import com.piglinmine.fastpipes.FastPipes;
 import com.piglinmine.fastpipes.blockentity.PipeBlockEntity;
 import com.piglinmine.fastpipes.network.NetworkManager;
 import com.piglinmine.fastpipes.network.pipe.attachment.Attachment;
 import com.piglinmine.fastpipes.network.pipe.attachment.extractor.ExtractorAttachment;
 import com.piglinmine.fastpipes.network.pipe.attachment.extractor.RoutingMode;
-import io.netty.buffer.ByteBuf;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.minecraftforge.network.NetworkEvent;
 
-public record ChangeRoutingModeMessage(BlockPos pos, Direction direction, int mode) implements CustomPacketPayload {
-    
-    public static final CustomPacketPayload.Type<ChangeRoutingModeMessage> TYPE = 
-        new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "change_routing_mode"));
+import java.util.function.Supplier;
 
-    public static final StreamCodec<ByteBuf, ChangeRoutingModeMessage> STREAM_CODEC = StreamCodec.composite(
-        BlockPos.STREAM_CODEC,
-        ChangeRoutingModeMessage::pos,
-        Direction.STREAM_CODEC,
-        ChangeRoutingModeMessage::direction,
-        ByteBufCodecs.VAR_INT,
-        ChangeRoutingModeMessage::mode,
-        ChangeRoutingModeMessage::new
-    );
+public record ChangeRoutingModeMessage(BlockPos pos, Direction direction, int mode) {
 
-    @Override
-    public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
-        return TYPE;
+    public void encode(FriendlyByteBuf buf) {
+        buf.writeBlockPos(pos);
+        buf.writeByte(direction.get3DDataValue());
+        buf.writeVarInt(mode);
     }
 
-    public static void handleServer(final ChangeRoutingModeMessage message, final IPayloadContext context) {
-        context.enqueueWork(() -> {
-            if (context.player() == null || context.player().level() == null) {
+    public static ChangeRoutingModeMessage decode(FriendlyByteBuf buf) {
+        BlockPos pos = buf.readBlockPos();
+        Direction direction = Direction.from3DDataValue(buf.readByte());
+        int mode = buf.readVarInt();
+        return new ChangeRoutingModeMessage(pos, direction, mode);
+    }
+
+    public void handle(Supplier<NetworkEvent.Context> ctx) {
+        ctx.get().enqueueWork(() -> {
+            var player = ctx.get().getSender();
+            if (player == null || player.level() == null) {
                 return;
             }
 
-            BlockEntity blockEntity = context.player().level().getBlockEntity(message.pos());
+            BlockEntity blockEntity = player.level().getBlockEntity(pos);
 
             if (blockEntity instanceof PipeBlockEntity) {
-                Attachment attachment = ((PipeBlockEntity) blockEntity).getAttachmentManager().getAttachment(message.direction());
+                Attachment attachment = ((PipeBlockEntity) blockEntity).getAttachmentManager().getAttachment(direction);
 
                 if (attachment instanceof ExtractorAttachment) {
-                    RoutingMode routingMode = RoutingMode.get((byte) message.mode());
+                    RoutingMode routingMode = RoutingMode.get((byte) mode);
                     ((ExtractorAttachment) attachment).setRoutingMode(routingMode);
 
                     NetworkManager.get(blockEntity.getLevel()).setDirty();
                 }
             }
-        }).exceptionally(e -> {
-            context.disconnect(net.minecraft.network.chat.Component.literal("Failed to handle ChangeRoutingModeMessage: " + e.getMessage()));
-            return null;
         });
+        ctx.get().setPacketHandled(true);
     }
-} 
+}

@@ -17,7 +17,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import net.minecraft.core.HolderLookup;
 
 import javax.annotation.Nullable;
 import java.util.ArrayDeque;
@@ -91,9 +90,8 @@ public class ItemTransport {
     }
 
     @Nullable
-    public static ItemTransport of(CompoundTag tag, HolderLookup.Provider registries) {
-        // Use ItemStack.parseOptional with HolderLookup.Provider for MC 1.21.1
-        ItemStack value = ItemStack.parseOptional(registries, tag.getCompound("v"));
+    public static ItemTransport of(CompoundTag tag) {
+        ItemStack value = ItemStack.of(tag.getCompound("v"));
         if (value.isEmpty()) {
             LOGGER.warn("Item no longer exists");
             return null;
@@ -110,19 +108,19 @@ public class ItemTransport {
 
         Direction initialDirection = Direction.values()[tag.getInt("initd")];
 
-        ResourceLocation finishedCallbackId = ResourceLocation.parse(tag.getString("fcid"));
+        ResourceLocation finishedCallbackId = new ResourceLocation(tag.getString("fcid"));
         TransportCallback finishedCallback = TransportCallbackFactoryRegistry.createCallback(
-            finishedCallbackId, tag.getCompound("fc"), registries
+            finishedCallbackId, tag.getCompound("fc")
         );
 
-        ResourceLocation cancelCallbackId = ResourceLocation.parse(tag.getString("ccid"));
+        ResourceLocation cancelCallbackId = new ResourceLocation(tag.getString("ccid"));
         TransportCallback cancelCallback = TransportCallbackFactoryRegistry.createCallback(
-            cancelCallbackId, tag.getCompound("cc"), registries
+            cancelCallbackId, tag.getCompound("cc")
         );
 
-        ResourceLocation pipeGoneCallbackId = ResourceLocation.parse(tag.getString("pgcid"));
+        ResourceLocation pipeGoneCallbackId = new ResourceLocation(tag.getString("pgcid"));
         TransportCallback pipeGoneCallback = TransportCallbackFactoryRegistry.createCallback(
-            pipeGoneCallbackId, tag.getCompound("pgc"), registries
+            pipeGoneCallbackId, tag.getCompound("pgc")
         );
 
         if (finishedCallback == null || cancelCallback == null || pipeGoneCallback == null) {
@@ -228,9 +226,8 @@ public class ItemTransport {
         );
     }
 
-    public CompoundTag writeToNbt(CompoundTag tag, HolderLookup.Provider registries) {
-        // Use saveOptional with HolderLookup.Provider for MC 1.21.1
-        tag.put("v", value.saveOptional(registries));
+    public CompoundTag writeToNbt(CompoundTag tag) {
+        tag.put("v", value.save(new CompoundTag()));
         tag.putLong("src", source.asLong());
         tag.putLong("dst", destination.asLong());
 
@@ -242,11 +239,11 @@ public class ItemTransport {
 
         tag.putInt("initd", initialDirection.ordinal());
 
-        tag.put("fc", finishedCallback.writeToNbt(new CompoundTag(), registries));
+        tag.put("fc", finishedCallback.writeToNbt(new CompoundTag()));
         tag.putString("fcid", finishedCallback.getId().toString());
-        tag.put("cc", cancelCallback.writeToNbt(new CompoundTag(), registries));
+        tag.put("cc", cancelCallback.writeToNbt(new CompoundTag()));
         tag.putString("ccid", cancelCallback.getId().toString());
-        tag.put("pgc", pipeGoneCallback.writeToNbt(new CompoundTag(), registries));
+        tag.put("pgc", pipeGoneCallback.writeToNbt(new CompoundTag()));
         tag.putString("pgcid", pipeGoneCallback.getId().toString());
 
         tag.putBoolean("fp", firstPipe);

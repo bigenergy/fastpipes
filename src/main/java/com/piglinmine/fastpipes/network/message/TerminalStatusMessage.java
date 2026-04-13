@@ -1,37 +1,31 @@
 package com.piglinmine.fastpipes.network.message;
 
-import com.piglinmine.fastpipes.FastPipes;
 import com.piglinmine.fastpipes.screen.TerminalScreen;
-import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
+import net.minecraftforge.network.NetworkEvent;
 
-public record TerminalStatusMessage(String messageKey) implements CustomPacketPayload {
+import java.util.function.Supplier;
 
-    public static final Type<TerminalStatusMessage> TYPE =
-        new Type<>(ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "terminal_status"));
+public record TerminalStatusMessage(String messageKey) {
 
-    public static final StreamCodec<ByteBuf, TerminalStatusMessage> STREAM_CODEC = StreamCodec.composite(
-        ByteBufCodecs.STRING_UTF8,
-        TerminalStatusMessage::messageKey,
-        TerminalStatusMessage::new
-    );
-
-    @Override
-    public Type<? extends CustomPacketPayload> type() {
-        return TYPE;
+    public void encode(FriendlyByteBuf buf) {
+        buf.writeUtf(messageKey);
     }
 
-    public static void handleClient(final TerminalStatusMessage message, final IPayloadContext context) {
-        context.enqueueWork(() -> {
+    public static TerminalStatusMessage decode(FriendlyByteBuf buf) {
+        String messageKey = buf.readUtf();
+        return new TerminalStatusMessage(messageKey);
+    }
+
+    public void handle(Supplier<NetworkEvent.Context> ctx) {
+        ctx.get().enqueueWork(() -> {
             Minecraft mc = Minecraft.getInstance();
             if (mc.screen instanceof TerminalScreen screen) {
-                screen.showStatus(net.minecraft.network.chat.Component.translatable(message.messageKey()).getString());
+                screen.showStatus(Component.translatable(messageKey).getString());
             }
         });
+        ctx.get().setPacketHandled(true);
     }
 }

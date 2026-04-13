@@ -1,4 +1,5 @@
 package com.piglinmine.fastpipes.network.graph;
+import com.piglinmine.fastpipes.util.CapabilityUtil;
 
 import com.piglinmine.fastpipes.network.NetworkManager;
 import com.piglinmine.fastpipes.network.pipe.Destination;
@@ -12,7 +13,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.neoforge.capabilities.Capabilities;
 
 import java.util.*;
 
@@ -108,19 +108,19 @@ public class NetworkGraphScanner {
 
                 if (blockEntity != null) {
                     // Check for Item Handler capability
-                    var itemHandler = request.getLevel().getCapability(Capabilities.ItemHandler.BLOCK, request.getPos(), request.getDirection().getOpposite());
+                    var itemHandler = CapabilityUtil.getItemHandler(request.getLevel(), request.getPos(), request.getDirection().getOpposite());
                     if (itemHandler != null) {
                         destinations.add(new Destination(DestinationType.ITEM_HANDLER, request.getPos(), request.getDirection(), connectedPipe));
                     }
 
                     // Check for Fluid Handler capability
-                    var fluidHandler = request.getLevel().getCapability(Capabilities.FluidHandler.BLOCK, request.getPos(), request.getDirection().getOpposite());
+                    var fluidHandler = CapabilityUtil.getFluidHandler(request.getLevel(), request.getPos(), request.getDirection().getOpposite());
                     if (fluidHandler != null) {
                         destinations.add(new Destination(DestinationType.FLUID_HANDLER, request.getPos(), request.getDirection(), connectedPipe));
                     }
 
                     // Check for Energy Storage capability
-                    var energyStorage = request.getLevel().getCapability(Capabilities.EnergyStorage.BLOCK, request.getPos(), request.getDirection().getOpposite());
+                    var energyStorage = CapabilityUtil.getEnergyStorage(request.getLevel(), request.getPos(), request.getDirection().getOpposite());
                     if (energyStorage != null && !(energyStorage instanceof EnergyPipeEnergyStorage)) {
                         destinations.add(new Destination(DestinationType.ENERGY_STORAGE, request.getPos(), request.getDirection(), connectedPipe));
                     }

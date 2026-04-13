@@ -1,53 +1,40 @@
 package com.piglinmine.fastpipes.network.message;
 
-import com.piglinmine.fastpipes.FastPipes;
 import com.piglinmine.fastpipes.menu.TerminalContainerMenu;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.minecraftforge.network.NetworkEvent;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
-public record TerminalRecipeTransferMessage(List<ItemStack> ingredients) implements CustomPacketPayload {
+public record TerminalRecipeTransferMessage(List<ItemStack> ingredients) {
 
-    public static final Type<TerminalRecipeTransferMessage> TYPE =
-        new Type<>(ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "terminal_recipe_transfer"));
-
-    public static final StreamCodec<RegistryFriendlyByteBuf, TerminalRecipeTransferMessage> STREAM_CODEC = new StreamCodec<>() {
-        @Override
-        public TerminalRecipeTransferMessage decode(RegistryFriendlyByteBuf buf) {
-            int size = buf.readByte();
-            List<ItemStack> items = new ArrayList<>(size);
-            for (int i = 0; i < size; i++) {
-                items.add(ItemStack.OPTIONAL_STREAM_CODEC.decode(buf));
-            }
-            return new TerminalRecipeTransferMessage(items);
+    public void encode(FriendlyByteBuf buf) {
+        buf.writeByte(ingredients.size());
+        for (ItemStack stack : ingredients) {
+            buf.writeItem(stack);
         }
-
-        @Override
-        public void encode(RegistryFriendlyByteBuf buf, TerminalRecipeTransferMessage msg) {
-            buf.writeByte(msg.ingredients().size());
-            for (ItemStack stack : msg.ingredients()) {
-                ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, stack);
-            }
-        }
-    };
-
-    @Override
-    public Type<? extends CustomPacketPayload> type() {
-        return TYPE;
     }
 
-    public static void handleServer(final TerminalRecipeTransferMessage message, final IPayloadContext context) {
-        context.enqueueWork(() -> {
-            if (context.player() == null) return;
-            if (context.player().containerMenu instanceof TerminalContainerMenu terminal) {
-                terminal.handleRecipeTransfer(message.ingredients());
+    public static TerminalRecipeTransferMessage decode(FriendlyByteBuf buf) {
+        int size = buf.readByte();
+        List<ItemStack> items = new ArrayList<>(size);
+        for (int i = 0; i < size; i++) {
+            items.add(buf.readItem());
+        }
+        return new TerminalRecipeTransferMessage(items);
+    }
+
+    public void handle(Supplier<NetworkEvent.Context> ctx) {
+        ctx.get().enqueueWork(() -> {
+            var player = ctx.get().getSender();
+            if (player == null) return;
+            if (player.containerMenu instanceof TerminalContainerMenu terminal) {
+                terminal.handleRecipeTransfer(ingredients);
             }
         });
+        ctx.get().setPacketHandled(true);
     }
 }

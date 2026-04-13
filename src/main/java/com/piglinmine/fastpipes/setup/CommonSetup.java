@@ -23,10 +23,9 @@ import com.piglinmine.fastpipes.network.pipe.fluid.FluidPipeType;
 import com.piglinmine.fastpipes.network.pipe.item.ItemPipe;
 import com.piglinmine.fastpipes.network.pipe.item.ItemPipeFactory;
 import com.piglinmine.fastpipes.network.pipe.transport.callback.TransportCallbackFactoryRegistry;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.event.tick.LevelTickEvent;
-import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.neoforged.fml.event.lifecycle.FMLConstructModEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -34,25 +33,20 @@ public class CommonSetup {
     private static final Logger LOGGER = LogManager.getLogger(CommonSetup.class);
 
     @SubscribeEvent
-    public static void onConstructMod(FMLConstructModEvent event) {
-        LOGGER.debug("Constructing Fast Pipes mod");
-        
-        // Initialize transport callback registry
-        TransportCallbackFactoryRegistry.INSTANCE.initialize();
-        
-        // Register network factories
-        registerNetworkFactories();
-        
-        // Register pipe factories
-        registerPipeFactories();
-        
-        // Register attachment factories
-        registerAttachmentFactories();
-    }
-
-    @SubscribeEvent
     public static void onCommonSetup(FMLCommonSetupEvent event) {
         LOGGER.debug("Common setup for Fast Pipes");
+
+        // Initialize transport callback registry
+        TransportCallbackFactoryRegistry.INSTANCE.initialize();
+
+        // Register network factories
+        registerNetworkFactories();
+
+        // Register pipe factories
+        registerPipeFactories();
+
+        // Register attachment factories
+        registerAttachmentFactories();
     }
 
     private static void registerNetworkFactories() {
@@ -130,10 +124,10 @@ public class CommonSetup {
     }
 
     @SubscribeEvent
-    public static void onLevelTick(LevelTickEvent.Post event) {
-        // Update all networks on server side
-        if (!event.getLevel().isClientSide()) {
-            NetworkManager.get(event.getLevel()).getNetworks().forEach(n -> n.update(event.getLevel()));
+    public static void onLevelTick(TickEvent.LevelTickEvent event) {
+        // Update all networks on server side (only on END phase to match Post behavior)
+        if (event.phase == TickEvent.Phase.END && !event.level.isClientSide()) {
+            NetworkManager.get(event.level).getNetworks().forEach(n -> n.update(event.level));
         }
     }
 } 

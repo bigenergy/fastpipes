@@ -15,11 +15,11 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.client.ChunkRenderTypeSet;
-import net.neoforged.neoforge.client.model.data.ModelData;
-import net.neoforged.neoforge.client.model.QuadTransformers;
-import net.neoforged.neoforge.client.model.IQuadTransformer;
-import net.neoforged.neoforge.common.util.TransformationHelper;
+import net.minecraftforge.client.ChunkRenderTypeSet;
+import net.minecraftforge.client.model.data.ModelData;
+import net.minecraftforge.client.model.QuadTransformers;
+import net.minecraftforge.client.model.IQuadTransformer;
+import net.minecraftforge.common.util.TransformationHelper;
 import com.mojang.math.Transformation;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
@@ -186,7 +186,8 @@ public class PipeBakedModel implements BakedModel {
         // Apply color tinting if pipe is dyed
         if (state.getColorId() != null) {
             DyeColor dyeColor = DyeColor.byId(state.getColorId());
-            int color = dyeColor.getTextureDiffuseColor();
+            float[] diffuse = dyeColor.getTextureDiffuseColors();
+            int color = ((int)(diffuse[0] * 255) << 16) | ((int)(diffuse[1] * 255) << 8) | (int)(diffuse[2] * 255);
             quads = tintQuads(quads, color);
         }
 

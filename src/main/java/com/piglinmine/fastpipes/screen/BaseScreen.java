@@ -11,8 +11,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.InventoryMenu;
-import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
-import net.neoforged.neoforge.fluids.FluidStack;
+import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
+import net.minecraftforge.fluids.FluidStack;
 
 public abstract class BaseScreen<T extends BaseContainerMenu> extends AbstractContainerScreen<T> {
     public BaseScreen(T screenContainer, Inventory inv, Component title) {
@@ -56,7 +56,7 @@ public abstract class BaseScreen<T extends BaseContainerMenu> extends AbstractCo
             FluidStack stack = slot.getFluidInventory().getFluid(slot.getSlotIndex());
             if (stack.isEmpty()) continue;
             if (!isHovering(slot.x, slot.y, 17, 17, mouseX, mouseY)) continue;
-            graphics.renderTooltip(font, stack.getHoverName(), mouseX - leftPos, mouseY - topPos);
+            graphics.renderTooltip(font, stack.getDisplayName(), mouseX - leftPos, mouseY - topPos);
         }
     }
 } 

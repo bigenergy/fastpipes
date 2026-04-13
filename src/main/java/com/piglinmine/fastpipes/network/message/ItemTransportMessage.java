@@ -1,53 +1,49 @@
 package com.piglinmine.fastpipes.network.message;
 
-import com.piglinmine.fastpipes.FastPipes;
 import com.piglinmine.fastpipes.blockentity.ItemPipeBlockEntity;
 import com.piglinmine.fastpipes.network.pipe.transport.ItemTransportProps;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.minecraftforge.network.NetworkEvent;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
-public record ItemTransportMessage(BlockPos pos, List<ItemTransportProps> props) implements CustomPacketPayload {
-    
-    public static final CustomPacketPayload.Type<ItemTransportMessage> TYPE = 
-        new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "item_transport"));
+public record ItemTransportMessage(BlockPos pos, List<ItemTransportProps> props) {
 
-    public static final StreamCodec<RegistryFriendlyByteBuf, ItemTransportMessage> STREAM_CODEC = StreamCodec.composite(
-        BlockPos.STREAM_CODEC,
-        ItemTransportMessage::pos,
-        ByteBufCodecs.collection(ArrayList::new, ItemTransportProps.STREAM_CODEC),
-        ItemTransportMessage::props,
-        ItemTransportMessage::new
-    );
-
-    @Override
-    public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
-        return TYPE;
+    public void encode(FriendlyByteBuf buf) {
+        buf.writeBlockPos(pos);
+        buf.writeVarInt(props.size());
+        for (ItemTransportProps prop : props) {
+            ItemTransportProps.encode(buf, prop);
+        }
     }
 
-    public static void handleClient(final ItemTransportMessage message, final IPayloadContext context) {
-        context.enqueueWork(() -> {
+    public static ItemTransportMessage decode(FriendlyByteBuf buf) {
+        BlockPos pos = buf.readBlockPos();
+        int size = buf.readVarInt();
+        List<ItemTransportProps> props = new ArrayList<>(size);
+        for (int i = 0; i < size; i++) {
+            props.add(ItemTransportProps.decode(buf));
+        }
+        return new ItemTransportMessage(pos, props);
+    }
+
+    public void handle(Supplier<NetworkEvent.Context> ctx) {
+        ctx.get().enqueueWork(() -> {
             if (Minecraft.getInstance().level == null) {
                 return;
             }
 
-            BlockEntity blockEntity = Minecraft.getInstance().level.getBlockEntity(message.pos());
+            BlockEntity blockEntity = Minecraft.getInstance().level.getBlockEntity(pos);
 
             if (blockEntity instanceof ItemPipeBlockEntity itemPipeBlockEntity) {
-                itemPipeBlockEntity.setProps(message.props());
+                itemPipeBlockEntity.setProps(props);
             }
-        }).exceptionally(e -> {
-            context.disconnect(net.minecraft.network.chat.Component.literal("Failed to handle ItemTransportMessage: " + e.getMessage()));
-            return null;
         });
+        ctx.get().setPacketHandled(true);
     }
-} 
+}

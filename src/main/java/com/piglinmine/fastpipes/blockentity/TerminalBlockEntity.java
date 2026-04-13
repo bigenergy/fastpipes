@@ -2,7 +2,6 @@ package com.piglinmine.fastpipes.blockentity;
 
 import com.piglinmine.fastpipes.FPipesBlockEntities;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.world.item.ItemStack;
@@ -19,28 +18,28 @@ public class TerminalBlockEntity extends BaseBlockEntity {
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.saveAdditional(tag, registries);
+    protected void saveAdditional(CompoundTag tag) {
+        super.saveAdditional(tag);
         ListTag list = new ListTag();
         for (ItemStack stack : craftGrid) {
             if (stack.isEmpty()) {
                 list.add(new CompoundTag());
             } else {
-                list.add(stack.save(registries));
+                list.add(stack.save(new CompoundTag()));
             }
         }
         tag.put("CraftGrid", list);
     }
 
     @Override
-    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.loadAdditional(tag, registries);
+    public void load(CompoundTag tag) {
+        super.load(tag);
         if (tag.contains("CraftGrid")) {
             ListTag list = tag.getList("CraftGrid", CompoundTag.TAG_COMPOUND);
             for (int i = 0; i < Math.min(list.size(), 9); i++) {
                 CompoundTag itemTag = list.getCompound(i);
                 craftGrid[i] = itemTag.isEmpty() ? ItemStack.EMPTY :
-                    ItemStack.parse(registries, itemTag).orElse(ItemStack.EMPTY);
+                    ItemStack.of(itemTag);
             }
         }
     }

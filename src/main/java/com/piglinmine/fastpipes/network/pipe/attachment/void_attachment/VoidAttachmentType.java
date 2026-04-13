@@ -9,15 +9,15 @@ public enum VoidAttachmentType {
     INSTANCE;
 
     public ResourceLocation getId() {
-        return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "void");
+        return new ResourceLocation(FastPipes.MOD_ID, "void");
     }
 
     public ResourceLocation getItemId() {
-        return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "void_attachment");
+        return new ResourceLocation(FastPipes.MOD_ID, "void_attachment");
     }
 
     public ResourceLocation getModelLocation() {
-        return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "block/pipe/attachment/void");
+        return new ResourceLocation(FastPipes.MOD_ID, "block/pipe/attachment/void");
     }
 
     public Item getItem() {

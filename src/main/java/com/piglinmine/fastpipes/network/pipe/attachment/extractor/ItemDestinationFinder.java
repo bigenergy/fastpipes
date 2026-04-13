@@ -1,4 +1,5 @@
 package com.piglinmine.fastpipes.network.pipe.attachment.extractor;
+import com.piglinmine.fastpipes.util.CapabilityUtil;
 
 import com.piglinmine.fastpipes.network.item.ItemNetwork;
 import com.piglinmine.fastpipes.network.pipe.Destination;
@@ -7,9 +8,8 @@ import com.piglinmine.fastpipes.network.pipe.attachment.Attachment;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.ItemHandlerHelper;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -110,7 +110,7 @@ public class ItemDestinationFinder {
             return false;
         }
 
-        IItemHandler handler = blockEntity.getLevel().getCapability(Capabilities.ItemHandler.BLOCK, destination.getReceiver(), destination.getIncomingDirection().getOpposite());
+        IItemHandler handler = CapabilityUtil.getItemHandler(blockEntity.getLevel(), destination.getReceiver(), destination.getIncomingDirection().getOpposite());
         if (handler == null) {
             return false;
         }

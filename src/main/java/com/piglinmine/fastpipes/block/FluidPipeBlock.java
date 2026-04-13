@@ -1,4 +1,5 @@
 package com.piglinmine.fastpipes.block;
+import com.piglinmine.fastpipes.util.CapabilityUtil;
 
 import com.piglinmine.fastpipes.blockentity.FluidPipeBlockEntity;
 import com.piglinmine.fastpipes.blockentity.PipeBlockEntity;
@@ -14,7 +15,6 @@ import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.capabilities.Capabilities;
 
 public class FluidPipeBlock extends PipeBlock implements EntityBlock {
     private final FluidPipeType type;
@@ -71,7 +71,7 @@ public class FluidPipeBlock extends PipeBlock implements EntityBlock {
         if (facingState.getBlock() instanceof FluidPipeBlock) return false;
 
         if (world instanceof Level level) {
-            return level.getCapability(Capabilities.FluidHandler.BLOCK, pos.relative(direction), direction.getOpposite()) != null;
+            return CapabilityUtil.getFluidHandler(level, pos.relative(direction), direction.getOpposite()) != null;
         }
         return false;
     }

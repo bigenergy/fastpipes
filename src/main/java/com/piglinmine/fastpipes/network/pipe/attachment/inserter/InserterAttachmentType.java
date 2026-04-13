@@ -50,22 +50,22 @@ public enum InserterAttachmentType {
 
     public ResourceLocation getId() {
         switch (this) {
-            case BASIC:    return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "basic_inserter");
-            case IMPROVED: return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "improved_inserter");
-            case ADVANCED: return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "advanced_inserter");
-            case ELITE:    return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "elite_inserter");
-            case ULTIMATE: return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "ultimate_inserter");
+            case BASIC:    return new ResourceLocation(FastPipes.MOD_ID, "basic_inserter");
+            case IMPROVED: return new ResourceLocation(FastPipes.MOD_ID, "improved_inserter");
+            case ADVANCED: return new ResourceLocation(FastPipes.MOD_ID, "advanced_inserter");
+            case ELITE:    return new ResourceLocation(FastPipes.MOD_ID, "elite_inserter");
+            case ULTIMATE: return new ResourceLocation(FastPipes.MOD_ID, "ultimate_inserter");
             default: throw new RuntimeException("Unknown InserterAttachmentType: " + this);
         }
     }
 
     ResourceLocation getItemId() {
         switch (this) {
-            case BASIC:    return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "basic_inserter_attachment");
-            case IMPROVED: return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "improved_inserter_attachment");
-            case ADVANCED: return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "advanced_inserter_attachment");
-            case ELITE:    return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "elite_inserter_attachment");
-            case ULTIMATE: return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "ultimate_inserter_attachment");
+            case BASIC:    return new ResourceLocation(FastPipes.MOD_ID, "basic_inserter_attachment");
+            case IMPROVED: return new ResourceLocation(FastPipes.MOD_ID, "improved_inserter_attachment");
+            case ADVANCED: return new ResourceLocation(FastPipes.MOD_ID, "advanced_inserter_attachment");
+            case ELITE:    return new ResourceLocation(FastPipes.MOD_ID, "elite_inserter_attachment");
+            case ULTIMATE: return new ResourceLocation(FastPipes.MOD_ID, "ultimate_inserter_attachment");
             default: throw new RuntimeException("Unknown InserterAttachmentType: " + this);
         }
     }
@@ -83,11 +83,11 @@ public enum InserterAttachmentType {
 
     ResourceLocation getModelLocation() {
         switch (this) {
-            case BASIC:    return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "block/pipe/attachment/inserter/basic");
-            case IMPROVED: return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "block/pipe/attachment/inserter/improved");
-            case ADVANCED: return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "block/pipe/attachment/inserter/advanced");
-            case ELITE:    return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "block/pipe/attachment/inserter/elite");
-            case ULTIMATE: return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "block/pipe/attachment/inserter/ultimate");
+            case BASIC:    return new ResourceLocation(FastPipes.MOD_ID, "block/pipe/attachment/inserter/basic");
+            case IMPROVED: return new ResourceLocation(FastPipes.MOD_ID, "block/pipe/attachment/inserter/improved");
+            case ADVANCED: return new ResourceLocation(FastPipes.MOD_ID, "block/pipe/attachment/inserter/advanced");
+            case ELITE:    return new ResourceLocation(FastPipes.MOD_ID, "block/pipe/attachment/inserter/elite");
+            case ULTIMATE: return new ResourceLocation(FastPipes.MOD_ID, "block/pipe/attachment/inserter/ultimate");
             default: throw new RuntimeException("Unknown InserterAttachmentType: " + this);
         }
     }

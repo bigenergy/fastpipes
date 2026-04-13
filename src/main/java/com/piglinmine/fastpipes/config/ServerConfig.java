@@ -1,10 +1,10 @@
 package com.piglinmine.fastpipes.config;
 
-import net.neoforged.neoforge.common.ModConfigSpec;
+import net.minecraftforge.common.ForgeConfigSpec;
 
 public class ServerConfig {
-    private final ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
-    private final ModConfigSpec spec;
+    private final ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
+    private final ForgeConfigSpec spec;
 
     private final ItemPipe basicItemPipe;
     private final ItemPipe improvedItemPipe;
@@ -139,7 +139,7 @@ public class ServerConfig {
         spec = builder.build();
     }
 
-    public ModConfigSpec getSpec() {
+    public ForgeConfigSpec getSpec() {
         return spec;
     }
 
@@ -222,7 +222,7 @@ public class ServerConfig {
     }
 
     public class ItemPipe {
-        private final ModConfigSpec.IntValue maxTicks;
+        private final ForgeConfigSpec.IntValue maxTicks;
 
         public ItemPipe(String type, int defaultMaxTicks) {
             builder.push(type);
@@ -238,8 +238,8 @@ public class ServerConfig {
     }
 
     public class FluidPipe {
-        private final ModConfigSpec.IntValue capacity;
-        private final ModConfigSpec.IntValue transferRate;
+        private final ForgeConfigSpec.IntValue capacity;
+        private final ForgeConfigSpec.IntValue transferRate;
 
         public FluidPipe(String type, int defaultCapacity, int defaultTransferRate) {
             builder.push(type);
@@ -260,8 +260,8 @@ public class ServerConfig {
     }
 
     public class EnergyPipe {
-        private final ModConfigSpec.IntValue capacity;
-        private final ModConfigSpec.IntValue transferRate;
+        private final ForgeConfigSpec.IntValue capacity;
+        private final ForgeConfigSpec.IntValue transferRate;
 
         public EnergyPipe(String type, int defaultCapacity, int defaultTransferRate) {
             builder.push(type);
@@ -282,11 +282,11 @@ public class ServerConfig {
     }
 
     public class InserterAttachment {
-        private final ModConfigSpec.IntValue filterSlots;
-        private final ModConfigSpec.BooleanValue canSetRedstoneMode;
-        private final ModConfigSpec.BooleanValue canSetWhitelistBlacklist;
-        private final ModConfigSpec.BooleanValue canSetExactMode;
-        private final ModConfigSpec.IntValue priority;
+        private final ForgeConfigSpec.IntValue filterSlots;
+        private final ForgeConfigSpec.BooleanValue canSetRedstoneMode;
+        private final ForgeConfigSpec.BooleanValue canSetWhitelistBlacklist;
+        private final ForgeConfigSpec.BooleanValue canSetExactMode;
+        private final ForgeConfigSpec.IntValue priority;
 
         public InserterAttachment(String type, int defaultFilterSlots, boolean defaultCanSetRedstoneMode,
                                   boolean defaultCanSetWhitelistBlacklist, boolean defaultCanSetExactMode,
@@ -308,15 +308,15 @@ public class ServerConfig {
     }
 
     public class ExtractorAttachment {
-        private final ModConfigSpec.IntValue itemTickInterval;
-        private final ModConfigSpec.IntValue itemsToExtract;
-        private final ModConfigSpec.IntValue fluidTickInterval;
-        private final ModConfigSpec.IntValue fluidsToExtract;
-        private final ModConfigSpec.IntValue filterSlots;
-        private final ModConfigSpec.BooleanValue canSetRedstoneMode;
-        private final ModConfigSpec.BooleanValue canSetWhitelistBlacklist;
-        private final ModConfigSpec.BooleanValue canSetRoutingMode;
-        private final ModConfigSpec.BooleanValue canSetExactMode;
+        private final ForgeConfigSpec.IntValue itemTickInterval;
+        private final ForgeConfigSpec.IntValue itemsToExtract;
+        private final ForgeConfigSpec.IntValue fluidTickInterval;
+        private final ForgeConfigSpec.IntValue fluidsToExtract;
+        private final ForgeConfigSpec.IntValue filterSlots;
+        private final ForgeConfigSpec.BooleanValue canSetRedstoneMode;
+        private final ForgeConfigSpec.BooleanValue canSetWhitelistBlacklist;
+        private final ForgeConfigSpec.BooleanValue canSetRoutingMode;
+        private final ForgeConfigSpec.BooleanValue canSetExactMode;
 
         public ExtractorAttachment(
             String type,

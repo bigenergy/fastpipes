@@ -1,4 +1,5 @@
 package com.piglinmine.fastpipes.block;
+import com.piglinmine.fastpipes.util.CapabilityUtil;
 
 import com.piglinmine.fastpipes.blockentity.ItemPipeBlockEntity;
 import com.piglinmine.fastpipes.blockentity.PipeBlockEntity;
@@ -16,7 +17,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.capabilities.Capabilities;
 import org.jetbrains.annotations.Nullable;
 
 public class ItemPipeBlock extends PipeBlock implements EntityBlock {
@@ -80,7 +80,7 @@ public class ItemPipeBlock extends PipeBlock implements EntityBlock {
         if (facingState.getBlock() instanceof ItemPipeBlock) return false;
 
         if (world instanceof Level level) {
-            return level.getCapability(Capabilities.ItemHandler.BLOCK, pos.relative(direction), direction.getOpposite()) != null;
+            return CapabilityUtil.getItemHandler(level, pos.relative(direction), direction.getOpposite()) != null;
         }
         return false;
     }

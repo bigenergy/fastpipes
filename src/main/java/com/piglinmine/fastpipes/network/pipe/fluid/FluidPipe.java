@@ -11,7 +11,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 
 public class FluidPipe extends Pipe {
-    public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "fluid");
+    public static final ResourceLocation ID = new ResourceLocation(FastPipes.MOD_ID, "fluid");
 
     private final FluidPipeType type;
     private float lastFullness = 0;

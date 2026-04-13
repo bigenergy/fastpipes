@@ -1,41 +1,35 @@
 package com.piglinmine.fastpipes.network.message;
 
-import com.piglinmine.fastpipes.FastPipes;
 import com.piglinmine.fastpipes.menu.TerminalContainerMenu;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.minecraftforge.network.NetworkEvent;
 
-public record TerminalExtractMessage(ItemStack stack, int amount, boolean toCursor) implements CustomPacketPayload {
+import java.util.function.Supplier;
 
-    public static final Type<TerminalExtractMessage> TYPE =
-        new Type<>(ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "terminal_extract"));
+public record TerminalExtractMessage(ItemStack stack, int amount, boolean toCursor) {
 
-    public static final StreamCodec<RegistryFriendlyByteBuf, TerminalExtractMessage> STREAM_CODEC = StreamCodec.composite(
-        ItemStack.STREAM_CODEC,
-        TerminalExtractMessage::stack,
-        ByteBufCodecs.VAR_INT,
-        TerminalExtractMessage::amount,
-        ByteBufCodecs.BOOL,
-        TerminalExtractMessage::toCursor,
-        TerminalExtractMessage::new
-    );
-
-    @Override
-    public Type<? extends CustomPacketPayload> type() {
-        return TYPE;
+    public void encode(FriendlyByteBuf buf) {
+        buf.writeItem(stack);
+        buf.writeVarInt(amount);
+        buf.writeBoolean(toCursor);
     }
 
-    public static void handleServer(final TerminalExtractMessage message, final IPayloadContext context) {
-        context.enqueueWork(() -> {
-            if (context.player() == null) return;
-            if (context.player().containerMenu instanceof TerminalContainerMenu terminal) {
-                terminal.extractItem(message.stack(), message.amount(), message.toCursor());
+    public static TerminalExtractMessage decode(FriendlyByteBuf buf) {
+        ItemStack stack = buf.readItem();
+        int amount = buf.readVarInt();
+        boolean toCursor = buf.readBoolean();
+        return new TerminalExtractMessage(stack, amount, toCursor);
+    }
+
+    public void handle(Supplier<NetworkEvent.Context> ctx) {
+        ctx.get().enqueueWork(() -> {
+            var player = ctx.get().getSender();
+            if (player == null) return;
+            if (player.containerMenu instanceof TerminalContainerMenu terminal) {
+                terminal.extractItem(stack, amount, toCursor);
             }
         });
+        ctx.get().setPacketHandled(true);
     }
 }

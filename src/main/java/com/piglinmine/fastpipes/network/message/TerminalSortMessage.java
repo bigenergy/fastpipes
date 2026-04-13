@@ -1,41 +1,35 @@
 package com.piglinmine.fastpipes.network.message;
 
-import com.piglinmine.fastpipes.FastPipes;
 import com.piglinmine.fastpipes.menu.TerminalContainerMenu;
-import io.netty.buffer.ByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.network.NetworkEvent;
 
-public record TerminalSortMessage(int sortOrdinal) implements CustomPacketPayload {
+import java.util.function.Supplier;
 
-    public static final Type<TerminalSortMessage> TYPE =
-        new Type<>(ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "terminal_sort"));
+public record TerminalSortMessage(int sortOrdinal) {
 
-    public static final StreamCodec<ByteBuf, TerminalSortMessage> STREAM_CODEC = StreamCodec.composite(
-        ByteBufCodecs.INT,
-        TerminalSortMessage::sortOrdinal,
-        TerminalSortMessage::new
-    );
-
-    @Override
-    public Type<? extends CustomPacketPayload> type() {
-        return TYPE;
+    public void encode(FriendlyByteBuf buf) {
+        buf.writeVarInt(sortOrdinal);
     }
 
-    public static void handleServer(final TerminalSortMessage message, final IPayloadContext context) {
-        context.enqueueWork(() -> {
-            if (context.player() == null) return;
-            if (context.player().containerMenu instanceof TerminalContainerMenu terminal) {
+    public static TerminalSortMessage decode(FriendlyByteBuf buf) {
+        int sortOrdinal = buf.readVarInt();
+        return new TerminalSortMessage(sortOrdinal);
+    }
+
+    public void handle(Supplier<NetworkEvent.Context> ctx) {
+        ctx.get().enqueueWork(() -> {
+            var player = ctx.get().getSender();
+            if (player == null) return;
+            if (player.containerMenu instanceof TerminalContainerMenu terminal) {
                 TerminalContainerMenu.SortMode[] modes = TerminalContainerMenu.SortMode.values();
-                int ordinal = message.sortOrdinal();
+                int ordinal = sortOrdinal;
                 if (ordinal >= 0 && ordinal < modes.length) {
                     terminal.setSortMode(modes[ordinal]);
                     terminal.refreshNetworkItems();
                 }
             }
         });
+        ctx.get().setPacketHandled(true);
     }
 }

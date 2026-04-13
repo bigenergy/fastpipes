@@ -1,8 +1,7 @@
 package com.piglinmine.fastpipes.inventory.fluid;
 
-import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.neoforged.neoforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidStack;
 
 import javax.annotation.Nonnull;
 
@@ -52,26 +51,26 @@ public class FluidInventory {
         onContentsChanged();
     }
 
-    public CompoundTag writeToNbt(HolderLookup.Provider registries) {
+    public CompoundTag writeToNbt() {
         CompoundTag tag = new CompoundTag();
 
         for (int i = 0; i < getSlots(); ++i) {
             FluidStack stack = getFluid(i);
 
             if (!stack.isEmpty()) {
-                tag.put(String.format(NBT_SLOT, i), stack.saveOptional(registries));
+                tag.put(String.format(NBT_SLOT, i), stack.writeToNBT(new CompoundTag()));
             }
         }
 
         return tag;
     }
 
-    public void readFromNbt(CompoundTag tag, HolderLookup.Provider registries) {
+    public void readFromNbt(CompoundTag tag) {
         for (int i = 0; i < getSlots(); ++i) {
             String key = String.format(NBT_SLOT, i);
 
             if (tag.contains(key)) {
-                fluids[i] = FluidStack.parseOptional(registries, tag.getCompound(key));
+                fluids[i] = FluidStack.loadFluidStackFromNBT(tag.getCompound(key));
             }
         }
     }

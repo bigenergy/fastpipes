@@ -1,7 +1,7 @@
 package com.piglinmine.fastpipes.network.pipe.energy;
 
 import com.piglinmine.fastpipes.network.energy.EnergyNetwork;
-import net.neoforged.neoforge.energy.IEnergyStorage;
+import net.minecraftforge.energy.IEnergyStorage;
 
 public class ServerEnergyPipeEnergyStorage implements IEnergyStorage, EnergyPipeEnergyStorage {
     private final EnergyNetwork network;
