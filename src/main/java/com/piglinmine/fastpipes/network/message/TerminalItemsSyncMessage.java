@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
-public record TerminalItemsSyncMessage(List<ItemStack> items) {
+public record TerminalItemsSyncMessage(List<ItemStack> items, int sortOrdinal) {
 
     public void encode(FriendlyByteBuf buf) {
         buf.writeVarInt(items.size());
@@ -20,6 +20,7 @@ public record TerminalItemsSyncMessage(List<ItemStack> items) {
             buf.writeItem(single);
             buf.writeVarInt(stack.getCount());
         }
+        buf.writeVarInt(sortOrdinal);
     }
 
     public static TerminalItemsSyncMessage decode(FriendlyByteBuf buf) {
@@ -33,13 +34,18 @@ public record TerminalItemsSyncMessage(List<ItemStack> items) {
             }
             items.add(stack);
         }
-        return new TerminalItemsSyncMessage(items);
+        int sortOrdinal = buf.readVarInt();
+        return new TerminalItemsSyncMessage(items, sortOrdinal);
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
             Minecraft mc = Minecraft.getInstance();
             if (mc.player != null && mc.player.containerMenu instanceof TerminalContainerMenu terminal) {
+                TerminalContainerMenu.SortMode[] modes = TerminalContainerMenu.SortMode.values();
+                if (sortOrdinal >= 0 && sortOrdinal < modes.length) {
+                    terminal.applyClientSortMode(modes[sortOrdinal]);
+                }
                 terminal.receiveNetworkItems(items);
             }
         });

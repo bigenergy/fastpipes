@@ -141,6 +141,7 @@
   "tooltip.fastpipes.barrel_upgrade": "Upgrades barrel to %s",
 
   "gui.fastpipes.terminal.in_network": "%s in network",
+  "gui.fastpipes.terminal.in_use": "Terminal is in use by %s",
 
   "jei.fastpipes.oak_barrel.description": "A basic barrel with 27 slots of storage. Can be upgraded with barrel upgrades.",
   "jei.fastpipes.copper_barrel.description": "An upgraded barrel with 45 slots of storage. Can be upgraded further.",

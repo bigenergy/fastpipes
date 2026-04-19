@@ -141,6 +141,7 @@
   "tooltip.fastpipes.barrel_upgrade": "Улучшает бочку до %s",
 
   "gui.fastpipes.terminal.in_network": "%s шт. в сети",
+  "gui.fastpipes.terminal.in_use": "Терминал занят игроком %s",
 
   "jei.fastpipes.oak_barrel.description": "Базовая бочка с 27 слотами хранения. Можно улучшить с помощью улучшений для бочек.",
   "jei.fastpipes.copper_barrel.description": "Улучшенная бочка с 45 слотами хранения. Можно улучшить дальше.",

@@ -163,6 +163,23 @@ public class ExtractorAttachment extends Attachment {
                 continue;
             }
 
+            // Pre-check destination capacity — don't extract if items can't fit there.
+            // This prevents orphaned items that would otherwise bounce back / drop in world.
+            IItemHandler destHandler = CapabilityUtil.getItemHandler(
+                pipe.getLevel(),
+                destination.getReceiver(),
+                destination.getIncomingDirection().getOpposite()
+            );
+            if (destHandler == null) {
+                slot++;
+                continue;
+            }
+            ItemStack destRemainder = net.minecraftforge.items.ItemHandlerHelper.insertItem(destHandler, simulated, true);
+            if (!destRemainder.isEmpty()) {
+                slot++;
+                continue;
+            }
+
             ItemStack extracted = source.extractItem(slot, remaining, false);
             if (extracted.isEmpty()) {
                 slot++;

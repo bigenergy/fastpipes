@@ -74,7 +74,7 @@ public class TerminalContainerMenu extends BaseContainerMenu {
         // Player inventory at bottom
         addPlayerInventory(8, 204);
 
-        // Load saved crafting grid from block entity
+        // Load saved crafting grid and sort mode from block entity
         if (!player.level().isClientSide) {
             if (player.level().getBlockEntity(terminalPos) instanceof TerminalBlockEntity be) {
                 loading = true;
@@ -83,6 +83,13 @@ public class TerminalContainerMenu extends BaseContainerMenu {
                 }
                 loading = false;
                 updateCraftResult();
+
+                // Restore saved sort mode
+                SortMode[] modes = SortMode.values();
+                int ordinal = be.getSortModeOrdinal();
+                if (ordinal >= 0 && ordinal < modes.length) {
+                    this.sortMode = modes[ordinal];
+                }
             }
         }
     }
@@ -147,8 +154,15 @@ public class TerminalContainerMenu extends BaseContainerMenu {
 
     private void syncToClient() {
         if (player instanceof ServerPlayer serverPlayer) {
-            FastPipesNetwork.sendToClient(serverPlayer, new TerminalItemsSyncMessage(networkItems));
+            FastPipesNetwork.sendToClient(serverPlayer, new TerminalItemsSyncMessage(networkItems, sortMode.ordinal()));
         }
+    }
+
+    /**
+     * Client-only: update sort mode from server sync without sending the change back.
+     */
+    public void applyClientSortMode(SortMode mode) {
+        this.sortMode = mode;
     }
 
     private void sendStatus(String langKey) {
@@ -213,6 +227,7 @@ public class TerminalContainerMenu extends BaseContainerMenu {
         this.sortMode = mode;
         applySorting();
         applyFilter();
+        persistSortMode();
     }
 
     public void cycleSortMode() {
@@ -220,6 +235,14 @@ public class TerminalContainerMenu extends BaseContainerMenu {
         sortMode = modes[(sortMode.ordinal() + 1) % modes.length];
         applySorting();
         applyFilter();
+        persistSortMode();
+    }
+
+    private void persistSortMode() {
+        if (player.level().isClientSide) return;
+        if (player.level().getBlockEntity(terminalPos) instanceof TerminalBlockEntity be) {
+            be.setSortModeOrdinal(sortMode.ordinal());
+        }
     }
 
     public List<ItemStack> getFilteredItems() {
@@ -305,6 +328,10 @@ public class TerminalContainerMenu extends BaseContainerMenu {
             }
         }
 
+        // Force immediate cursor sync to client
+        if (player instanceof ServerPlayer) {
+            super.broadcastChanges();
+        }
         refreshNetworkItems();
     }
 
@@ -413,6 +440,12 @@ public class TerminalContainerMenu extends BaseContainerMenu {
     @Override
     public void removed(Player player) {
         saveCraftGrid();
+        // Release the single-user lock so other players can open the terminal
+        if (!player.level().isClientSide) {
+            if (player.level().getBlockEntity(terminalPos) instanceof TerminalBlockEntity be) {
+                be.release(player.getUUID());
+            }
+        }
         super.removed(player);
     }
 

@@ -10,7 +10,11 @@ import java.util.function.Supplier;
 public record TerminalExtractMessage(ItemStack stack, int amount, boolean toCursor) {
 
     public void encode(FriendlyByteBuf buf) {
-        buf.writeItem(stack);
+        // Force count=1 to avoid byte-overflow in writeItem (aggregated counts > 127 get corrupted,
+        // which makes ItemStack.getItem() return AIR on the server and breaks identity matching).
+        ItemStack identity = stack.copy();
+        identity.setCount(1);
+        buf.writeItem(identity);
         buf.writeVarInt(amount);
         buf.writeBoolean(toCursor);
     }

@@ -225,6 +225,16 @@ public abstract class PipeBlock extends Block implements EntityBlock, SimpleWate
 
         Direction dirClicked = getAttachmentDirectionClicked(pos, hit.getLocation());
 
+        // Fallback: if click didn't precisely land on attachment bbox, but an attachment
+        // exists on the clicked face, use that face. Prevents GUI "dead zones" on attachment edges.
+        if (dirClicked == null) {
+            BlockEntity be = level.getBlockEntity(pos);
+            if (be instanceof PipeBlockEntity pipeBlockEntity
+                && pipeBlockEntity.getAttachmentManager().hasAttachment(hit.getDirection())) {
+                dirClicked = hit.getDirection();
+            }
+        }
+
         if (dirClicked != null) {
             BlockEntity blockEntity = level.getBlockEntity(pos);
 

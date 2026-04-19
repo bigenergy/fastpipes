@@ -73,6 +73,20 @@ public class TerminalBlock extends Block implements EntityBlock {
         if (player instanceof ServerPlayer serverPlayer) {
             Pipe connectedPipe = findConnectedPipe(level, pos);
             if (connectedPipe != null) {
+                // Enforce single-user lock on the terminal
+                if (level.getBlockEntity(pos) instanceof TerminalBlockEntity be) {
+                    if (!be.tryAcquire(serverPlayer.getUUID(), serverPlayer.getName().getString())) {
+                        String owner = be.getActiveUserName();
+                        serverPlayer.displayClientMessage(
+                            net.minecraft.network.chat.Component.translatable(
+                                "gui.fastpipes.terminal.in_use",
+                                owner == null ? "?" : owner
+                            ),
+                            true
+                        );
+                        return InteractionResult.SUCCESS;
+                    }
+                }
                 TerminalMenuProvider.open(pos, serverPlayer);
             }
         }
