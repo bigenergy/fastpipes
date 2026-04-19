@@ -1,4 +1,16 @@
 # Changelog
+## [1.3.1] - 2026-04-19
+
+### Fixed
+- Items no longer dropped in world when destination inventory is full (pre-check + network-wide fallback)
+- Terminal extraction broken for aggregated stacks > 127 items (byte-overflow in packet)
+- GUI dead zones on attachment edges (clicks near borders now reliably open the GUI)
+- Rare NPE crashes during pipe network rescans
+
+### Added
+- Terminal sort mode persists across GUI closes
+- Terminal single-user lock — one player at a time; auto-recovers from stale locks
+
 ## [1.3.0] - 2026-04-13
 
 ### Added
