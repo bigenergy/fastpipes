@@ -1,4 +1,12 @@
 # Changelog
+## [1.3.2] - 2026-05-11
+
+### Fixed
+- **Barrel upgrade item duplication** — applying a barrel upgrade no longer drops a duplicate copy of the barrel's contents into the world while preserving them in the upgraded barrel. The old block entity is cleared before the block is replaced so `onRemove` has nothing to drop.
+- **Wrench shift+right-click not breaking pipes** — wrench item now bypasses vanilla's sneak-use suppression (`doesSneakBypassUse`), so shift+right-clicking a pipe with the wrench correctly breaks and drops it.
+- **Wrench right-click on attachment now opens its GUI** — previously the wrench's "toggle disconnect" action triggered first, silently disconnecting the pipe side instead of opening the attachment. Toggle disconnect still works on bare pipe sides.
+- **Removing an attachment clears stale disconnect state** — if a side was toggled disconnected (e.g. accidentally with the wrench while the attachment was installed), removing the attachment now resets that side so the pipe reconnects to the adjacent inventory.
+
 ## [1.3.1] - 2026-04-19
 
 ### Fixed
