@@ -1,11 +1,14 @@
 package com.piglinmine.fastpipes.item;
 
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
 import net.minecraftforge.common.ToolAction;
 
 import javax.annotation.Nullable;
@@ -26,6 +29,15 @@ public class WrenchItem extends Item {
     @Override
     public boolean canPerformAction(ItemStack stack, ToolAction toolAction) {
         return toolAction == WRENCH_ROTATE || toolAction == WRENCH_DISASSEMBLE;
+    }
+
+    /**
+     * Vanilla skips Block#use when the player is sneaking and holding an item, unless this returns true.
+     * Without this override, shift+right-click with the wrench would silently do nothing.
+     */
+    @Override
+    public boolean doesSneakBypassUse(ItemStack stack, LevelReader level, BlockPos pos, Player player) {
+        return true;
     }
 
     @Override
