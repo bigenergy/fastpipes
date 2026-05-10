@@ -92,6 +92,9 @@ public class TieredBarrelBlock extends Block implements EntityBlock {
             if (oldBe.hasCustomName()) {
                 savedName = oldBe.getCustomName().getString();
             }
+            // Clear old BE so onRemove (triggered by setBlock below) doesn't drop the contents.
+            // Without this, items are both dropped to world AND restored in the new BE → duplication.
+            oldBe.clearContent();
         }
 
         // Replace block
