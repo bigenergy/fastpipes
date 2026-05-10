@@ -214,11 +214,18 @@ public abstract class PipeBlock extends Block implements EntityBlock, SimpleWate
             return InteractionResult.SUCCESS;
         }
 
-        // Wrench: right-click to toggle disconnect on a side (supports cross-mod wrenches)
+        // Wrench: right-click on bare pipe side to toggle disconnect.
+        // If the clicked side has an attachment, open its GUI instead — don't toggle disconnect,
+        // since users expect the attachment to react to a click rather than the underlying pipe.
         if (WrenchItem.isWrench(held)) {
             Direction dir = getAttachmentDirectionClicked(pos, hit.getLocation());
             if (dir == null) {
                 dir = hit.getDirection(); // fallback to the face that was clicked
+            }
+            BlockEntity be = level.getBlockEntity(pos);
+            if (be instanceof PipeBlockEntity pipeBlockEntity
+                && pipeBlockEntity.getAttachmentManager().hasAttachment(dir)) {
+                return openAttachmentContainer(player, pos, pipeBlockEntity.getAttachmentManager(), dir);
             }
             return toggleDisconnect(level, pos, dir);
         }
@@ -319,6 +326,13 @@ public abstract class PipeBlock extends Block implements EntityBlock, SimpleWate
                 Attachment attachment = pipe.getAttachmentManager().getAttachment(dir);
 
                 pipe.getAttachmentManager().removeAttachmentAndScanGraph(dir);
+
+                // If this side was disconnected (e.g. wrench-toggle while attachment was installed),
+                // clear the disconnect so the pipe reconnects to whatever's there now.
+                if (pipe.isDisconnected(dir)) {
+                    pipe.toggleDisconnect(dir);
+                }
+
                 NetworkManager.get(level).setDirty();
 
                 pipe.sendBlockUpdate();
