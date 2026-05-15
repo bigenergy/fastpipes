@@ -47,12 +47,13 @@ public enum PipeAttachmentProvider implements IBlockComponentProvider, IServerDa
     }
 
     private void renderAttachment(ITooltip tooltip, CompoundTag att) {
-        String typeId = att.getString("id");
+        // Resolve a localized name from the drop's registry name (translation keys are based on
+        // the item ID, not the attachment ID — those differ for extractor/inserter variants).
+        String itemId = att.contains("itemId") ? att.getString("itemId") : att.getString("id");
         Direction side = Direction.values()[att.getInt("side")];
 
-        // Header: attachment type + side. Attachments are items, not blocks.
         Component sideName = Component.translatable("misc.fastpipes.direction." + side.getName());
-        Component typeName = Component.translatable("item." + typeId.replace(":", "."));
+        Component typeName = Component.translatable("item." + itemId.replace(":", "."));
         tooltip.add(Component.literal("• ")
             .append(typeName.copy().withStyle(ChatFormatting.YELLOW))
             .append(Component.literal(" — ").withStyle(ChatFormatting.DARK_GRAY))
@@ -108,6 +109,12 @@ public enum PipeAttachmentProvider implements IBlockComponentProvider, IServerDa
             Attachment att = pipe.getAttachmentManager().getAttachment(dir);
             CompoundTag tag = new CompoundTag();
             tag.putString("id", att.getId().toString());
+            // Item registry name of the drop — used to build the translation key for the display name.
+            var dropItem = att.getDrop().getItem();
+            var itemKey = net.minecraftforge.registries.ForgeRegistries.ITEMS.getKey(dropItem);
+            if (itemKey != null) {
+                tag.putString("itemId", itemKey.toString());
+            }
             tag.putInt("side", dir.ordinal());
 
             if (att instanceof ExtractorAttachment ex) {
