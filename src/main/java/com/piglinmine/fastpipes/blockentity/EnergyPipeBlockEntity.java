@@ -12,6 +12,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.IEnergyStorage;
 
 import javax.annotation.Nullable;
@@ -19,11 +20,57 @@ import javax.annotation.Nullable;
 public class EnergyPipeBlockEntity extends PipeBlockEntity {
     private final EnergyPipeType type;
     private final ClientEnergyPipeEnergyStorage clientEnergyStorage;
+    // Order matters: stableEnergyStorage must be initialized before energyCapability references it.
+    private final IEnergyStorage stableEnergyStorage = new DelegatingEnergyStorage();
+    // Stable LazyOptional that delegates to whichever storage the current network has.
+    // Cached for the lifetime of the BlockEntity so external code (e.g. IE generators) can
+    // hold a single reference; reseating the network's storage instance doesn't break it.
+    private final LazyOptional<IEnergyStorage> energyCapability =
+        LazyOptional.of(() -> stableEnergyStorage);
 
     public EnergyPipeBlockEntity(BlockPos pos, BlockState state) {
         super(getBlockEntityType(state), pos, state);
         this.type = getEnergyPipeType(state);
         this.clientEnergyStorage = new ClientEnergyPipeEnergyStorage(type);
+    }
+
+    /** Always looks up the current network's storage. Prevents stale capability caches in
+     *  adjacent machines from binding to orphaned EnergyNetwork instances after a rescan. */
+    private final class DelegatingEnergyStorage implements IEnergyStorage {
+        private IEnergyStorage current() {
+            if (level == null || level.isClientSide) return clientEnergyStorage;
+            NetworkManager mgr = NetworkManager.get(level);
+            Pipe pipe = mgr.getPipe(worldPosition);
+            if (pipe instanceof EnergyPipe energyPipe) {
+                IEnergyStorage s = energyPipe.getEnergyStorage();
+                if (s != null) return s;
+            }
+            return null;
+        }
+        @Override public int receiveEnergy(int maxReceive, boolean simulate) {
+            IEnergyStorage s = current();
+            return s == null ? 0 : s.receiveEnergy(maxReceive, simulate);
+        }
+        @Override public int extractEnergy(int maxExtract, boolean simulate) {
+            IEnergyStorage s = current();
+            return s == null ? 0 : s.extractEnergy(maxExtract, simulate);
+        }
+        @Override public int getEnergyStored() {
+            IEnergyStorage s = current();
+            return s == null ? 0 : s.getEnergyStored();
+        }
+        @Override public int getMaxEnergyStored() {
+            IEnergyStorage s = current();
+            return s == null ? 0 : s.getMaxEnergyStored();
+        }
+        @Override public boolean canExtract() {
+            IEnergyStorage s = current();
+            return s != null && s.canExtract();
+        }
+        @Override public boolean canReceive() {
+            IEnergyStorage s = current();
+            return s != null && s.canReceive();
+        }
     }
 
     private static BlockEntityType<?> getBlockEntityType(BlockState state) {
@@ -66,28 +113,24 @@ public class EnergyPipeBlockEntity extends PipeBlockEntity {
         return type;
     }
 
-    // NeoForge Capability Handler - returns null if no capability available
+    // Returns the stable wrapper — external callers don't bind to a specific network instance.
     @Nullable
     public IEnergyStorage getEnergyStorage(@Nullable Direction side) {
-        if (!level.isClientSide) {
-            NetworkManager mgr = NetworkManager.get(level);
-            Pipe pipe = mgr.getPipe(worldPosition);
-            if (pipe instanceof EnergyPipe energyPipe) {
-                return energyPipe.getEnergyStorage();
-            }
-        }
-        return clientEnergyStorage;
+        return stableEnergyStorage;
     }
 
     @Override
     public <T> net.minecraftforge.common.util.LazyOptional<T> getCapability(net.minecraftforge.common.capabilities.Capability<T> cap, @javax.annotation.Nullable Direction side) {
         if (cap == net.minecraftforge.common.capabilities.ForgeCapabilities.ENERGY) {
-            IEnergyStorage storage = getEnergyStorage(side);
-            if (storage != null) {
-                return net.minecraftforge.common.util.LazyOptional.of(() -> storage).cast();
-            }
+            return energyCapability.cast();
         }
         return super.getCapability(cap, side);
+    }
+
+    @Override
+    public void invalidateCaps() {
+        super.invalidateCaps();
+        energyCapability.invalidate();
     }
 
     @Override
