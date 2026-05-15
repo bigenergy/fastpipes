@@ -108,17 +108,17 @@ public class ItemTransport {
 
         Direction initialDirection = Direction.values()[tag.getInt("initd")];
 
-        ResourceLocation finishedCallbackId = ResourceLocation.fromNamespaceAndPath(tag.getString("fcid"));
+        ResourceLocation finishedCallbackId = ResourceLocation.parse(tag.getString("fcid"));
         TransportCallback finishedCallback = TransportCallbackFactoryRegistry.createCallback(
             finishedCallbackId, tag.getCompound("fc")
         );
 
-        ResourceLocation cancelCallbackId = ResourceLocation.fromNamespaceAndPath(tag.getString("ccid"));
+        ResourceLocation cancelCallbackId = ResourceLocation.parse(tag.getString("ccid"));
         TransportCallback cancelCallback = TransportCallbackFactoryRegistry.createCallback(
             cancelCallbackId, tag.getCompound("cc")
         );
 
-        ResourceLocation pipeGoneCallbackId = ResourceLocation.fromNamespaceAndPath(tag.getString("pgcid"));
+        ResourceLocation pipeGoneCallbackId = ResourceLocation.parse(tag.getString("pgcid"));
         TransportCallback pipeGoneCallback = TransportCallbackFactoryRegistry.createCallback(
             pipeGoneCallbackId, tag.getCompound("pgc")
         );

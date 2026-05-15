@@ -276,7 +276,7 @@ public class NetworkManager extends SavedData {
                 continue;
             }
 
-            ResourceLocation type = ResourceLocation.fromNamespaceAndPath(netTagCompound.getString("type"));
+            ResourceLocation type = ResourceLocation.parse(netTagCompound.getString("type"));
 
             NetworkFactory factory = NetworkRegistry.INSTANCE.getFactory(type);
             if (factory == null) {
