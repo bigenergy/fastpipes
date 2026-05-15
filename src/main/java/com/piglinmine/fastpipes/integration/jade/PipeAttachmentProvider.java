@@ -50,9 +50,9 @@ public enum PipeAttachmentProvider implements IBlockComponentProvider, IServerDa
         String typeId = att.getString("id");
         Direction side = Direction.values()[att.getInt("side")];
 
-        // Header: attachment type + side
+        // Header: attachment type + side. Attachments are items, not blocks.
         Component sideName = Component.translatable("misc.fastpipes.direction." + side.getName());
-        Component typeName = Component.translatable("block." + typeId.replace(":", "."));
+        Component typeName = Component.translatable("item." + typeId.replace(":", "."));
         tooltip.add(Component.literal("• ")
             .append(typeName.copy().withStyle(ChatFormatting.YELLOW))
             .append(Component.literal(" — ").withStyle(ChatFormatting.DARK_GRAY))
