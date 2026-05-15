@@ -351,7 +351,6 @@ public abstract class PipeBlock extends Block implements EntityBlock, SimpleWate
         if (player instanceof ServerPlayer) {
             attachmentManager.openAttachmentContainer(dir, (ServerPlayer) player);
         }
-
         return InteractionResult.SUCCESS;
     }
 

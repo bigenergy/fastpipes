@@ -120,23 +120,23 @@ public class PipeBakedModel implements BakedModel {
 
         // Add attachment models
         if (state.getAttachmentState() != null) {
-            LOGGER.debug("Processing attachments for pipe at state: {}", Arrays.toString(state.getAttachmentState()));
+            //LOGGER.debug("Processing attachments for pipe at state: {}", Arrays.toString(state.getAttachmentState()));
             for (Direction dir : Direction.values()) {
                 ResourceLocation attachmentId = state.getAttachmentState()[dir.ordinal()];
 
                 if (attachmentId != null) {
-                    LOGGER.debug("Found attachment {} in direction {}", attachmentId, dir);
+                    //LOGGER.debug("Found attachment {} in direction {}", attachmentId, dir);
                     BakedModel attachmentModel = attachmentModels.get(attachmentId);
                     if (attachmentModel != null) {
-                        LOGGER.debug("Adding attachment model for {} in direction {}", attachmentId, dir);
+                        //LOGGER.debug("Adding attachment model for {} in direction {}", attachmentId, dir);
                         quads.addAll(getTransformedQuads(attachmentModel, dir, state));
                     } else {
-                        LOGGER.warn("No attachment model found for ID: {}", attachmentId);
+                        //LOGGER.warn("No attachment model found for ID: {}", attachmentId);
                     }
                 }
             }
         } else {
-            LOGGER.debug("No attachment state found for pipe");
+            //LOGGER.debug("No attachment state found for pipe");
         }
 
         // Add inventory attachment indicators — only for non-pipe inventory connections.

@@ -44,7 +44,7 @@ public class FPipesContainerMenus {
                 // Read fluid filter contents from buffer
                 FluidInventory fluidFilter = ExtractorAttachment.createFluidFilterInventory(null);
                 for (int i = 0; i < ExtractorAttachment.MAX_FILTER_SLOTS; i++) {
-                    FluidStack fluid = FluidStack.readFromPacket(data);
+                    FluidStack fluid = data.readFluidStack();
                     if (!fluid.isEmpty()) {
                         fluidFilter.setFluid(i, fluid);
                     }
@@ -77,7 +77,7 @@ public class FPipesContainerMenus {
                 // Read fluid filter contents from buffer
                 FluidInventory fluidFilter = InserterAttachment.createFluidFilterInventory(null);
                 for (int i = 0; i < InserterAttachment.MAX_FILTER_SLOTS; i++) {
-                    FluidStack fluid = FluidStack.readFromPacket(data);
+                    FluidStack fluid = data.readFluidStack();
                     if (!fluid.isEmpty()) {
                         fluidFilter.setFluid(i, fluid);
                     }
@@ -107,7 +107,7 @@ public class FPipesContainerMenus {
                 // Read fluid filter contents from buffer
                 FluidInventory fluidFilter = VoidAttachment.createFluidFilterInventory(null);
                 for (int i = 0; i < VoidAttachment.MAX_FILTER_SLOTS; i++) {
-                    FluidStack fluid = FluidStack.readFromPacket(data);
+                    FluidStack fluid = data.readFluidStack();
                     if (!fluid.isEmpty()) {
                         fluidFilter.setFluid(i, fluid);
                     }
@@ -137,7 +137,7 @@ public class FPipesContainerMenus {
                 // Read fluid filter contents from buffer
                 FluidInventory fluidFilter = SensorAttachment.createFluidFilterInventory(null);
                 for (int i = 0; i < SensorAttachment.MAX_FILTER_SLOTS; i++) {
-                    FluidStack fluid = FluidStack.readFromPacket(data);
+                    FluidStack fluid = data.readFluidStack();
                     if (!fluid.isEmpty()) {
                         fluidFilter.setFluid(i, fluid);
                     }
