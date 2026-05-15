@@ -49,6 +49,7 @@ public class ExtractorAttachmentScreen extends BaseScreen<ExtractorAttachmentCon
         super.init();
         this.titleLabelX = 7;
         this.inventoryLabelX = 7;
+        this.inventoryLabelY = 100;
 
         redstoneModeButton = this.addRenderableWidget(new IconButton(
             this.leftPos + 32,

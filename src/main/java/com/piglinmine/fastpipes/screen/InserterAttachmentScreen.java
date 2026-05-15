@@ -41,6 +41,7 @@ public class InserterAttachmentScreen extends BaseScreen<InserterAttachmentConta
         super.init();
         this.titleLabelX = 7;
         this.inventoryLabelX = 7;
+        this.inventoryLabelY = 100; // place "Inventory" below the mode-button row (buttons sit at y=76..94)
 
         redstoneModeButton = this.addRenderableWidget(new IconButton(
             this.leftPos + 32, this.topPos + 76,

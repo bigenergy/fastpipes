@@ -39,6 +39,7 @@ public class VoidAttachmentScreen extends BaseScreen<VoidAttachmentContainerMenu
         super.init();
         this.titleLabelX = 7;
         this.inventoryLabelX = 7;
+        this.inventoryLabelY = 100;
 
         blacklistWhitelistButton = this.addRenderableWidget(new IconButton(
             this.leftPos + 55, this.topPos + 76,
