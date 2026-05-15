@@ -45,6 +45,7 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraftforge.items.ItemHandlerHelper;
 
 import javax.annotation.Nullable;
 
@@ -246,7 +247,7 @@ public abstract class PipeBlock extends Block implements EntityBlock, SimpleWate
             BlockEntity blockEntity = level.getBlockEntity(pos);
 
             if (held.isEmpty() && player.isCrouching()) {
-                return removeAttachment(level, pos, dirClicked);
+                return removeAttachment(level, pos, dirClicked, player);
             } else if (blockEntity instanceof PipeBlockEntity pipeBlockEntity && pipeBlockEntity.getAttachmentManager().hasAttachment(dirClicked)) {
                 return openAttachmentContainer(player, pos, pipeBlockEntity.getAttachmentManager(), dirClicked);
             } else if (held.getItem() instanceof AttachmentItem) {
@@ -318,7 +319,7 @@ public abstract class PipeBlock extends Block implements EntityBlock, SimpleWate
         return InteractionResult.SUCCESS;
     }
 
-    private InteractionResult removeAttachment(Level level, BlockPos pos, Direction dir) {
+    private InteractionResult removeAttachment(Level level, BlockPos pos, Direction dir, Player player) {
         if (!level.isClientSide) {
             Pipe pipe = NetworkManager.get(level).getPipe(pos);
 
@@ -338,7 +339,10 @@ public abstract class PipeBlock extends Block implements EntityBlock, SimpleWate
                 pipe.sendBlockUpdate();
                 level.setBlockAndUpdate(pos, getState(level.getBlockState(pos), level, pos));
 
-                Block.popResource(level, pos.relative(dir), attachment.getDrop());
+                // Give directly to the player (handles sync + overflow drop properly).
+                // popResource alone caused a desync where the pickup wasn't reflected in
+                // the client's inventory view until another container was opened.
+                ItemHandlerHelper.giveItemToPlayer(player, attachment.getDrop());
             }
 
             return InteractionResult.SUCCESS;
