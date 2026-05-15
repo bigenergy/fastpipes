@@ -54,30 +54,30 @@ public class ClientSetup {
         }
 
         for (String type : new String[]{"item", "fluid", "energy"}) {
-            event.register(new ResourceLocation(FastPipes.MOD_ID, "block/pipe/" + type + "/basic/core"));
-            event.register(new ResourceLocation(FastPipes.MOD_ID, "block/pipe/" + type + "/basic/extension"));
-            event.register(new ResourceLocation(FastPipes.MOD_ID, "block/pipe/" + type + "/basic/straight"));
+            event.register(ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "block/pipe/" + type + "/basic/core"));
+            event.register(ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "block/pipe/" + type + "/basic/extension"));
+            event.register(ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "block/pipe/" + type + "/basic/straight"));
 
-            event.register(new ResourceLocation(FastPipes.MOD_ID, "block/pipe/" + type + "/improved/core"));
-            event.register(new ResourceLocation(FastPipes.MOD_ID, "block/pipe/" + type + "/improved/extension"));
-            event.register(new ResourceLocation(FastPipes.MOD_ID, "block/pipe/" + type + "/improved/straight"));
+            event.register(ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "block/pipe/" + type + "/improved/core"));
+            event.register(ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "block/pipe/" + type + "/improved/extension"));
+            event.register(ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "block/pipe/" + type + "/improved/straight"));
 
-            event.register(new ResourceLocation(FastPipes.MOD_ID, "block/pipe/" + type + "/advanced/core"));
-            event.register(new ResourceLocation(FastPipes.MOD_ID, "block/pipe/" + type + "/advanced/extension"));
-            event.register(new ResourceLocation(FastPipes.MOD_ID, "block/pipe/" + type + "/advanced/straight"));
+            event.register(ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "block/pipe/" + type + "/advanced/core"));
+            event.register(ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "block/pipe/" + type + "/advanced/extension"));
+            event.register(ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "block/pipe/" + type + "/advanced/straight"));
 
             if (type.equals("fluid") || type.equals("energy")) {
-                event.register(new ResourceLocation(FastPipes.MOD_ID, "block/pipe/" + type + "/elite/core"));
-                event.register(new ResourceLocation(FastPipes.MOD_ID, "block/pipe/" + type + "/elite/extension"));
-                event.register(new ResourceLocation(FastPipes.MOD_ID, "block/pipe/" + type + "/elite/straight"));
+                event.register(ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "block/pipe/" + type + "/elite/core"));
+                event.register(ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "block/pipe/" + type + "/elite/extension"));
+                event.register(ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "block/pipe/" + type + "/elite/straight"));
 
-                event.register(new ResourceLocation(FastPipes.MOD_ID, "block/pipe/" + type + "/ultimate/core"));
-                event.register(new ResourceLocation(FastPipes.MOD_ID, "block/pipe/" + type + "/ultimate/extension"));
-                event.register(new ResourceLocation(FastPipes.MOD_ID, "block/pipe/" + type + "/ultimate/straight"));
+                event.register(ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "block/pipe/" + type + "/ultimate/core"));
+                event.register(ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "block/pipe/" + type + "/ultimate/extension"));
+                event.register(ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "block/pipe/" + type + "/ultimate/straight"));
             }
         }
 
-        event.register(new ResourceLocation(FastPipes.MOD_ID, "block/pipe/attachment/inventory_attachment"));
+        event.register(ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "block/pipe/attachment/inventory_attachment"));
 
         LOGGER.debug("Special models registered successfully");
     }
@@ -137,10 +137,10 @@ public class ClientSetup {
     private static void createPipeBakedModel(ModelEvent.ModifyBakingResult event, Map<ResourceLocation, PipeBakedModel> pipeModels,
                                              Map<ResourceLocation, BakedModel> attachmentModels, ResourceLocation pipeId, String type, String tier) {
         // In 1.20.1, additional models are stored under plain ResourceLocation keys
-        BakedModel core = event.getModels().get(new ResourceLocation(FastPipes.MOD_ID, "block/pipe/" + type + "/" + tier + "/core"));
-        BakedModel extension = event.getModels().get(new ResourceLocation(FastPipes.MOD_ID, "block/pipe/" + type + "/" + tier + "/extension"));
-        BakedModel straight = event.getModels().get(new ResourceLocation(FastPipes.MOD_ID, "block/pipe/" + type + "/" + tier + "/straight"));
-        BakedModel inventoryAttachment = event.getModels().get(new ResourceLocation(FastPipes.MOD_ID, "block/pipe/attachment/inventory_attachment"));
+        BakedModel core = event.getModels().get(ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "block/pipe/" + type + "/" + tier + "/core"));
+        BakedModel extension = event.getModels().get(ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "block/pipe/" + type + "/" + tier + "/extension"));
+        BakedModel straight = event.getModels().get(ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "block/pipe/" + type + "/" + tier + "/straight"));
+        BakedModel inventoryAttachment = event.getModels().get(ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "block/pipe/attachment/inventory_attachment"));
 
         if (core != null && extension != null && straight != null && inventoryAttachment != null) {
             pipeModels.put(pipeId, new PipeBakedModel(core, extension, straight, inventoryAttachment, attachmentModels));
