@@ -16,7 +16,8 @@ base {
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
 minecraft {
-    mappings channel: 'parchment', version: "${parchment_mappings_version}-${parchment_minecraft_version}"
+   // mappings channel: 'parchment', version: "${parchment_mappings_version}-${parchment_minecraft_version}"
+    mappings channel: 'official', version: minecraft_version
 
     copyIdeResources = true
 
@@ -62,6 +63,10 @@ repositories {
     }
 }
 
+configurations {
+    jadeDevPatch { transitive = false }
+}
+
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
 
@@ -70,9 +75,52 @@ dependencies {
     compileOnly "mezz.jei:jei-${minecraft_version}-forge-api:${jei_version}"
     runtimeOnly fg.deobf("mezz.jei:jei-${minecraft_version}-forge:${jei_version}")
 
-    // Jade — runtime included so the plugin is testable from the IDE
+    // Jade (compile-only for our plugin code).
     compileOnly fg.deobf("maven.modrinth:jade:11.13.1+forge")
-    runtimeOnly fg.deobf("maven.modrinth:jade:11.13.1+forge")
+
+    // Same artifact, deobfuscated, fed into patchJadeForDev (NOT on runtime classpath directly).
+    jadeDevPatch fg.deobf("maven.modrinth:jade:11.13.1+forge")
+}
+
+// Patches the deobf'd Jade jar: strips ALL of Jade's mixins (they're cosmetic, and several break
+// in deobf dev env), then installs the result into run/mods.
+// Run `./gradlew installJadeForDev` once; re-run after changing Jade version.
+tasks.register('installJadeForDev') {
+    description = 'Patch + install Jade into run/mods for dev testing'
+    doLast {
+        def src = configurations.jadeDevPatch.singleFile
+        def runMods = file('run/mods')
+        runMods.mkdirs()
+        runMods.listFiles().findAll { it.name.toLowerCase().contains('jade') }.each {
+            println "Removing existing ${it.name}"
+            it.delete()
+        }
+        def out = new File(runMods, 'jade-dev-patched.jar')
+        // Empty mixins list — Jade still works for tooltips, just without its UI mixins.
+        def emptyMixinsJson = '{"required":true,"package":"snownee.jade.mixin","compatibilityLevel":"JAVA_17","refmap":"jade.refmap.json","mixins":[],"client":[],"injectors":{"defaultRequire":1},"minVersion":"0.8"}'
+        new java.util.zip.ZipFile(src).withCloseable { zin ->
+            new java.util.zip.ZipOutputStream(new FileOutputStream(out)).withCloseable { zout ->
+                zin.entries().each { entry ->
+                    // Drop every mixin class
+                    if (entry.name.startsWith('snownee/jade/mixin/') && entry.name.endsWith('.class')) {
+                        return
+                    }
+                    def bytes
+                    if (entry.name == 'jade.mixins.json') {
+                        bytes = emptyMixinsJson.getBytes('UTF-8')
+                        println "Replaced jade.mixins.json with empty mixin list"
+                    } else {
+                        bytes = zin.getInputStream(entry).readAllBytes()
+                    }
+                    def ne = new java.util.zip.ZipEntry(entry.name)
+                    zout.putNextEntry(ne)
+                    zout.write(bytes)
+                    zout.closeEntry()
+                }
+            }
+        }
+        println "Installed ${out}"
+    }
 }
 
 // Process resources - replace tokens in mods.toml
