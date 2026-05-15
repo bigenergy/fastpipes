@@ -24,7 +24,7 @@ public class FastPipesJEIPlugin implements IModPlugin {
 
     @Override
     public ResourceLocation getPluginUid() {
-        return new ResourceLocation(FastPipes.MOD_ID, "jei_plugin");
+        return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "jei_plugin");
     }
 
     @Override

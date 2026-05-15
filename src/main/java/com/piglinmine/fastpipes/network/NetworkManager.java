@@ -255,7 +255,7 @@ public class NetworkManager extends SavedData {
             CompoundTag pipeTagCompound = (CompoundTag) pipeTag;
 
             // @BC
-            ResourceLocation factoryId = pipeTagCompound.contains("id") ? new ResourceLocation(pipeTagCompound.getString("id")) : ItemPipe.ID;
+            ResourceLocation factoryId = pipeTagCompound.contains("id") ? ResourceLocation.parse(pipeTagCompound.getString("id")) : ItemPipe.ID;
 
             PipeFactory factory = PipeRegistry.INSTANCE.getFactory(factoryId);
             if (factory == null) {
@@ -276,7 +276,7 @@ public class NetworkManager extends SavedData {
                 continue;
             }
 
-            ResourceLocation type = new ResourceLocation(netTagCompound.getString("type"));
+            ResourceLocation type = ResourceLocation.fromNamespaceAndPath(netTagCompound.getString("type"));
 
             NetworkFactory factory = NetworkRegistry.INSTANCE.getFactory(type);
             if (factory == null) {

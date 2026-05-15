@@ -51,21 +51,21 @@ public enum FluidPipeType {
     public ResourceLocation getId() {
         switch (this) {
             case BASIC:
-                return new ResourceLocation(FastPipes.MOD_ID, "basic_fluid_pipe");
+                return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "basic_fluid_pipe");
             case IMPROVED:
-                return new ResourceLocation(FastPipes.MOD_ID, "improved_fluid_pipe");
+                return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "improved_fluid_pipe");
             case ADVANCED:
-                return new ResourceLocation(FastPipes.MOD_ID, "advanced_fluid_pipe");
+                return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "advanced_fluid_pipe");
             case ELITE:
-                return new ResourceLocation(FastPipes.MOD_ID, "elite_fluid_pipe");
+                return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "elite_fluid_pipe");
             case ULTIMATE:
-                return new ResourceLocation(FastPipes.MOD_ID, "ultimate_fluid_pipe");
+                return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "ultimate_fluid_pipe");
             default:
                 throw new RuntimeException("Unknown FluidPipeType: " + this);
         }
     }
 
     public ResourceLocation getNetworkType() {
-        return new ResourceLocation(FastPipes.MOD_ID, "fluid_" + name().toLowerCase());
+        return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "fluid_" + name().toLowerCase());
     }
 } 

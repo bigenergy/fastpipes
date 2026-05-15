@@ -62,10 +62,19 @@ public class CommonSetup {
             LOGGER.debug("Registered FluidNetworkFactory for type: {}", pipeType.getNetworkType());
         }
         
-        // Register Energy Network Factories for each pipe type
-        for (EnergyPipeType pipeType : EnergyPipeType.values()) {
-            NetworkRegistry.INSTANCE.addFactory(pipeType.getNetworkType(), new EnergyNetworkFactory(pipeType));
-            LOGGER.debug("Registered EnergyNetworkFactory for type: {}", pipeType.getNetworkType());
+        // Unified Energy Network Factory — single shared network type for all tiers.
+        EnergyNetworkFactory energyFactory = new EnergyNetworkFactory();
+        NetworkRegistry.INSTANCE.addFactory(EnergyPipeType.NETWORK_TYPE, energyFactory);
+        LOGGER.debug("Registered unified EnergyNetworkFactory for type: {}", EnergyPipeType.NETWORK_TYPE);
+
+        // Backward-compat: old worlds may have networks saved under per-tier IDs
+        // (fastpipes:energy_basic, fastpipes:energy_improved, ...). Register the same factory
+        // under those legacy IDs so deserialization doesn't drop them — they'll merge naturally
+        // on the next scanGraph since all energy pipes now share NETWORK_TYPE.
+        for (EnergyPipeType tier : EnergyPipeType.values()) {
+            var legacy = net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(
+                com.piglinmine.fastpipes.FastPipes.MOD_ID, "energy_" + tier.name().toLowerCase());
+            NetworkRegistry.INSTANCE.addFactory(legacy, energyFactory);
         }
         
         LOGGER.debug("Network factories registered successfully");

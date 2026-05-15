@@ -9,15 +9,15 @@ public enum SensorAttachmentType {
     INSTANCE;
 
     public ResourceLocation getId() {
-        return new ResourceLocation(FastPipes.MOD_ID, "sensor");
+        return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "sensor");
     }
 
     public ResourceLocation getItemId() {
-        return new ResourceLocation(FastPipes.MOD_ID, "sensor_attachment");
+        return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "sensor_attachment");
     }
 
     public ResourceLocation getModelLocation() {
-        return new ResourceLocation(FastPipes.MOD_ID, "block/pipe/attachment/sensor");
+        return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "block/pipe/attachment/sensor");
     }
 
     public Item getItem() {

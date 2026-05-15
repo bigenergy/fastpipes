@@ -51,21 +51,27 @@ public enum EnergyPipeType {
     public ResourceLocation getId() {
         switch (this) {
             case BASIC:
-                return new ResourceLocation(FastPipes.MOD_ID, "basic_energy_pipe");
+                return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "basic_energy_pipe");
             case IMPROVED:
-                return new ResourceLocation(FastPipes.MOD_ID, "improved_energy_pipe");
+                return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "improved_energy_pipe");
             case ADVANCED:
-                return new ResourceLocation(FastPipes.MOD_ID, "advanced_energy_pipe");
+                return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "advanced_energy_pipe");
             case ELITE:
-                return new ResourceLocation(FastPipes.MOD_ID, "elite_energy_pipe");
+                return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "elite_energy_pipe");
             case ULTIMATE:
-                return new ResourceLocation(FastPipes.MOD_ID, "ultimate_energy_pipe");
+                return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "ultimate_energy_pipe");
             default:
                 throw new RuntimeException("Unknown EnergyPipeType: " + this);
         }
     }
 
+    /**
+     * Single shared network type so pipes of different tiers can connect into one network.
+     * The network picks the highest transfer rate among its member pipes at runtime.
+     */
+    public static final ResourceLocation NETWORK_TYPE = ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "energy");
+
     public ResourceLocation getNetworkType() {
-        return new ResourceLocation(FastPipes.MOD_ID, "energy_" + name().toLowerCase());
+        return NETWORK_TYPE;
     }
 } 

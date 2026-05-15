@@ -43,17 +43,17 @@ public enum ItemPipeType {
     public ResourceLocation getId() {
         switch (this) {
             case BASIC:
-                return new ResourceLocation(FastPipes.MOD_ID, "basic_item_pipe");
+                return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "basic_item_pipe");
             case IMPROVED:
-                return new ResourceLocation(FastPipes.MOD_ID, "improved_item_pipe");
+                return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "improved_item_pipe");
             case ADVANCED:
-                return new ResourceLocation(FastPipes.MOD_ID, "advanced_item_pipe");
+                return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "advanced_item_pipe");
             default:
                 throw new RuntimeException("Unknown ItemPipeType: " + this);
         }
     }
 
     public ResourceLocation getNetworkType() {
-        return new ResourceLocation(FastPipes.MOD_ID, "item_" + name().toLowerCase());
+        return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "item_" + name().toLowerCase());
     }
 } 

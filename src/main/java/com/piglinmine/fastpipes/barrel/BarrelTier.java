@@ -38,7 +38,7 @@ public enum BarrelTier {
     }
 
     public ResourceLocation getGuiTexture() {
-        return new ResourceLocation(FastPipes.MOD_ID, "textures/gui/" + name + "_barrel_gui.png");
+        return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "textures/gui/" + name + "_barrel_gui.png");
     }
 
     public boolean canUpgradeTo(BarrelTier target) {

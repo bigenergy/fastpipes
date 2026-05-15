@@ -14,23 +14,20 @@ import java.util.Random;
 public class EnergyNetworkFactory implements NetworkFactory {
     private static final Logger LOGGER = LogManager.getLogger(EnergyNetworkFactory.class);
 
-    private final EnergyPipeType pipeType;
-
-    public EnergyNetworkFactory(EnergyPipeType pipeType) {
-        this.pipeType = pipeType;
-    }
-
+    /**
+     * Unified factory — all tiers share one network type now. The network's effective tier
+     * is recomputed on each scanGraph based on member pipes; BASIC here is just a placeholder
+     * for the initial state before the first scan.
+     */
     @Override
     public Network create(BlockPos pos) {
-        return new EnergyNetwork(pos, StringUtil.randomString(new Random(), 8), pipeType);
+        return new EnergyNetwork(pos, StringUtil.randomString(new Random(), 8), EnergyPipeType.BASIC);
     }
 
     @Override
     public Network create(CompoundTag tag) {
-        EnergyNetwork network = new EnergyNetwork(BlockPos.of(tag.getLong("origin")), tag.getString("id"), pipeType);
-
-        LOGGER.debug("Deserialized energy network {} of type {}", network.getId(), network.getType().toString());
-
+        EnergyNetwork network = new EnergyNetwork(BlockPos.of(tag.getLong("origin")), tag.getString("id"), EnergyPipeType.BASIC);
+        LOGGER.debug("Deserialized energy network {}", network.getId());
         return network;
     }
 } 

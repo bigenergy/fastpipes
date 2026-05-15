@@ -68,7 +68,7 @@ public class ClientAttachmentManager implements AttachmentManager {
             String pickBlockKey = "pb_" + dir.ordinal();
 
             if (tag.contains(attachmentKey)) {
-                attachmentState[dir.ordinal()] = new ResourceLocation(tag.getString(attachmentKey));
+                attachmentState[dir.ordinal()] = ResourceLocation.fromNamespaceAndPath(tag.getString(attachmentKey));
                 
                 if (tag.contains(pickBlockKey)) {
                     pickBlocks[dir.ordinal()] = ItemStack.of(tag.getCompound(pickBlockKey));

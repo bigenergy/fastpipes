@@ -21,7 +21,7 @@ import java.util.List;
 
 public class InserterAttachmentScreen extends BaseScreen<InserterAttachmentContainerMenu> {
     // Reuse extractor texture — same layout (filter slots + mode buttons)
-    private static final ResourceLocation RESOURCE = new ResourceLocation(FastPipes.MOD_ID, "textures/gui/extractor_attachment.png");
+    private static final ResourceLocation RESOURCE = ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "textures/gui/extractor_attachment.png");
 
     private final List<Component> tooltip = new ArrayList<>();
 

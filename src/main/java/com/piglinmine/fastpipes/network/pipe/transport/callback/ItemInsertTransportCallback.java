@@ -21,7 +21,7 @@ import org.apache.logging.log4j.Logger;
 import javax.annotation.Nullable;
 
 public class ItemInsertTransportCallback implements TransportCallback {
-    public static final ResourceLocation ID = new ResourceLocation(FastPipes.MOD_ID, "item_insert");
+    public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "item_insert");
     private static final Logger LOGGER = LogManager.getLogger(ItemInsertTransportCallback.class);
     
     private final BlockPos itemHandlerPosition;

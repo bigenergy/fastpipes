@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ExtractorAttachmentScreen extends BaseScreen<ExtractorAttachmentContainerMenu> {
-    private static final ResourceLocation RESOURCE = new ResourceLocation(FastPipes.MOD_ID, "textures/gui/extractor_attachment.png");
+    private static final ResourceLocation RESOURCE = ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "textures/gui/extractor_attachment.png");
 
     private final List<Component> tooltip = new ArrayList<>();
 
