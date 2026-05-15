@@ -58,9 +58,8 @@ repositories {
         name = "ModMaven"
         url = "https://modmaven.dev"
     }
-    maven {
-        url = "https://api.modrinth.com/maven"
-    }
+    maven { url = "https://api.modrinth.com/maven" }
+    maven { url = "https://www.cursemaven.com" }
 }
 
 configurations {
@@ -80,6 +79,10 @@ dependencies {
 
     // Same artifact, deobfuscated, fed into patchJadeForDev (NOT on runtime classpath directly).
     jadeDevPatch fg.deobf("maven.modrinth:jade:11.13.1+forge")
+
+    // TConstruct for barrels
+    runtimeOnly fg.deobf("curse.maven:mantle-74924:7563777")
+    runtimeOnly fg.deobf("curse.maven:tinkers-construct-74072:7449219")
 }
 
 // Patches the deobf'd Jade jar: strips ALL of Jade's mixins (they're cosmetic, and several break

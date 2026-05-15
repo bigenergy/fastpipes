@@ -1,4 +1,24 @@
 # Changelog
+## [1.3.3] - 2026-05-15
+
+### Added
+- **Jade integration for attachments and terminal** — pipe attachments (Extractor / Inserter / Sensor / Void) now appear in Jade's WAILA tooltip with tier, side, redstone mode, blacklist/whitelist, routing mode, stack size, exact mode, and fluid mode. Pipe Terminal shows network status (unique stacks, total items, active user).
+- **Mixed-tier Energy Pipe networks** — energy pipes of any tier now connect into a single network. Capacity is summed across all tiers; transfer rate is bottlenecked by the slowest tier in the network (no free upgrade — a single Ultimate pipe in a Basic network won't accelerate the whole network).
+- **TConstruct support for barrels** — all barrels now support side inventory by crafting station
+
+### Fixed
+- **Attachment GUIs not opening** — fixed asymmetric `FluidStack` packet serialization between server and client. Server wrote a boolean-prefixed FluidStack but the client factory decoded the payload directly, causing a `NullPointerException` in Forge's `readRegistryId` on the first empty fluid filter slot and silently breaking every Extractor / Inserter / Sensor / Void menu.
+- **Removed attachment didn't appear in inventory** — the dropped item used to spawn as an `ItemEntity`, which produced a client-side desync where the pickup sound played but the inventory didn't update until another container was opened. Items are now given directly via `ItemHandlerHelper.giveItemToPlayer` with proper sync.
+- **Energy flow stopped after adding a second power source** — adjacent energy generators / consumers cached the pipe's `LazyOptional<IEnergyStorage>` which bound to a specific network instance; after a network rescan their cache pointed at an orphaned network and all flow stopped, with pipe energy appearing to reset to 0. The pipe now exposes a stable `LazyOptional` backed by a delegating storage that always queries the current network.
+
+### Changed
+- Wrench right-click on an attachment opens the attachment GUI instead of toggling disconnect on that side. Toggle disconnect still works on bare pipe sides.
+- Removing an attachment now clears a stale "disconnected" flag on that side so the pipe reconnects normally to the adjacent inventory.
+- Migrated all `new ResourceLocation(...)` calls to `ResourceLocation.fromNamespaceAndPath(...)` / `ResourceLocation.parse(...)` to remove deprecation warnings.
+
+### Notes
+- Existing worlds with tier-specific energy networks load fine — legacy network IDs are mapped to the unified energy network type, and pipes merge on the next scan. Pre-existing buffered energy in those networks is not persisted (was never persisted) so it resets once after the update.
+
 ## [1.3.2] - 2026-05-11
 
 ### Fixed
