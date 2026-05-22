@@ -13,7 +13,7 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 import java.util.ArrayList;
 import java.util.List;
 
-public record TerminalItemsSyncMessage(List<ItemStack> items) implements CustomPacketPayload {
+public record TerminalItemsSyncMessage(List<ItemStack> items, int sortOrdinal) implements CustomPacketPayload {
 
     public static final Type<TerminalItemsSyncMessage> TYPE =
         new Type<>(ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "terminal_items_sync"));
@@ -21,6 +21,7 @@ public record TerminalItemsSyncMessage(List<ItemStack> items) implements CustomP
     public static final StreamCodec<RegistryFriendlyByteBuf, TerminalItemsSyncMessage> STREAM_CODEC = new StreamCodec<>() {
         @Override
         public TerminalItemsSyncMessage decode(RegistryFriendlyByteBuf buf) {
+            int sortOrdinal = buf.readVarInt();
             int size = buf.readVarInt();
             List<ItemStack> items = new ArrayList<>(size);
             for (int i = 0; i < size; i++) {
@@ -31,11 +32,12 @@ public record TerminalItemsSyncMessage(List<ItemStack> items) implements CustomP
                 }
                 items.add(stack);
             }
-            return new TerminalItemsSyncMessage(items);
+            return new TerminalItemsSyncMessage(items, sortOrdinal);
         }
 
         @Override
         public void encode(RegistryFriendlyByteBuf buf, TerminalItemsSyncMessage msg) {
+            buf.writeVarInt(msg.sortOrdinal());
             buf.writeVarInt(msg.items().size());
             for (ItemStack stack : msg.items()) {
                 ItemStack single = stack.copy();
@@ -55,6 +57,11 @@ public record TerminalItemsSyncMessage(List<ItemStack> items) implements CustomP
         context.enqueueWork(() -> {
             Minecraft mc = Minecraft.getInstance();
             if (mc.player != null && mc.player.containerMenu instanceof TerminalContainerMenu terminal) {
+                TerminalContainerMenu.SortMode[] modes = TerminalContainerMenu.SortMode.values();
+                int ord = message.sortOrdinal();
+                if (ord >= 0 && ord < modes.length) {
+                    terminal.applyClientSortMode(modes[ord]);
+                }
                 terminal.receiveNetworkItems(message.items());
             }
         });

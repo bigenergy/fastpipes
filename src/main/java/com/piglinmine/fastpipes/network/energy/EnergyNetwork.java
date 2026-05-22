@@ -17,27 +17,38 @@ import java.util.List;
 
 public class EnergyNetwork extends Network {
     private final EnergyStorage energyStorage;
-    private final EnergyPipeType pipeType;
+    // Effective pipe type, recomputed on scanGraph as the slowest tier present.
+    private EnergyPipeType pipeType;
 
     public EnergyNetwork(BlockPos originPos, String id, EnergyPipeType pipeType) {
         super(originPos, id);
 
         this.pipeType = pipeType;
         this.energyStorage = new EnergyStorage(0);
-        this.energyStorage.setMaxReceive(pipeType.getCapacity());
+        this.energyStorage.setMaxReceive(pipeType.getTransferRate());
     }
 
     @Override
     public NetworkGraphScannerResult scanGraph(Level level, BlockPos pos) {
         NetworkGraphScannerResult result = super.scanGraph(level, pos);
 
-        energyStorage.setCapacityAndMaxExtract(
-            result.getFoundPipes()
-                .stream()
-                .filter(p -> p instanceof EnergyPipe)
-                .mapToInt(p -> ((EnergyPipe) p).getType().getCapacity())
-                .sum()
-        );
+        int totalCapacity = result.getFoundPipes()
+            .stream()
+            .filter(p -> p instanceof EnergyPipe)
+            .mapToInt(p -> ((EnergyPipe) p).getType().getCapacity())
+            .sum();
+
+        // Effective tier = LOWEST tier among present pipes (bottleneck model).
+        EnergyPipeType slowestType = result.getFoundPipes()
+            .stream()
+            .filter(p -> p instanceof EnergyPipe)
+            .map(p -> ((EnergyPipe) p).getType())
+            .min(java.util.Comparator.comparingInt(EnergyPipeType::getTier))
+            .orElse(pipeType);
+        this.pipeType = slowestType;
+
+        energyStorage.setCapacityAndMaxExtract(totalCapacity);
+        energyStorage.setMaxReceive(slowestType.getTransferRate());
 
         if (energyStorage.getEnergyStored() > energyStorage.getMaxEnergyStored()) {
             energyStorage.setStored(energyStorage.getMaxEnergyStored());

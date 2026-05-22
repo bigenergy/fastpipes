@@ -2,6 +2,8 @@ package com.piglinmine.fastpipes.network.pipe.transport.callback;
 
 import com.piglinmine.fastpipes.FastPipes;
 import com.piglinmine.fastpipes.network.Network;
+import com.piglinmine.fastpipes.network.pipe.Destination;
+import com.piglinmine.fastpipes.network.pipe.DestinationType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
@@ -9,6 +11,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Containers;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -38,8 +43,21 @@ public class ItemPipeGoneTransportCallback implements TransportCallback {
 
     @Override
     public void call(Network network, Level level, BlockPos currentPos, TransportCallback cancelCallback) {
-        // Drop the item at the current position when a pipe is gone
-        Containers.dropItemStack(level, currentPos.getX(), currentPos.getY(), currentPos.getZ(), stack);
+        ItemStack remaining = stack.copy();
+
+        // Try inserting into any inventory in the network first
+        if (network != null) {
+            for (Destination dest : network.getDestinations(DestinationType.ITEM_HANDLER)) {
+                if (remaining.isEmpty()) break;
+                IItemHandler handler = level.getCapability(Capabilities.ItemHandler.BLOCK, dest.getReceiver(), dest.getIncomingDirection().getOpposite());
+                if (handler == null) continue;
+                remaining = ItemHandlerHelper.insertItem(handler, remaining, false);
+            }
+            if (remaining.isEmpty()) return;
+        }
+
+        // Last resort — drop at current position
+        Containers.dropItemStack(level, currentPos.getX(), currentPos.getY(), currentPos.getZ(), remaining);
     }
 
     @Override

@@ -104,6 +104,12 @@ public class TieredBarrelBlock extends Block implements EntityBlock {
         Block targetBlock = FPipesBlocks.getBarrelBlock(targetTier);
         if (targetBlock == null) return;
 
+        // Clear contents before setBlock so vanilla onRemove doesn't drop them
+        // (we re-fill the new BE below, otherwise items would be duplicated).
+        if (oldBe != null) {
+            oldBe.clearContent();
+        }
+
         level.setBlock(pos, targetBlock.defaultBlockState().setValue(FACING, facing), 3);
 
         // Restore contents

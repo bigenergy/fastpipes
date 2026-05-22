@@ -2,6 +2,8 @@ package com.piglinmine.fastpipes.network.pipe.transport.callback;
 
 import com.piglinmine.fastpipes.FastPipes;
 import com.piglinmine.fastpipes.network.Network;
+import com.piglinmine.fastpipes.network.pipe.Destination;
+import com.piglinmine.fastpipes.network.pipe.DestinationType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
@@ -48,19 +50,31 @@ public class ItemBounceBackTransportCallback implements TransportCallback {
 
     @Override
     public void call(Network network, Level level, BlockPos currentPos, TransportCallback cancelCallback) {
-        IItemHandler handler = level.getCapability(Capabilities.ItemHandler.BLOCK, bounceBackItemHandlerPosition, bounceBackDirection);
-        if (handler != null) {
-            ItemStack remainder = ItemHandlerHelper.insertItem(handler, toInsert, false);
-            if (remainder.isEmpty()) {
-                return;
-            }
-            // Source inventory is full — drop the remainder at the current pipe position
-            Containers.dropItemStack(level, currentPos.getX(), currentPos.getY(), currentPos.getZ(), remainder);
-        } else {
-            // Source block is gone — drop at current pipe position
-            LOGGER.warn("Bounce-back source is gone at {}, dropping item at {}", bounceBackItemHandlerPosition, currentPos);
-            Containers.dropItemStack(level, currentPos.getX(), currentPos.getY(), currentPos.getZ(), toInsert);
+        ItemStack remaining = toInsert.copy();
+
+        // 1) Try original source first
+        IItemHandler sourceHandler = level.getCapability(Capabilities.ItemHandler.BLOCK, bounceBackItemHandlerPosition, bounceBackDirection);
+        if (sourceHandler != null) {
+            remaining = ItemHandlerHelper.insertItem(sourceHandler, remaining, false);
+            if (remaining.isEmpty()) return;
         }
+
+        // 2) Try any other inserter destination in the network (avoid losing items)
+        if (network != null) {
+            for (Destination dest : network.getDestinations(DestinationType.ITEM_HANDLER)) {
+                if (remaining.isEmpty()) break;
+                if (dest.getReceiver().equals(bounceBackItemHandlerPosition)) continue;
+                IItemHandler altHandler = level.getCapability(Capabilities.ItemHandler.BLOCK, dest.getReceiver(), dest.getIncomingDirection().getOpposite());
+                if (altHandler == null) continue;
+                remaining = ItemHandlerHelper.insertItem(altHandler, remaining, false);
+            }
+            if (remaining.isEmpty()) return;
+        }
+
+        // 3) Last resort — drop at current pipe position
+        LOGGER.warn("No inventory in network can accept bounced item at {}; dropping {} at {}",
+            bounceBackItemHandlerPosition, remaining, currentPos);
+        Containers.dropItemStack(level, currentPos.getX(), currentPos.getY(), currentPos.getZ(), remaining);
     }
 
     @Override

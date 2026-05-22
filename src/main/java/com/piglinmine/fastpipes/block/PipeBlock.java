@@ -44,6 +44,7 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
 
 import javax.annotation.Nullable;
 
@@ -213,22 +214,38 @@ public abstract class PipeBlock extends Block implements EntityBlock, SimpleWate
             return InteractionResult.SUCCESS;
         }
 
-        // Wrench: right-click to toggle disconnect on a side (supports cross-mod wrenches)
+        // Wrench: right-click on bare pipe side to toggle disconnect.
+        // If the clicked side has an attachment, open its GUI instead.
         if (WrenchItem.isWrench(held)) {
             Direction dir = getAttachmentDirectionClicked(pos, hit.getLocation());
             if (dir == null) {
                 dir = hit.getDirection(); // fallback to the face that was clicked
+            }
+            BlockEntity be = level.getBlockEntity(pos);
+            if (be instanceof PipeBlockEntity pipeBlockEntity
+                && pipeBlockEntity.getAttachmentManager().hasAttachment(dir)) {
+                return openAttachmentContainer(player, pos, pipeBlockEntity.getAttachmentManager(), dir);
             }
             return toggleDisconnect(level, pos, dir);
         }
 
         Direction dirClicked = getAttachmentDirectionClicked(pos, hit.getLocation());
 
+        // Fallback: if click didn't precisely land on attachment bbox, but an attachment
+        // exists on the clicked face, use that face. Prevents GUI "dead zones" on attachment edges.
+        if (dirClicked == null) {
+            BlockEntity be = level.getBlockEntity(pos);
+            if (be instanceof PipeBlockEntity pipeBlockEntity
+                && pipeBlockEntity.getAttachmentManager().hasAttachment(hit.getDirection())) {
+                dirClicked = hit.getDirection();
+            }
+        }
+
         if (dirClicked != null) {
             BlockEntity blockEntity = level.getBlockEntity(pos);
 
             if (held.isEmpty() && player.isCrouching()) {
-                return removeAttachment(level, pos, dirClicked);
+                return removeAttachment(level, pos, dirClicked, player);
             } else if (blockEntity instanceof PipeBlockEntity pipeBlockEntity && pipeBlockEntity.getAttachmentManager().hasAttachment(dirClicked)) {
                 return openAttachmentContainer(player, pos, pipeBlockEntity.getAttachmentManager(), dirClicked);
             } else if (held.getItem() instanceof AttachmentItem) {
@@ -300,7 +317,7 @@ public abstract class PipeBlock extends Block implements EntityBlock, SimpleWate
         return InteractionResult.SUCCESS;
     }
 
-    private InteractionResult removeAttachment(Level level, BlockPos pos, Direction dir) {
+    private InteractionResult removeAttachment(Level level, BlockPos pos, Direction dir, Player player) {
         if (!level.isClientSide) {
             Pipe pipe = NetworkManager.get(level).getPipe(pos);
 
@@ -308,12 +325,20 @@ public abstract class PipeBlock extends Block implements EntityBlock, SimpleWate
                 Attachment attachment = pipe.getAttachmentManager().getAttachment(dir);
 
                 pipe.getAttachmentManager().removeAttachmentAndScanGraph(dir);
+
+                // If this side was disconnected (e.g. wrench-toggle while attachment was installed),
+                // clear the disconnect so the pipe reconnects to whatever's there now.
+                if (pipe.isDisconnected(dir)) {
+                    pipe.toggleDisconnect(dir);
+                }
+
                 NetworkManager.get(level).setDirty();
 
                 pipe.sendBlockUpdate();
                 level.setBlockAndUpdate(pos, getState(level.getBlockState(pos), level, pos));
 
-                Block.popResource(level, pos.relative(dir), attachment.getDrop());
+                // Give directly to the player (handles sync + overflow drop properly).
+                ItemHandlerHelper.giveItemToPlayer(player, attachment.getDrop());
             }
 
             return InteractionResult.SUCCESS;

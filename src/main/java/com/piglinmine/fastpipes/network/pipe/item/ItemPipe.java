@@ -103,7 +103,7 @@ public class ItemPipe extends Pipe {
         transportsToRemove.clear();
 
         // Update existing transports - only mark dirty if a transport was actually removed
-        if (transports.removeIf(t -> t.update(network, this))) {
+        if (network != null && transports.removeIf(t -> t.update(network, this))) {
             NetworkManager.get(level).setDirty();
             sendTransportUpdate();
         }

@@ -26,6 +26,7 @@ import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
 import net.neoforged.neoforge.items.ItemStackHandler;
 
 import net.minecraft.core.registries.Registries;
@@ -167,6 +168,22 @@ public class ExtractorAttachment extends Attachment {
                 .getDestinationPathCache()
                 .getPath(pipe.getPos(), destination);
             if (path == null) {
+                slot++;
+                continue;
+            }
+
+            // Pre-check destination capacity — don't extract if items can't fit there.
+            IItemHandler destHandler = pipe.getLevel().getCapability(
+                Capabilities.ItemHandler.BLOCK,
+                destination.getReceiver(),
+                destination.getIncomingDirection().getOpposite()
+            );
+            if (destHandler == null) {
+                slot++;
+                continue;
+            }
+            ItemStack destRemainder = ItemHandlerHelper.insertItem(destHandler, simulated, true);
+            if (!destRemainder.isEmpty()) {
                 slot++;
                 continue;
             }

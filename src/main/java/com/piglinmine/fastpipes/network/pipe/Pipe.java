@@ -64,9 +64,10 @@ public abstract class Pipe {
     }
 
     public void leaveNetwork() {
-        logger.debug(pos + " left network " + network.getId());
-
-        this.network = null;
+        if (network != null) {
+            logger.debug(pos + " left network " + network.getId());
+            this.network = null;
+        }
 
         sendBlockUpdate();
     }

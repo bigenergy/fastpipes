@@ -84,8 +84,26 @@ public class TerminalContainerMenu extends BaseContainerMenu {
                 }
                 loading = false;
                 updateCraftResult();
+                // Restore sort mode from BE
+                SortMode[] modes = SortMode.values();
+                int ord = be.getSortModeOrdinal();
+                if (ord >= 0 && ord < modes.length) {
+                    this.sortMode = modes[ord];
+                }
             }
         }
+    }
+
+    private void persistSortMode() {
+        if (player.level().isClientSide) return;
+        if (player.level().getBlockEntity(terminalPos) instanceof TerminalBlockEntity be) {
+            be.setSortModeOrdinal(sortMode.ordinal());
+        }
+    }
+
+    /** Apply a sort mode received from the server on the client side, no persistence. */
+    public void applyClientSortMode(SortMode mode) {
+        this.sortMode = mode;
     }
 
     // Client constructor
@@ -148,7 +166,7 @@ public class TerminalContainerMenu extends BaseContainerMenu {
 
     private void syncToClient() {
         if (player instanceof ServerPlayer serverPlayer) {
-            FastPipesNetwork.sendToClient(serverPlayer, new TerminalItemsSyncMessage(networkItems));
+            FastPipesNetwork.sendToClient(serverPlayer, new TerminalItemsSyncMessage(networkItems, sortMode.ordinal()));
         }
     }
 
@@ -214,6 +232,7 @@ public class TerminalContainerMenu extends BaseContainerMenu {
         this.sortMode = mode;
         applySorting();
         applyFilter();
+        persistSortMode();
     }
 
     public void cycleSortMode() {
@@ -221,6 +240,7 @@ public class TerminalContainerMenu extends BaseContainerMenu {
         sortMode = modes[(sortMode.ordinal() + 1) % modes.length];
         applySorting();
         applyFilter();
+        persistSortMode();
     }
 
     public List<ItemStack> getFilteredItems() {
@@ -306,6 +326,8 @@ public class TerminalContainerMenu extends BaseContainerMenu {
             }
         }
 
+        // Force immediate sync of carried item / inventory back to client
+        super.broadcastChanges();
         refreshNetworkItems();
     }
 
@@ -416,6 +438,10 @@ public class TerminalContainerMenu extends BaseContainerMenu {
     @Override
     public void removed(Player player) {
         saveCraftGrid();
+        if (!player.level().isClientSide
+            && player.level().getBlockEntity(terminalPos) instanceof TerminalBlockEntity be) {
+            be.release(player.getUUID());
+        }
         super.removed(player);
     }
 

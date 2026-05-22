@@ -7,6 +7,7 @@ import com.piglinmine.fastpipes.network.pipe.Pipe;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -70,6 +71,14 @@ public class TerminalBlock extends Block implements EntityBlock {
         if (player instanceof ServerPlayer serverPlayer) {
             Pipe connectedPipe = findConnectedPipe(level, pos);
             if (connectedPipe != null) {
+                if (level.getBlockEntity(pos) instanceof TerminalBlockEntity be) {
+                    if (!be.tryAcquire(player.getUUID(), player.getName().getString())) {
+                        String owner = be.getActiveUserName() != null ? be.getActiveUserName() : "?";
+                        serverPlayer.displayClientMessage(
+                            Component.translatable("gui.fastpipes.terminal.in_use", owner), true);
+                        return InteractionResult.SUCCESS;
+                    }
+                }
                 TerminalMenuProvider.open(pos, serverPlayer);
             }
         }

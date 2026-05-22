@@ -19,6 +19,7 @@ import javax.annotation.Nullable;
 public class EnergyPipeBlockEntity extends PipeBlockEntity {
     private final EnergyPipeType type;
     private final ClientEnergyPipeEnergyStorage clientEnergyStorage;
+    private final DelegatingEnergyStorage stableStorage = new DelegatingEnergyStorage();
 
     public EnergyPipeBlockEntity(BlockPos pos, BlockState state) {
         super(getBlockEntityType(state), pos, state);
@@ -38,7 +39,6 @@ public class EnergyPipeBlockEntity extends PipeBlockEntity {
         } else if (state.getBlock() == FPipesBlocks.ULTIMATE_ENERGY_PIPE.get()) {
             return FPipesBlockEntities.ULTIMATE_ENERGY_PIPE.get();
         }
-        // Fallback to basic if unknown
         return FPipesBlockEntities.BASIC_ENERGY_PIPE.get();
     }
 
@@ -54,7 +54,6 @@ public class EnergyPipeBlockEntity extends PipeBlockEntity {
         } else if (state.getBlock() == FPipesBlocks.ULTIMATE_ENERGY_PIPE.get()) {
             return EnergyPipeType.ULTIMATE;
         }
-        // Fallback to basic if unknown
         return EnergyPipeType.BASIC;
     }
 
@@ -66,21 +65,72 @@ public class EnergyPipeBlockEntity extends PipeBlockEntity {
         return type;
     }
 
-    // NeoForge Capability Handler - returns null if no capability available
+    // Returns a stable wrapper so external machines that cache the capability
+    // continue working when the underlying network changes.
     @Nullable
     public IEnergyStorage getEnergyStorage(@Nullable Direction side) {
-        if (!level.isClientSide) {
-            NetworkManager mgr = NetworkManager.get(level);
-            Pipe pipe = mgr.getPipe(worldPosition);
-            if (pipe instanceof EnergyPipe energyPipe) {
-                return energyPipe.getEnergyStorage();
-            }
+        if (level == null || level.isClientSide) {
+            return clientEnergyStorage;
         }
-        return clientEnergyStorage;
+        return stableStorage;
     }
 
     @Override
     protected Pipe createPipe(Level level, BlockPos pos) {
         return new EnergyPipe(level, pos, type);
     }
-} 
+
+    /**
+     * IEnergyStorage that on every call resolves the current network's storage
+     * via NetworkManager. This avoids stale references caused by external machines
+     * caching a capability handle from before a network split/merge.
+     */
+    private class DelegatingEnergyStorage implements IEnergyStorage {
+        @Nullable
+        private IEnergyStorage current() {
+            if (level == null || level.isClientSide) return null;
+            NetworkManager mgr = NetworkManager.get(level);
+            Pipe pipe = mgr.getPipe(worldPosition);
+            if (pipe instanceof EnergyPipe energyPipe) {
+                return energyPipe.getEnergyStorage();
+            }
+            return null;
+        }
+
+        @Override
+        public int receiveEnergy(int maxReceive, boolean simulate) {
+            IEnergyStorage s = current();
+            return s == null ? 0 : s.receiveEnergy(maxReceive, simulate);
+        }
+
+        @Override
+        public int extractEnergy(int maxExtract, boolean simulate) {
+            IEnergyStorage s = current();
+            return s == null ? 0 : s.extractEnergy(maxExtract, simulate);
+        }
+
+        @Override
+        public int getEnergyStored() {
+            IEnergyStorage s = current();
+            return s == null ? 0 : s.getEnergyStored();
+        }
+
+        @Override
+        public int getMaxEnergyStored() {
+            IEnergyStorage s = current();
+            return s == null ? 0 : s.getMaxEnergyStored();
+        }
+
+        @Override
+        public boolean canExtract() {
+            IEnergyStorage s = current();
+            return s != null && s.canExtract();
+        }
+
+        @Override
+        public boolean canReceive() {
+            IEnergyStorage s = current();
+            return s != null && s.canReceive();
+        }
+    }
+}

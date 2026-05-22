@@ -65,7 +65,12 @@ public enum EnergyPipeType {
         }
     }
 
+    /**
+     * Single shared network type so pipes of different tiers can connect into one network.
+     */
+    public static final ResourceLocation NETWORK_TYPE = ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "energy");
+
     public ResourceLocation getNetworkType() {
-        return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "energy_" + name().toLowerCase());
+        return NETWORK_TYPE;
     }
 } 

@@ -1,10 +1,13 @@
 package com.piglinmine.fastpipes.item;
 
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.LevelReader;
 import net.neoforged.neoforge.common.ItemAbility;
 
 import java.util.List;
@@ -24,6 +27,12 @@ public class WrenchItem extends Item {
     @Override
     public boolean canPerformAction(ItemStack stack, ItemAbility itemAbility) {
         return itemAbility == WRENCH_ROTATE || itemAbility == WRENCH_DISASSEMBLE;
+    }
+
+    @Override
+    public boolean doesSneakBypassUse(ItemStack stack, LevelReader level, BlockPos pos, Player player) {
+        // Allow our pipe block's useWithoutItem to handle sneak+wrench (break pipe)
+        return true;
     }
 
     @Override

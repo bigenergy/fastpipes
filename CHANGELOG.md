@@ -1,4 +1,29 @@
 # Changelog
+## [1.3.3] - 2026-05-15
+
+### Added
+- **Jade integration for attachments and terminal** — pipe attachments (Extractor / Inserter / Sensor / Void) now appear in Jade's WAILA tooltip with tier, side, redstone mode, blacklist/whitelist, routing mode, stack size, exact mode, and fluid mode. Pipe Terminal shows network status (unique stacks, total items, active user).
+- **Mixed-tier Energy Pipe networks** — energy pipes of any tier now connect into a single network. Capacity is summed across all tiers; transfer rate is bottlenecked by the slowest tier in the network (no free upgrade — a single Ultimate pipe in a Basic network won't accelerate the whole network).
+- **Terminal sort mode persistence** — the selected sort (Name / Count / Mod) is saved per-terminal and restored after closing and reopening the GUI.
+- **Terminal single-user lock** — only one player can have a given terminal open at a time; others see "Terminal is in use by <name>". Auto-recovers from stale locks (crashed/offline holder or menu already closed).
+
+### Fixed
+- **Items no longer dropped in world on full destination** — extractor now pre-checks destination capacity before pulling; items stay in source if target inventory is full. Bounce-back and orphaned-transport fallbacks scan the entire network for space before resorting to a world drop.
+- **Removed attachment didn't appear in inventory** — the dropped item used to spawn as an `ItemEntity`, which produced a client-side desync where the pickup sound played but the inventory didn't update until another container was opened. Items are now given directly via `ItemHandlerHelper.giveItemToPlayer` with proper sync.
+- **Energy flow stopped after adding a second power source** — adjacent energy generators / consumers cached the pipe's energy capability handle which bound to a specific network instance; after a network rescan their cache pointed at an orphaned network and all flow stopped, with pipe energy appearing to reset to 0. The pipe now exposes a stable delegating storage that always queries the current network.
+- **Wrench shift+right-click not breaking pipes** — wrench item now bypasses sneak-use suppression (`doesSneakBypassUse`), so shift+right-clicking a pipe with the wrench correctly breaks and drops it.
+- **Barrel upgrade item duplication** — applying a barrel upgrade no longer drops a duplicate copy of the barrel's contents into the world while preserving them in the upgraded barrel. The old block entity is cleared before the block is replaced so `onRemove` has nothing to drop.
+- **GUI dead zones on attachment edges** — clicking near the edge of an attachment now reliably opens its GUI (falls back to the clicked face when the bounding-box hit misses).
+- **Terminal cursor sync delay** — items now appear on the cursor immediately after extraction instead of after a tick.
+- **NPE on pipe network tick** — `Pipe.leaveNetwork` and `ItemTransport.update` are now defensive against transient null-network states during rescans.
+
+### Changed
+- Wrench right-click on an attachment opens the attachment GUI instead of toggling disconnect on that side. Toggle disconnect still works on bare pipe sides.
+- Removing an attachment now clears a stale "disconnected" flag on that side so the pipe reconnects normally to the adjacent inventory.
+
+### Notes
+- Existing worlds with tier-specific energy networks load fine — legacy network IDs are mapped to the unified energy network type, and pipes merge on the next scan. Pre-existing buffered energy in those networks is not persisted (was never persisted) so it resets once after the update.
+
 ## [1.3.0] - 2026-04-13
 
 ### Added

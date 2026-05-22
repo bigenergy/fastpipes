@@ -23,6 +23,8 @@ import com.piglinmine.fastpipes.network.pipe.fluid.FluidPipeType;
 import com.piglinmine.fastpipes.network.pipe.item.ItemPipe;
 import com.piglinmine.fastpipes.network.pipe.item.ItemPipeFactory;
 import com.piglinmine.fastpipes.network.pipe.transport.callback.TransportCallbackFactoryRegistry;
+import net.minecraft.resources.ResourceLocation;
+import com.piglinmine.fastpipes.FastPipes;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -68,10 +70,16 @@ public class CommonSetup {
             LOGGER.debug("Registered FluidNetworkFactory for type: {}", pipeType.getNetworkType());
         }
         
-        // Register Energy Network Factories for each pipe type
+        // Single energy network factory — pipes of all tiers join one network type.
+        EnergyNetworkFactory energyFactory = new EnergyNetworkFactory();
+        NetworkRegistry.INSTANCE.addFactory(EnergyPipeType.NETWORK_TYPE, energyFactory);
+        LOGGER.debug("Registered EnergyNetworkFactory for type: {}", EnergyPipeType.NETWORK_TYPE);
+
+        // Legacy IDs for save backward compatibility (older worlds stored per-tier network types).
         for (EnergyPipeType pipeType : EnergyPipeType.values()) {
-            NetworkRegistry.INSTANCE.addFactory(pipeType.getNetworkType(), new EnergyNetworkFactory(pipeType));
-            LOGGER.debug("Registered EnergyNetworkFactory for type: {}", pipeType.getNetworkType());
+            ResourceLocation legacyId = ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "energy_" + pipeType.name().toLowerCase());
+            NetworkRegistry.INSTANCE.addFactory(legacyId, energyFactory);
+            LOGGER.debug("Registered legacy EnergyNetworkFactory alias: {}", legacyId);
         }
         
         LOGGER.debug("Network factories registered successfully");
