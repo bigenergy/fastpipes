@@ -49,7 +49,11 @@ public class ClientAttachmentManager implements AttachmentManager {
 
     @Override
     public void writeUpdate(CompoundTag tag) {
-        throw new RuntimeException("Shouldn't be called on the client");
+        // No-op on client. NeoForge 1.21.11's BlockSnapshot.create() (invoked when the
+        // client predicts a block break) calls saveWithFullMetadata which routes through
+        // this path. We can't throw — that crashes the game. Attachment state on the
+        // client is sync-only (it gets pushed from server via readUpdate), so there's
+        // nothing to write here.
     }
 
     @Override
