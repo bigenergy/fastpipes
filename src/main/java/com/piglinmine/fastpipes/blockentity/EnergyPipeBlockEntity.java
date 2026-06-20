@@ -100,13 +100,21 @@ public class EnergyPipeBlockEntity extends PipeBlockEntity {
         @Override
         public int receiveEnergy(int maxReceive, boolean simulate) {
             IEnergyStorage s = current();
-            return s == null ? 0 : s.receiveEnergy(maxReceive, simulate);
+            if (s == null) return 0;
+            // Per-pipe rate limit: this pipe's transferRate caps how much energy can
+            // enter the network *through this pipe*. Mixed-tier networks therefore
+            // behave intuitively: Basic feeds limit input at Basic rate, Improved
+            // trunk pipes don't constrain anything they're not directly carrying.
+            int clamped = Math.min(maxReceive, type.getTransferRate());
+            return s.receiveEnergy(clamped, simulate);
         }
 
         @Override
         public int extractEnergy(int maxExtract, boolean simulate) {
             IEnergyStorage s = current();
-            return s == null ? 0 : s.extractEnergy(maxExtract, simulate);
+            if (s == null) return 0;
+            int clamped = Math.min(maxExtract, type.getTransferRate());
+            return s.extractEnergy(clamped, simulate);
         }
 
         @Override
