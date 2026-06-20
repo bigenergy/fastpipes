@@ -211,7 +211,8 @@ public class TerminalScreen extends BaseScreen<TerminalContainerMenu> {
         int relMouseX = mouseX - leftPos;
         int relMouseY = mouseY - topPos;
         if (relMouseX >= sortBtnX && relMouseX < sortBtnX + 24 && relMouseY >= sortBtnY && relMouseY < sortBtnY + 13) {
-            // TODO 1.21.11: renderTooltip(Font,Component,int,int) signature changed; sort button tooltip stubbed
+            Component sortLabel = Component.translatable("gui.fastpipes.terminal.sort." + menu.getSortMode().name().toLowerCase());
+            graphics.setTooltipForNextFrame(font, sortLabel, mouseX, mouseY);
         }
 
         // Tooltip for hovered grid item
@@ -225,7 +226,9 @@ public class TerminalScreen extends BaseScreen<TerminalContainerMenu> {
                 List<ItemStack> visible = menu.getVisibleItems();
                 if (idx < visible.size()) {
                     ItemStack stack = visible.get(idx);
-                    // TODO 1.21.11: renderComponentTooltip removed; item tooltip stubbed
+                    if (!stack.isEmpty()) {
+                        graphics.setTooltipForNextFrame(font, stack, mouseX, mouseY);
+                    }
                 }
             }
         }
@@ -238,8 +241,69 @@ public class TerminalScreen extends BaseScreen<TerminalContainerMenu> {
         this.renderTooltip(graphics, mouseX, mouseY);
     }
 
-    // TODO 1.21.11: mouseClicked/keyPressed/charTyped signatures changed to use MouseButtonEvent/KeyEvent/CharacterEvent.
-    // Sort button click, grid click, search box input are broken until new event-based overrides are wired up.
+    // 1.21.11: mouseClicked now takes a MouseButtonEvent + a doubleClick boolean. Search box
+    // input is dispatched automatically via the framework because searchBox is a registered
+    // child widget; this override handles network-grid clicks and the sort-button click.
+
+    @Override
+    public boolean mouseClicked(net.minecraft.client.input.MouseButtonEvent event, boolean doubleClick) {
+        double mouseX = event.x();
+        double mouseY = event.y();
+        int button = event.button();
+
+        // Sort button click
+        int sortBtnX = leftPos + 163;
+        int sortBtnY = topPos + 18;
+        if (mouseX >= sortBtnX && mouseX < sortBtnX + 24 && mouseY >= sortBtnY && mouseY < sortBtnY + 13) {
+            if (button == 0 || button == 1) {
+                TerminalContainerMenu.SortMode[] modes = TerminalContainerMenu.SortMode.values();
+                TerminalContainerMenu.SortMode current = menu.getSortMode();
+                TerminalContainerMenu.SortMode next = modes[(current.ordinal() + 1) % modes.length];
+                menu.setSortMode(next);
+                FastPipesNetwork.sendToServer(new TerminalSortMessage(next.ordinal()));
+                return true;
+            }
+        }
+
+        // Network grid click — extract item to cursor / inventory
+        int gridMouseX = (int) (mouseX - leftPos - GRID_X);
+        int gridMouseY = (int) (mouseY - topPos - GRID_Y);
+        if (gridMouseX >= 0 && gridMouseY >= 0) {
+            int col = gridMouseX / SLOT_SIZE;
+            int row = gridMouseY / SLOT_SIZE;
+            if (col < TerminalContainerMenu.GRID_COLS && row < TerminalContainerMenu.GRID_ROWS) {
+                int idx = row * TerminalContainerMenu.GRID_COLS + col;
+                List<ItemStack> visible = menu.getVisibleItems();
+                if (idx < visible.size()) {
+                    ItemStack stack = visible.get(idx);
+                    if (!stack.isEmpty()) {
+                        com.mojang.blaze3d.platform.Window window = net.minecraft.client.Minecraft.getInstance().getWindow();
+                        boolean shift = com.mojang.blaze3d.platform.InputConstants.isKeyDown(window, com.mojang.blaze3d.platform.InputConstants.KEY_LSHIFT)
+                            || com.mojang.blaze3d.platform.InputConstants.isKeyDown(window, com.mojang.blaze3d.platform.InputConstants.KEY_RSHIFT);
+                        int amount;
+                        if (button == 1) {
+                            amount = Math.min(stack.getCount(), stack.getMaxStackSize() / 2);
+                            if (amount <= 0) amount = 1;
+                        } else {
+                            amount = Math.min(stack.getCount(), stack.getMaxStackSize());
+                        }
+                        FastPipesNetwork.sendToServer(new TerminalExtractMessage(stack.copy(), amount, !shift));
+                        return true;
+                    }
+                }
+            }
+        }
+
+        // Insert from cursor into network — clicking on the area between grid and player inv
+        // delegates to the menu so the cursor stack gets consumed.
+        ItemStack carried = menu.getCarried();
+        if (!carried.isEmpty()) {
+            // Allow vanilla slot handling to fire (clicked on a slot)
+            // — fall through to super so slotClicked is invoked correctly.
+        }
+
+        return super.mouseClicked(event, doubleClick);
+    }
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {

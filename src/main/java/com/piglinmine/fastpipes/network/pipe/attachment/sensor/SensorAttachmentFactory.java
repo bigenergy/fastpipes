@@ -35,7 +35,10 @@ public class SensorAttachmentFactory implements AttachmentFactory {
             attachment.setExactMode(tag.getBooleanOr("exa", false));
         }
         if (tag.contains("itemfilter")) {
-            // TODO 1.21.11: ItemStackHandler.deserializeNBT replaced by deserialize(ValueInput); filter persistence broken
+            com.piglinmine.fastpipes.util.ItemStackSerialization.loadItemStackHandler(
+                pipe.getLevel().registryAccess(),
+                attachment.getItemFilter(),
+                tag.getCompoundOrEmpty("itemfilter"));
         }
         if (tag.contains("fluidfilter")) {
             attachment.getFluidFilter().readFromNbt(tag.getCompoundOrEmpty("fluidfilter"), pipe.getLevel().registryAccess());

@@ -42,4 +42,32 @@ public final class ItemStackSerialization {
         DataResult<Tag> result = net.neoforged.neoforge.fluids.FluidStack.OPTIONAL_CODEC.encodeStart(ops, stack);
         return result.result().orElseGet(CompoundTag::new);
     }
+
+    /**
+     * Serializes a {@link net.neoforged.neoforge.items.ItemStackHandler} into a {@link CompoundTag}
+     * via the new ValueOutput pipeline. Used by attachment NBT bridges that still operate on
+     * raw CompoundTag.
+     */
+    public static CompoundTag saveItemStackHandler(HolderLookup.Provider registries,
+                                                   net.neoforged.neoforge.items.ItemStackHandler handler) {
+        net.minecraft.world.level.storage.TagValueOutput out =
+            net.minecraft.world.level.storage.TagValueOutput.createWithContext(
+                net.minecraft.util.ProblemReporter.DISCARDING, registries);
+        handler.serialize(out);
+        return out.buildResult();
+    }
+
+    /**
+     * Loads an {@link net.neoforged.neoforge.items.ItemStackHandler}'s state from a
+     * {@link CompoundTag} via the new ValueInput pipeline.
+     */
+    public static void loadItemStackHandler(HolderLookup.Provider registries,
+                                            net.neoforged.neoforge.items.ItemStackHandler handler,
+                                            CompoundTag tag) {
+        if (tag == null || tag.isEmpty()) return;
+        net.minecraft.world.level.storage.ValueInput in =
+            net.minecraft.world.level.storage.TagValueInput.create(
+                net.minecraft.util.ProblemReporter.DISCARDING, registries, tag);
+        handler.deserialize(in);
+    }
 }

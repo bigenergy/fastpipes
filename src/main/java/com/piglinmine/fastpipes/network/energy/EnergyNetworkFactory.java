@@ -27,6 +27,10 @@ public class EnergyNetworkFactory implements NetworkFactory {
     public Network create(CompoundTag tag) {
         EnergyNetwork network = new EnergyNetwork(BlockPos.of(tag.getLongOr("origin", 0L)), tag.getStringOr("id", ""), EnergyPipeType.BASIC);
 
+        if (tag.contains("energy")) {
+            network.getEnergyStorage().setStored(tag.getIntOr("energy", 0));
+        }
+
         LOGGER.debug("Deserialized energy network {} of type {}", network.getId(), network.getType().toString());
 
         return network;

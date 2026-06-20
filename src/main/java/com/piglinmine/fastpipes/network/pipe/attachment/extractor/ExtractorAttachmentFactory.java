@@ -30,7 +30,10 @@ public class ExtractorAttachmentFactory implements AttachmentFactory {
         ExtractorAttachment attachment = new ExtractorAttachment(pipe, dir, type);
 
         if (tag.contains("itemfilter")) {
-            // TODO 1.21.11: ItemStackHandler.deserializeNBT replaced by deserialize(ValueInput); filter persistence broken
+            com.piglinmine.fastpipes.util.ItemStackSerialization.loadItemStackHandler(
+                pipe.getLevel().registryAccess(),
+                attachment.getItemFilter(),
+                tag.getCompoundOrEmpty("itemfilter"));
         }
 
         if (tag.contains("rm")) {

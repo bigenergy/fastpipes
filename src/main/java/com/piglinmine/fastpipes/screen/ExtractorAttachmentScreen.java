@@ -143,8 +143,11 @@ public class ExtractorAttachmentScreen extends BaseScreen<ExtractorAttachmentCon
     }
 
     private void updateStackSize(int amount) {
-        // TODO 1.21.11: hasShiftDown() removed from Screen; stubbed
-        if (false /* hasShiftDown() */) {
+        // 1.21.11: hasShiftDown() removed from Screen — query window state directly via InputConstants.
+        com.mojang.blaze3d.platform.Window window = net.minecraft.client.Minecraft.getInstance().getWindow();
+        boolean shift = com.mojang.blaze3d.platform.InputConstants.isKeyDown(window, com.mojang.blaze3d.platform.InputConstants.KEY_LSHIFT)
+            || com.mojang.blaze3d.platform.InputConstants.isKeyDown(window, com.mojang.blaze3d.platform.InputConstants.KEY_RSHIFT);
+        if (shift) {
             amount *= 4;
         }
 
@@ -437,7 +440,7 @@ public class ExtractorAttachmentScreen extends BaseScreen<ExtractorAttachmentCon
         }
 
         if (!tooltip.isEmpty()) {
-            // TODO 1.21.11: renderComponentTooltip removed
+            graphics.setComponentTooltipForNextFrame(font, tooltip, mouseX - this.leftPos, mouseY - this.topPos);
         }
 
         super.renderLabels(graphics, mouseX, mouseY);
@@ -447,13 +450,16 @@ public class ExtractorAttachmentScreen extends BaseScreen<ExtractorAttachmentCon
     protected void renderBg(@NotNull GuiGraphics graphics, float partialTicks, int mouseX, int mouseY) {
         int i = (this.width - this.imageWidth) / 2;
         int j = (this.height - this.imageHeight) / 2;
-        // TODO 1.21.11: blit(Identifier,int,int,int,int,int,int) signature changed; bg render stubbed
+        graphics.blit(net.minecraft.client.renderer.RenderPipelines.GUI_TEXTURED,
+            RESOURCE, i, j, 0f, 0f, this.imageWidth, this.imageHeight, 256, 256);
 
         int x = 43;
         int y = 18;
         for (int filterSlotId = 1; filterSlotId <= ExtractorAttachment.MAX_FILTER_SLOTS; ++filterSlotId) {
             if (filterSlotId > menu.getExtractorAttachmentType().getFilterSlots()) {
-                // TODO 1.21.11: blit signature changed; locked-slot overlay stubbed
+                // Locked filter slot overlay
+                graphics.blit(net.minecraft.client.renderer.RenderPipelines.GUI_TEXTURED,
+                    RESOURCE, i + x, j + y, 240f, 0f, 18, 18, 256, 256);
             }
 
             if (filterSlotId % 5 == 0) {

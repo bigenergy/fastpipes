@@ -142,7 +142,13 @@ public class FluidNetwork extends Network {
     @Override
     public CompoundTag writeToNbt(CompoundTag tag, HolderLookup.Provider provider) {
         tag = super.writeToNbt(tag, provider);
-        // TODO 1.21.11: FluidTank.writeToNBT/readFromNBT replaced by serialize/deserialize on ValueOutput/ValueInput; fluid persistence broken
+        // Persist tank contents via the OPTIONAL_CODEC — bypasses FluidTank's
+        // ValueOutput/ValueInput serializer so this stays compatible with the
+        // existing CompoundTag-based NetworkManager codec path.
+        if (!fluidTank.getFluid().isEmpty()) {
+            tag.put("fluid", com.piglinmine.fastpipes.util.ItemStackSerialization.saveOptionalFluid(provider, fluidTank.getFluid()));
+        }
+        tag.putInt("fluid_capacity", fluidTank.getCapacity());
         return tag;
     }
 } 

@@ -1,5 +1,6 @@
 package com.piglinmine.fastpipes.network;
 
+import com.mojang.serialization.Codec;
 import com.piglinmine.fastpipes.FastPipes;
 import com.piglinmine.fastpipes.network.pipe.Pipe;
 import com.piglinmine.fastpipes.network.pipe.PipeFactory;
@@ -13,8 +14,10 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.datafix.DataFixTypes;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.saveddata.SavedData;
+import net.minecraft.world.level.saveddata.SavedDataType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -36,12 +39,38 @@ public class NetworkManager extends SavedData {
         return get((ServerLevel) level);
     }
 
-    // TODO 1.21.11: SavedData.Factory removed in favor of SavedDataType<T> with Codec<T>.
-    // Using static cache as a stub — network state will NOT persist across world reload.
-    private static final java.util.Map<ServerLevel, NetworkManager> INSTANCES = new java.util.WeakHashMap<>();
+    /**
+     * SavedDataType lives per-level — built lazily so the NetworkManager carries the level
+     * reference into network/pipe deserialization paths that still expect a Level.
+     */
+    public static SavedDataType<NetworkManager> savedDataType(ServerLevel level) {
+        return new SavedDataType<>(
+            NAME,
+            srv -> new NetworkManager(srv),
+            srv -> codec(srv),
+            DataFixTypes.LEVEL
+        );
+    }
 
     public static NetworkManager get(ServerLevel level) {
-        return INSTANCES.computeIfAbsent(level, NetworkManager::new);
+        return level.getDataStorage().computeIfAbsent(savedDataType(level));
+    }
+
+    /**
+     * Builds the {@link Codec} used by the {@link SavedDataType} — round-trips through the
+     * pre-existing {@link #load(CompoundTag, HolderLookup.Provider)} / {@link #save(CompoundTag, HolderLookup.Provider)}
+     * CompoundTag format, so all pipe/network factories continue to use their established NBT
+     * schemas without per-class refactoring.
+     */
+    private static Codec<NetworkManager> codec(ServerLevel level) {
+        return CompoundTag.CODEC.xmap(
+            tag -> {
+                NetworkManager mgr = new NetworkManager(level);
+                mgr.load(tag, level.registryAccess());
+                return mgr;
+            },
+            mgr -> mgr.save(new CompoundTag(), level.registryAccess())
+        );
     }
 
     public void addNetwork(Network network) {
@@ -114,7 +143,7 @@ public class NetworkManager extends SavedData {
                 // Create a temporary network for this pipe if it doesn't have one
                 formNetworkAt(candidate.getLevel(), candidate.getPos(), candidate.getNetworkType());
             }
-            
+
             if (candidate.getNetwork() != null) {
                 networkCandidates.add(candidate.getNetwork());
             }
@@ -182,7 +211,6 @@ public class NetworkManager extends SavedData {
     }
 
     private void splitNetworks(Pipe originPipe) {
-        // Collect all networks that the removed pipe was bridging
         Set<Network> affectedNetworks = new HashSet<>();
         if (originPipe.getNetwork() != null) {
             affectedNetworks.add(originPipe.getNetwork());
@@ -197,44 +225,27 @@ public class NetworkManager extends SavedData {
         }
 
         if (adjacentPipes.isEmpty()) {
-            // No adjacent pipes — just remove the origin pipe's network if it's now empty
             if (originPipe.getNetwork() != null) {
                 removeNetwork(originPipe.getNetwork().getId());
             }
             return;
         }
 
-        // Remove all affected networks
         for (Network net : affectedNetworks) {
             removeNetwork(net.getId());
         }
 
-        // Make all adjacent pipes leave their networks
         for (Pipe adjacentPipe : adjacentPipes) {
             if (adjacentPipe.getNetwork() != null) {
                 adjacentPipe.leaveNetwork();
             }
         }
 
-        // Reform networks from each adjacent pipe (scanGraph will handle color-aware connections)
         for (Pipe adjacentPipe : adjacentPipes) {
             if (adjacentPipe.getNetwork() == null) {
                 formNetworkAt(adjacentPipe.getLevel(), adjacentPipe.getPos(), adjacentPipe.getNetworkType());
             }
         }
-    }
-
-    @Nullable
-    private Pipe findFirstAdjacentPipe(BlockPos pos, Identifier networkType) {
-        for (Direction dir : Direction.values()) {
-            Pipe pipe = getPipe(pos.relative(dir));
-
-            if (pipe != null && pipe.getNetworkType().equals(networkType)) {
-                return pipe;
-            }
-        }
-
-        return null;
     }
 
     @Nullable
@@ -290,9 +301,28 @@ public class NetworkManager extends SavedData {
         LOGGER.debug("Read {} networks", networks.size());
     }
 
-    // TODO 1.21.11: SavedData.save signature removed; SavedData now uses Codec-based persistence via SavedDataType.
-    // Stubbed — no persistence in this port.
+    /**
+     * Serializes the network manager to a CompoundTag. Re-implemented for the SavedDataType
+     * codec path — writes every pipe via its factory NBT and every network via its writeToNbt.
+     */
     public CompoundTag save(CompoundTag tag, HolderLookup.Provider provider) {
+        ListTag pipesList = new ListTag();
+        for (Pipe pipe : pipes.values()) {
+            CompoundTag pipeTag = new CompoundTag();
+            pipe.writeToNbt(pipeTag);
+            pipesList.add(pipeTag);
+        }
+        tag.put("pipes", pipesList);
+
+        ListTag nets = new ListTag();
+        for (Network network : networks.values()) {
+            CompoundTag netTag = new CompoundTag();
+            netTag.putString("type", network.getType().toString());
+            network.writeToNbt(netTag, provider);
+            nets.add(netTag);
+        }
+        tag.put("networks", nets);
+
         return tag;
     }
-} 
+}

@@ -134,4 +134,11 @@ public class EnergyNetwork extends Network {
     public EnergyPipeType getPipeType() {
         return pipeType;
     }
+
+    @Override
+    public net.minecraft.nbt.CompoundTag writeToNbt(net.minecraft.nbt.CompoundTag tag, net.minecraft.core.HolderLookup.Provider provider) {
+        tag = super.writeToNbt(tag, provider);
+        tag.putInt("energy", energyStorage.getEnergyStored());
+        return tag;
+    }
 } 

@@ -377,8 +377,8 @@ public class ExtractorAttachment extends Attachment {
     @Override
     public CompoundTag writeToNbt(CompoundTag tag) {
         tag.putByte("rm", (byte) redstoneMode.ordinal());
-        // TODO 1.21.11: ItemStackHandler.serializeNBT/deserializeNBT replaced by serialize(ValueOutput)/deserialize(ValueInput); filter persistence broken
-        tag.put("itemfilter", new CompoundTag());
+        tag.put("itemfilter", com.piglinmine.fastpipes.util.ItemStackSerialization.saveItemStackHandler(
+            pipe.getLevel().registryAccess(), itemFilter));
         tag.putByte("bw", (byte) blacklistWhitelist.ordinal());
         tag.putInt("rr", itemDestinationFinder.getRoundRobinIndex());
         tag.putByte("routingm", (byte) routingMode.ordinal());

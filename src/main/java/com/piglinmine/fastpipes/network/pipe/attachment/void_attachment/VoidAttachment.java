@@ -173,8 +173,8 @@ public class VoidAttachment extends Attachment {
     public CompoundTag writeToNbt(CompoundTag tag) {
         tag.putByte("bw", (byte) blacklistWhitelist.ordinal());
         tag.putBoolean("exa", exactMode);
-        // TODO 1.21.11: ItemStackHandler.serializeNBT replaced by serialize(ValueOutput); filter persistence broken
-        tag.put("itemfilter", new CompoundTag());
+        tag.put("itemfilter", com.piglinmine.fastpipes.util.ItemStackSerialization.saveItemStackHandler(
+            pipe.getLevel().registryAccess(), itemFilter));
         tag.put("fluidfilter", fluidFilter.writeToNbt(pipe.getLevel().registryAccess()));
         return super.writeToNbt(tag);
     }

@@ -35,8 +35,15 @@ public class FluidNetworkFactory implements NetworkFactory {
     public Network create(CompoundTag tag, HolderLookup.Provider provider) {
         FluidNetwork network = new FluidNetwork(BlockPos.of(tag.getLongOr("origin", 0L)), tag.getStringOr("id", ""), pipeType);
 
-        if (tag.contains("tank")) {
-            // TODO 1.21.11: FluidTank.readFromNBT replaced by deserialize(ValueInput); fluid network persistence broken
+        if (tag.contains("fluid_capacity")) {
+            network.getFluidTank().setCapacity(tag.getIntOr("fluid_capacity", 1000));
+        }
+        if (tag.contains("fluid")) {
+            net.neoforged.neoforge.fluids.FluidStack stack = com.piglinmine.fastpipes.util.ItemStackSerialization.parseOptionalFluid(
+                provider, tag.getCompoundOrEmpty("fluid"));
+            if (!stack.isEmpty()) {
+                network.getFluidTank().fill(stack, net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction.EXECUTE);
+            }
         }
 
         LOGGER.debug("Deserialized fluid network {} of type {}", network.getId(), network.getType().toString());
