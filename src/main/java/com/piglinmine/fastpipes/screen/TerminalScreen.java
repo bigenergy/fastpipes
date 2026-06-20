@@ -112,10 +112,18 @@ public class TerminalScreen extends BaseScreen<TerminalContainerMenu> {
 
             // Render count
             if (stack.getCount() > 1) {
-                // TODO 1.21.11: pose() returns Matrix3x2fStack; pushPose/popPose→pushMatrix/popMatrix, translate/scale args changed.
-                // Count rendering simplified without pose transformations.
+                // 1.21.11: GuiGraphics.pose() returns org.joml.Matrix3x2fStack — use pushMatrix/popMatrix
+                // and the 2-arg translate/scale variants (no Z component). Match the master 1.21.1 behavior
+                // of rendering the count at 0.75x scale, bottom-right-aligned within the 16x16 slot.
                 String countStr = formatCount(stack.getCount());
-                graphics.drawString(font, countStr, slotX + 16 - font.width(countStr), slotY + 8, WHITE_OPAQUE, true);
+                float scale = 0.75f;
+                int scaledWidth = (int)(font.width(countStr) * scale);
+                var pose = graphics.pose();
+                pose.pushMatrix();
+                pose.translate(slotX + 16 - scaledWidth, slotY + 8);
+                pose.scale(scale, scale);
+                graphics.drawString(font, countStr, 0, 0, WHITE_OPAQUE, true);
+                pose.popMatrix();
             }
         }
 

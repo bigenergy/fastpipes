@@ -1,104 +1,11 @@
 {
-  "multipart": [
-    {
-      "apply": {
-        "model": "fastpipes:block/pipe/energy/advanced/core"
-      }
-    },
-    {
-      "when": {
-        "OR": [
-          {
-            "north": "true"
-          },
-          {
-            "inv_north": "true"
-          }
-        ]
-      },
-      "apply": {
-        "model": "fastpipes:block/pipe/energy/advanced/extension"
-      }
-    },
-    {
-      "when": {
-        "OR": [
-          {
-            "east": "true"
-          },
-          {
-            "inv_east": "true"
-          }
-        ]
-      },
-      "apply": {
-        "model": "fastpipes:block/pipe/energy/advanced/extension",
-        "y": 90
-      }
-    },
-    {
-      "when": {
-        "OR": [
-          {
-            "south": "true"
-          },
-          {
-            "inv_south": "true"
-          }
-        ]
-      },
-      "apply": {
-        "model": "fastpipes:block/pipe/energy/advanced/extension",
-        "y": 180
-      }
-    },
-    {
-      "when": {
-        "OR": [
-          {
-            "west": "true"
-          },
-          {
-            "inv_west": "true"
-          }
-        ]
-      },
-      "apply": {
-        "model": "fastpipes:block/pipe/energy/advanced/extension",
-        "y": 270
-      }
-    },
-    {
-      "when": {
-        "OR": [
-          {
-            "up": "true"
-          },
-          {
-            "inv_up": "true"
-          }
-        ]
-      },
-      "apply": {
-        "model": "fastpipes:block/pipe/energy/advanced/extension",
-        "x": 270
-      }
-    },
-    {
-      "when": {
-        "OR": [
-          {
-            "down": "true"
-          },
-          {
-            "inv_down": "true"
-          }
-        ]
-      },
-      "apply": {
-        "model": "fastpipes:block/pipe/energy/advanced/extension",
-        "x": 90
-      }
+  "variants": {
+    "": {
+      "type": "fastpipes:pipe",
+      "core": { "model": "fastpipes:block/pipe/energy/advanced/core" },
+      "extension": { "model": "fastpipes:block/pipe/energy/advanced/extension" },
+      "straight": { "model": "fastpipes:block/pipe/energy/advanced/straight" },
+      "inventory_attachment": { "model": "fastpipes:block/pipe/attachment/inventory_attachment" }
     }
-  ]
+  }
 }

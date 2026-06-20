@@ -60,6 +60,8 @@ public class InserterAttachmentScreen extends BaseScreen<InserterAttachmentConta
         super.init();
         this.titleLabelX = 7;
         this.inventoryLabelX = 7;
+        // Push "Inventory" label clear of the mode-buttons row at y=76..94.
+        this.inventoryLabelY = 100;
 
         redstoneModeButton = this.addRenderableWidget(new IconButton(
             this.leftPos + 32, this.topPos + 76,
@@ -326,6 +328,41 @@ public class InserterAttachmentScreen extends BaseScreen<InserterAttachmentConta
         int j = (this.height - this.imageHeight) / 2;
         graphics.blit(net.minecraft.client.renderer.RenderPipelines.GUI_TEXTURED,
             RESOURCE, i, j, 0f, 0f, this.imageWidth, this.imageHeight, 256, 256);
+
+        // Locked filter slot overlay — UV (198, 0) is the gray "disabled" slot sprite.
+        int x = 43;
+        int y = 18;
+        for (int filterSlotId = 1; filterSlotId <= InserterAttachment.MAX_FILTER_SLOTS; ++filterSlotId) {
+            if (filterSlotId > menu.getInserterAttachmentType().getFilterSlots()) {
+                graphics.blit(net.minecraft.client.renderer.RenderPipelines.GUI_TEXTURED,
+                    RESOURCE, i + x, j + y, 198f, 0f, 18, 18, 256, 256);
+            }
+            if (filterSlotId % 5 == 0) {
+                x = 43;
+                y += 18;
+            } else {
+                x += 18;
+            }
+        }
+
+        // Render tag override icon on filter slots
+        x = 43;
+        y = 18;
+        for (int slotIdx = 0; slotIdx < menu.getInserterAttachmentType().getFilterSlots(); ++slotIdx) {
+            String override = menu.getTagOverride(slotIdx);
+            if (!override.isEmpty()) {
+                graphics.blit(
+                    net.minecraft.client.renderer.RenderPipelines.GUI_TEXTURED,
+                    TAG_OVERLAY, i + x, j + y, 0f, 0f, 16, 16, 16, 16);
+            }
+            if ((slotIdx + 1) % 5 == 0) {
+                x = 43;
+                y += 18;
+            } else {
+                x += 18;
+            }
+        }
+
         super.renderBg(graphics, partialTicks, mouseX, mouseY);
     }
 }

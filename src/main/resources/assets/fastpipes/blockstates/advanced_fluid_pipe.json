@@ -1,104 +1,25 @@
 {
-  "multipart": [
-    {
-      "apply": {
-        "model": "fastpipes:block/pipe/fluid/advanced/core"
-      }
-    },
-    {
-      "when": {
-        "OR": [
-          {
-            "north": "true"
-          },
-          {
-            "inv_north": "true"
-          }
-        ]
-      },
-      "apply": {
-        "model": "fastpipes:block/pipe/fluid/advanced/extension"
-      }
-    },
-    {
-      "when": {
-        "OR": [
-          {
-            "east": "true"
-          },
-          {
-            "inv_east": "true"
-          }
-        ]
-      },
-      "apply": {
-        "model": "fastpipes:block/pipe/fluid/advanced/extension",
-        "y": 90
-      }
-    },
-    {
-      "when": {
-        "OR": [
-          {
-            "south": "true"
-          },
-          {
-            "inv_south": "true"
-          }
-        ]
-      },
-      "apply": {
-        "model": "fastpipes:block/pipe/fluid/advanced/extension",
-        "y": 180
-      }
-    },
-    {
-      "when": {
-        "OR": [
-          {
-            "west": "true"
-          },
-          {
-            "inv_west": "true"
-          }
-        ]
-      },
-      "apply": {
-        "model": "fastpipes:block/pipe/fluid/advanced/extension",
-        "y": 270
-      }
-    },
-    {
-      "when": {
-        "OR": [
-          {
-            "up": "true"
-          },
-          {
-            "inv_up": "true"
-          }
-        ]
-      },
-      "apply": {
-        "model": "fastpipes:block/pipe/fluid/advanced/extension",
-        "x": 270
-      }
-    },
-    {
-      "when": {
-        "OR": [
-          {
-            "down": "true"
-          },
-          {
-            "inv_down": "true"
-          }
-        ]
-      },
-      "apply": {
-        "model": "fastpipes:block/pipe/fluid/advanced/extension",
-        "x": 90
+  "variants": {
+    "": {
+      "type": "fastpipes:pipe",
+      "core": { "model": "fastpipes:block/pipe/fluid/advanced/core" },
+      "extension": { "model": "fastpipes:block/pipe/fluid/advanced/extension" },
+      "straight": { "model": "fastpipes:block/pipe/fluid/advanced/straight" },
+      "inventory_attachment": { "model": "fastpipes:block/pipe/attachment/inventory_attachment" },
+      "attachments": {
+        "fastpipes:basic_extractor":     { "model": "fastpipes:block/pipe/attachment/extractor/basic" },
+        "fastpipes:improved_extractor":  { "model": "fastpipes:block/pipe/attachment/extractor/improved" },
+        "fastpipes:advanced_extractor":  { "model": "fastpipes:block/pipe/attachment/extractor/advanced" },
+        "fastpipes:elite_extractor":     { "model": "fastpipes:block/pipe/attachment/extractor/elite" },
+        "fastpipes:ultimate_extractor":  { "model": "fastpipes:block/pipe/attachment/extractor/ultimate" },
+        "fastpipes:basic_inserter":      { "model": "fastpipes:block/pipe/attachment/inserter/basic" },
+        "fastpipes:improved_inserter":   { "model": "fastpipes:block/pipe/attachment/inserter/improved" },
+        "fastpipes:advanced_inserter":   { "model": "fastpipes:block/pipe/attachment/inserter/advanced" },
+        "fastpipes:elite_inserter":      { "model": "fastpipes:block/pipe/attachment/inserter/elite" },
+        "fastpipes:ultimate_inserter":   { "model": "fastpipes:block/pipe/attachment/inserter/ultimate" },
+        "fastpipes:sensor":              { "model": "fastpipes:block/pipe/attachment/sensor" },
+        "fastpipes:void":                { "model": "fastpipes:block/pipe/attachment/void" }
       }
     }
-  ]
+  }
 }

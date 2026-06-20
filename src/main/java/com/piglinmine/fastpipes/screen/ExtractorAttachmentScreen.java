@@ -67,6 +67,10 @@ public class ExtractorAttachmentScreen extends BaseScreen<ExtractorAttachmentCon
         super.init();
         this.titleLabelX = 7;
         this.inventoryLabelX = 7;
+        // Mode buttons row sits at y=76..94 (76 + 18 = 94 for NORMAL preset; the +/- minus button
+        // extends a few pixels above/below). Default inventoryLabelY = imageHeight - 94 = 99 would
+        // overlap. Push the "Inventory" label down to clear the buttons.
+        this.inventoryLabelY = 100;
 
         redstoneModeButton = this.addRenderableWidget(new IconButton(
             this.leftPos + 32,
@@ -463,9 +467,10 @@ public class ExtractorAttachmentScreen extends BaseScreen<ExtractorAttachmentCon
         int y = 18;
         for (int filterSlotId = 1; filterSlotId <= ExtractorAttachment.MAX_FILTER_SLOTS; ++filterSlotId) {
             if (filterSlotId > menu.getExtractorAttachmentType().getFilterSlots()) {
-                // Locked filter slot overlay
+                // Locked filter slot overlay. Master 1.21.1 uses UV (198, 0) — the gray "disabled" slot
+                // sprite. The previous (240, 0) hit the +/- button icons region instead.
                 graphics.blit(net.minecraft.client.renderer.RenderPipelines.GUI_TEXTURED,
-                    RESOURCE, i + x, j + y, 240f, 0f, 18, 18, 256, 256);
+                    RESOURCE, i + x, j + y, 198f, 0f, 18, 18, 256, 256);
             }
 
             if (filterSlotId % 5 == 0) {
