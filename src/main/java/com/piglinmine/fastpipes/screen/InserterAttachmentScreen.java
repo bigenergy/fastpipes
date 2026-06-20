@@ -272,9 +272,76 @@ public class InserterAttachmentScreen extends BaseScreen<InserterAttachmentConta
     }
 
     private void renderFilterEditor(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
-        // TODO 1.21.11: graphics.pose() now returns Matrix3x2fStack with pushMatrix/popMatrix/translate(Matrix3x2f);
-        // Registry.get returns Optional<Holder.Reference<T>>; renderTooltip/blit signatures changed.
-        // Filter editor modal is aggressively stubbed for compile.
+        // 26.1.2: graphics.pose() is a Matrix3x2fStack (2D only — no z-translate). The legacy
+        // pose.translate(0, 0, 300) trick is replaced by nextStratum(), which advances the GUI
+        // draw depth so subsequent geometry layers above slots/items.
+        graphics.nextStratum();
+
+        graphics.fill(0, 0, this.width, this.height, 0x80000000);
+
+        int panelW = 220;
+        int panelH = 170;
+        int panelX = (this.width - panelW) / 2;
+        int panelY = (this.height - panelH) / 2;
+
+        graphics.fill(panelX, panelY, panelX + panelW, panelY + panelH, 0xFFC6C6C6);
+        graphics.fill(panelX, panelY, panelX + panelW, panelY + 2, 0xFFFFFFFF);
+        graphics.fill(panelX, panelY, panelX + 2, panelY + panelH, 0xFFFFFFFF);
+        graphics.fill(panelX + panelW - 2, panelY, panelX + panelW, panelY + panelH, 0xFF555555);
+        graphics.fill(panelX, panelY + panelH - 2, panelX + panelW, panelY + panelH, 0xFF555555);
+
+        graphics.text(font, Component.translatable("gui.fastpipes.filter_editor.item_tag"), panelX + 10, panelY + 10, 0xFF404040, false);
+
+        String val = filterStringBox != null ? filterStringBox.getValue().trim() : "";
+        if (!val.isEmpty() && !val.startsWith("#")) {
+            Identifier rl = Identifier.tryParse(val);
+            if (rl != null) {
+                if (menu.isFluidMode()) {
+                    net.minecraft.world.level.material.Fluid fluid = BuiltInRegistries.FLUID.getValue(rl);
+                    if (fluid != null && fluid != net.minecraft.world.level.material.Fluids.EMPTY) {
+                        Component fluidName = fluid.defaultFluidState().createLegacyBlock().getBlock().getName();
+                        graphics.text(font, fluidName, panelX + 10, panelY + 28, 0xFF404040, false);
+                    }
+                } else {
+                    net.minecraft.world.item.Item item = BuiltInRegistries.ITEM.getValue(rl);
+                    if (item != null && item != net.minecraft.world.item.Items.AIR) {
+                        graphics.item(new ItemStack(item), panelX + 12, panelY + 23);
+                    }
+                }
+            }
+        }
+
+        if (filterStringBox != null) filterStringBox.extractRenderState(graphics, mouseX, mouseY, 0);
+
+        graphics.text(font, Component.translatable("gui.fastpipes.filter_editor.tags"), panelX + 10, panelY + 50, 0xFF404040, false);
+
+        int tagsAreaTop = panelY + 62;
+        int tagsAreaBottom = panelY + 138;
+        int tagsAreaHeight = tagsAreaBottom - tagsAreaTop;
+        graphics.fill(panelX + 10, tagsAreaTop, panelX + panelW - 10, tagsAreaBottom, 0xFF000000);
+
+        int maxVisibleLines = tagsAreaHeight / 10;
+        if (tagsLines.length > 0) {
+            for (int i = tagsScrollOffset; i < tagsLines.length && (i - tagsScrollOffset) < maxVisibleLines; i++) {
+                int tagY = tagsAreaTop + 2 + (i - tagsScrollOffset) * 10;
+                boolean hovered = mouseX >= panelX + 10 && mouseX <= panelX + panelW - 10
+                    && mouseY >= tagY && mouseY < tagY + 10;
+                if (hovered) {
+                    graphics.fill(panelX + 11, tagY - 1, panelX + panelW - 11, tagY + 9, 0x40FFFFFF);
+                }
+                graphics.text(font, tagsLines[i], panelX + 14, tagY, hovered ? 0xFFFFFF55 : 0xFF55FF55, false);
+            }
+            if (tagsLines.length > maxVisibleLines) {
+                String indicator = "▲▼ " + (tagsScrollOffset + 1) + "-"
+                    + Math.min(tagsScrollOffset + maxVisibleLines, tagsLines.length) + "/" + tagsLines.length;
+                graphics.text(font, indicator, panelX + panelW - 10 - font.width(indicator), tagsAreaBottom + 1, 0xFF808080, false);
+            }
+        } else if (val.startsWith("#")) {
+            graphics.text(font, val, panelX + 14, tagsAreaTop + 2, 0xFFFFFF55, false);
+        }
+
+        if (editorSubmitButton != null) editorSubmitButton.extractRenderState(graphics, mouseX, mouseY, 0);
+        if (editorCancelButton != null) editorCancelButton.extractRenderState(graphics, mouseX, mouseY, 0);
     }
 
     // 26.1.2: render() / renderTooltip() / renderBackground() removed — driven by the framework.

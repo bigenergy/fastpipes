@@ -62,10 +62,9 @@ public class FluidPipeBlockEntityRenderer
             return;
         }
 
-        // 26.1.2: IClientFluidTypeExtensions.getStillTexture / getTintColor were removed.
-        // Fluid sprites + tint are now obtained from the FluidModel registered for the
-        // FluidState via ModelManager#getFluidStateModelSet(). The tint source provides
-        // the color (-1 == untinted), and the still material's sprite is the still texture.
+        // 26.1.2 gap: NeoForge IClientFluidTypeExtensions stack-context accessors (getTintColor(FluidStack),
+        // getStillTexture(FluidStack)) were dropped — FluidTintSource is BlockState-keyed only, so
+        // FluidStack-encoded tints (NBT-coloured fluids) cannot be honoured. Pass AIR as no-op state.
         FluidModel model = Minecraft.getInstance()
                 .getModelManager()
                 .getFluidStateModelSet()
@@ -73,8 +72,6 @@ public class FluidPipeBlockEntityRenderer
 
         int color;
         if (model.fluidTintSource() != null) {
-            // We don't have a real BlockState/BlockAndTintGetter for the carried fluid here;
-            // the in-hand tint (color(BlockState)) is fine for the pipe-interior rendering.
             color = model.fluidTintSource().color(net.minecraft.world.level.block.Blocks.AIR.defaultBlockState());
         } else {
             color = -1; // untinted (white)
