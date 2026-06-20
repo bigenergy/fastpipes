@@ -3,7 +3,10 @@
   "pattern": ["CCC", "CBC", "CCC"],
   "key": {
     "C": {"tag": "c:ingots/copper"},
-    "B": {"item": "minecraft:barrel"}
+    "B": [
+      {"item": "minecraft:barrel"},
+      {"item": "fastpipes:oak_barrel"}
+    ]
   },
   "result": {"id": "fastpipes:copper_barrel_upgrade", "count": 1}
 }
