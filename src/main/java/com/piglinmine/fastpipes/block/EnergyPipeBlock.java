@@ -70,6 +70,12 @@ public class EnergyPipeBlock extends PipeBlock implements EntityBlock {
         BlockEntity be = world.getBlockEntity(pos);
         if (be instanceof EnergyPipeBlockEntity epe && epe.isDisconnected(direction)) return false;
 
+        // 1.21.11: see ItemPipeBlock — render a pipe extension on sides carrying an
+        // attachment so the player can see them at all while PipeBakedModel is stubbed.
+        if (be instanceof PipeBlockEntity pbe && pbe.getAttachmentManager().getAttachment(direction) != null) {
+            return true;
+        }
+
         if (world instanceof Level level) {
             // TODO 1.21.11: Capabilities.Energy.BLOCK now returns EnergyHandler not IEnergyStorage; wrap via IEnergyStorage.of()
             var cap = level.getCapability(Capabilities.Energy.BLOCK, pos.relative(direction), direction.getOpposite());

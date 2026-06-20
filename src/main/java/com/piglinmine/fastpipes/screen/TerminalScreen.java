@@ -24,6 +24,14 @@ public class TerminalScreen extends BaseScreen<TerminalContainerMenu> {
     private String statusMessage = "";
     private int statusTicks = 0;
 
+    // 1.21.11: GuiGraphics.text() now silently skips rendering when ARGB.alpha(color) == 0
+    // (see GuiGraphics#text). The legacy 0xRRGGBB constants (e.g. 4210752 == 0x00404040 dark gray
+    // and 0x00FFFFFF white) all had implicit alpha 0 and are now invisible. Vanilla 1.21.11 uses
+    // -12566464 (== 0xFF404040 signed). Mirror that with explicit full-alpha constants.
+    private static final int LABEL_COLOR = 0xFF404040;        // was 4210752 (alpha 0 → invisible)
+    private static final int WHITE_OPAQUE = 0xFFFFFFFF;       // was 0xFFFFFF (alpha 0 → invisible)
+    private static final int STATUS_RED_OPAQUE = 0xFFFF5555;  // was 0xFF5555 (alpha 0 → invisible)
+
     public TerminalScreen(TerminalContainerMenu container, Inventory inv, Component title) {
         super(container, inv, title);
         this.imageWidth = 195;
@@ -42,8 +50,10 @@ public class TerminalScreen extends BaseScreen<TerminalContainerMenu> {
         searchBox = new EditBox(this.font, this.leftPos + 8, this.topPos + 19, 153, 12, Component.empty());
         searchBox.setMaxLength(50);
         searchBox.setBordered(true);
-        searchBox.setTextColor(0xFFFFFF);
-        searchBox.setTextColorUneditable(0xA0A0A0);
+        // 1.21.11: GuiGraphics.text skips alpha-0 colors, so EditBox text colors must include
+        // full alpha or they render invisibly (search box appeared as just a black bar).
+        searchBox.setTextColor(WHITE_OPAQUE);
+        searchBox.setTextColorUneditable(0xFFA0A0A0);
         searchBox.setHint(Component.translatable("gui.fastpipes.terminal.search_hint").withStyle(net.minecraft.ChatFormatting.DARK_GRAY));
         searchBox.setResponder(text -> {
             menu.setSearchText(text);
@@ -105,7 +115,7 @@ public class TerminalScreen extends BaseScreen<TerminalContainerMenu> {
                 // TODO 1.21.11: pose() returns Matrix3x2fStack; pushPose/popPose→pushMatrix/popMatrix, translate/scale args changed.
                 // Count rendering simplified without pose transformations.
                 String countStr = formatCount(stack.getCount());
-                graphics.drawString(font, countStr, slotX + 16 - font.width(countStr), slotY + 8, 0xFFFFFF, true);
+                graphics.drawString(font, countStr, slotX + 16 - font.width(countStr), slotY + 8, WHITE_OPAQUE, true);
             }
         }
 
@@ -190,9 +200,9 @@ public class TerminalScreen extends BaseScreen<TerminalContainerMenu> {
 
     @Override
     protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
-        graphics.drawString(font, title, titleLabelX, titleLabelY, 4210752, false);
-        graphics.drawString(font, Component.translatable("container.crafting"), 8, 126, 4210752, false);
-        graphics.drawString(font, Component.translatable("container.inventory"), inventoryLabelX, inventoryLabelY, 4210752, false);
+        graphics.drawString(font, title, titleLabelX, titleLabelY, LABEL_COLOR, false);
+        graphics.drawString(font, Component.translatable("container.crafting"), 8, 126, LABEL_COLOR, false);
+        graphics.drawString(font, Component.translatable("container.inventory"), inventoryLabelX, inventoryLabelY, LABEL_COLOR, false);
 
         // Status message — centered over network grid with dark background
         if (statusTicks > 0) {
@@ -202,7 +212,7 @@ public class TerminalScreen extends BaseScreen<TerminalContainerMenu> {
             int sy = GRID_Y + (TerminalContainerMenu.GRID_ROWS * SLOT_SIZE) / 2 - 5;
             int pad = 4;
             graphics.fill(sx - pad, sy - pad, sx + sw + pad, sy + font.lineHeight + pad, 0xE0000000);
-            graphics.drawString(font, statusMessage, sx, sy, 0xFF5555, false);
+            graphics.drawString(font, statusMessage, sx, sy, STATUS_RED_OPAQUE, false);
         }
 
         // Sort button tooltip

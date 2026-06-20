@@ -413,8 +413,9 @@ public class ExtractorAttachmentScreen extends BaseScreen<ExtractorAttachmentCon
     protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
 
         if (!menu.isFluidMode()) {
-            // TODO 1.21.11: Font.drawInBatch signature uses Matrix4f from pose().last().pose() which is no longer accessible; stubbed
-            graphics.drawString(font, "" + menu.getStackSize(), 139, 83, 4210752, false);
+            // 1.21.11: GuiGraphics.text skips colors with alpha 0. The legacy 4210752 (0x00404040)
+            // had implicit alpha 0 and rendered nothing; vanilla now uses 0xFF404040 (signed -12566464).
+            graphics.drawString(font, "" + menu.getStackSize(), 139, 83, 0xFF404040, false);
         }
 
         // Don't show tooltips when editor is open
@@ -440,7 +441,12 @@ public class ExtractorAttachmentScreen extends BaseScreen<ExtractorAttachmentCon
         }
 
         if (!tooltip.isEmpty()) {
-            graphics.setComponentTooltipForNextFrame(font, tooltip, mouseX - this.leftPos, mouseY - this.topPos);
+            // 1.21.11: setTooltipForNextFrame schedules a deferred render that runs AFTER the
+            // (leftPos, topPos) pose translation has been popped (see GuiGraphics.renderDeferredElements
+            // / setTooltipForNextFrameInternal — the closure captures xo/yo at submit time, runs at
+            // identity pose on the next-stratum). So we must pass SCREEN-absolute mouse coords here;
+            // subtracting leftPos/topPos produced top-left rendering.
+            graphics.setComponentTooltipForNextFrame(font, tooltip, mouseX, mouseY);
         }
 
         super.renderLabels(graphics, mouseX, mouseY);

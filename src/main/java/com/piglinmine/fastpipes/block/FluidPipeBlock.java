@@ -67,6 +67,12 @@ public class FluidPipeBlock extends PipeBlock implements EntityBlock {
         BlockEntity be = world.getBlockEntity(pos);
         if (be instanceof FluidPipeBlockEntity fpe && fpe.isDisconnected(direction)) return false;
 
+        // 1.21.11: see ItemPipeBlock — render a pipe extension on sides carrying an
+        // attachment so the player can see them at all while PipeBakedModel is stubbed.
+        if (be instanceof PipeBlockEntity pbe && pbe.getAttachmentManager().getAttachment(direction) != null) {
+            return true;
+        }
+
         // Don't show inventory connection indicator toward other fluid pipes
         BlockState facingState = world.getBlockState(pos.relative(direction));
         if (facingState.getBlock() instanceof FluidPipeBlock) return false;

@@ -311,7 +311,10 @@ public class InserterAttachmentScreen extends BaseScreen<InserterAttachmentConta
         }
 
         if (!tooltip.isEmpty()) {
-            graphics.setComponentTooltipForNextFrame(font, tooltip, mouseX - this.leftPos, mouseY - this.topPos);
+            // 1.21.11: setTooltipForNextFrame defers rendering past the leftPos/topPos pose
+            // translation, so it expects SCREEN-absolute coords (see ExtractorAttachmentScreen for
+            // the longer rationale). Passing local coords rendered tooltips in the top-left corner.
+            graphics.setComponentTooltipForNextFrame(font, tooltip, mouseX, mouseY);
         }
 
         super.renderLabels(graphics, mouseX, mouseY);

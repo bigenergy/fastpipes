@@ -106,7 +106,9 @@ public class VoidAttachmentScreen extends BaseScreen<VoidAttachmentContainerMenu
         }
 
         if (!tooltip.isEmpty()) {
-            graphics.setComponentTooltipForNextFrame(font, tooltip, mouseX - this.leftPos, mouseY - this.topPos);
+            // 1.21.11: setTooltipForNextFrame uses SCREEN-absolute coords (deferred render past pose
+            // translation). Subtracting leftPos/topPos sent tooltips to the top-left corner.
+            graphics.setComponentTooltipForNextFrame(font, tooltip, mouseX, mouseY);
         }
 
         super.renderLabels(graphics, mouseX, mouseY);

@@ -74,6 +74,16 @@ public class ItemPipeBlock extends PipeBlock implements EntityBlock {
         BlockEntity be = world.getBlockEntity(pos);
         if (be instanceof ItemPipeBlockEntity ipe && ipe.isDisconnected(direction)) return false;
 
+        // 1.21.11: PipeBakedModel is stubbed out, so the per-side attachment overlay quads no
+        // longer render. As a stopgap so attachments are visible at all, treat any side that
+        // has an attachment as an "inventory connection" — the multipart blockstate then draws
+        // the standard pipe extension on that side. This makes the attachment-bearing side
+        // look connected (not bare); the dedicated attachment model will come back once the
+        // new 1.21.11 model API is wired through.
+        if (be instanceof PipeBlockEntity pbe && pbe.getAttachmentManager().getAttachment(direction) != null) {
+            return true;
+        }
+
         // Don't show inventory connection indicator toward other item pipes
         // (pipes expose IItemHandler, which would cause false inv connections
         //  when pipe-to-pipe connection is blocked by color)
