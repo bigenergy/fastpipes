@@ -29,8 +29,8 @@ public record TerminalStatusMessage(String messageKey) implements CustomPacketPa
     public static void handleClient(final TerminalStatusMessage message, final IPayloadContext context) {
         context.enqueueWork(() -> {
             Minecraft mc = Minecraft.getInstance();
-            if (mc.screen instanceof TerminalScreen screen) {
-                screen.showStatus(net.minecraft.network.chat.Component.translatable(message.messageKey()).getString());
+            if (mc.gui.screen() instanceof TerminalScreen term) {
+                term.showStatus(net.minecraft.network.chat.Component.translatable(message.messageKey()).getString());
             }
         });
     }
