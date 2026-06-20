@@ -51,15 +51,23 @@ public class ServerAttachmentManager implements AttachmentManager {
         attachments.remove(dir);
         attachmentState[dir.ordinal()] = null;
 
-        // Re-scan graph, required to rebuild destinations (chests with an attachment connected are no valid destination, refresh that)
-        pipe.getNetwork().scanGraph(pipe.getLevel(), pipe.getPos());
+        // Re-scan graph if the pipe has a network. A pipe may be temporarily networkless
+        // (e.g. just placed, or in a transient rescan state for some mod-injected world);
+        // skipping the scan is safe — the next tick / neighbor change will rescan.
+        // Without this guard, the packet handler aborts mid-operation, leaving the client
+        // out of sync (duplicate attachments, broken rendering).
+        if (pipe.getNetwork() != null) {
+            pipe.getNetwork().scanGraph(pipe.getLevel(), pipe.getPos());
+        }
     }
 
     public void setAttachmentAndScanGraph(Direction dir, Attachment attachment) {
         setAttachment(dir, attachment);
 
-        // Re-scan graph, required to rebuild destinations (chests with an attachment connected are no valid destination, refresh that)
-        pipe.getNetwork().scanGraph(pipe.getLevel(), pipe.getPos());
+        // Same guard as removeAttachmentAndScanGraph — see comment there.
+        if (pipe.getNetwork() != null) {
+            pipe.getNetwork().scanGraph(pipe.getLevel(), pipe.getPos());
+        }
     }
 
     private void setAttachment(Direction dir, Attachment attachment) {
