@@ -27,24 +27,25 @@ public class InserterAttachmentFactory implements AttachmentFactory {
 
     @Override
     public Attachment createFromNbt(Pipe pipe, CompoundTag tag) {
-        Direction dir = DirectionUtil.safeGet((byte) tag.getInt("dir"));
+        Direction dir = DirectionUtil.safeGet((byte) tag.getIntOr("dir", 0));
         InserterAttachment attachment = new InserterAttachment(pipe, dir, type);
 
-        if (tag.contains("rm")) attachment.setRedstoneMode(RedstoneMode.get(tag.getByte("rm")));
-        if (tag.contains("bw")) attachment.setBlacklistWhitelist(BlacklistWhitelist.get(tag.getByte("bw")));
-        if (tag.contains("exa")) attachment.setExactMode(tag.getBoolean("exa"));
+        if (tag.contains("rm")) attachment.setRedstoneMode(RedstoneMode.get(tag.getByteOr("rm", (byte) 0)));
+        if (tag.contains("bw")) attachment.setBlacklistWhitelist(BlacklistWhitelist.get(tag.getByteOr("bw", (byte) 0)));
+        if (tag.contains("exa")) attachment.setExactMode(tag.getBooleanOr("exa", false));
         if (tag.contains("itemfilter")) {
-            attachment.getItemFilter().deserializeNBT(pipe.getLevel().registryAccess(), tag.getCompound("itemfilter"));
+            // TODO 1.21.11: ItemStackHandler.deserializeNBT replaced by deserialize(ValueInput); filter persistence broken
         }
         if (tag.contains("fluidfilter")) {
-            attachment.getFluidFilter().readFromNbt(tag.getCompound("fluidfilter"), pipe.getLevel().registryAccess());
+            attachment.getFluidFilter().readFromNbt(tag.getCompoundOrEmpty("fluidfilter"), pipe.getLevel().registryAccess());
         }
         if (tag.contains("tagov")) {
-            CompoundTag overrides = tag.getCompound("tagov");
+            CompoundTag overrides = tag.getCompoundOrEmpty("tagov");
             for (int i = 0; i < InserterAttachment.MAX_FILTER_SLOTS; i++) {
                 String key = "s" + i;
                 if (overrides.contains(key)) {
-                    attachment.setTagOverride(i, overrides.getString(key));
+                    // TODO 1.21.11: CompoundTag.getString returns Optional<String>
+                    attachment.setTagOverride(i, overrides.getString(key).orElse(""));
                 }
             }
         }

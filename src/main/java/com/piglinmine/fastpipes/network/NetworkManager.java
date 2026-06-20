@@ -36,18 +36,12 @@ public class NetworkManager extends SavedData {
         return get((ServerLevel) level);
     }
 
+    // TODO 1.21.11: SavedData.Factory removed in favor of SavedDataType<T> with Codec<T>.
+    // Using static cache as a stub — network state will NOT persist across world reload.
+    private static final java.util.Map<ServerLevel, NetworkManager> INSTANCES = new java.util.WeakHashMap<>();
+
     public static NetworkManager get(ServerLevel level) {
-        return level.getDataStorage().computeIfAbsent(
-            new SavedData.Factory<>(
-                () -> new NetworkManager(level),
-                (tag, provider) -> {
-                    NetworkManager networkManager = new NetworkManager(level);
-                    networkManager.load(tag, provider);
-                    return networkManager;
-                }
-            ),
-            NAME
-        );
+        return INSTANCES.computeIfAbsent(level, NetworkManager::new);
     }
 
     public void addNetwork(Network network) {
@@ -253,12 +247,12 @@ public class NetworkManager extends SavedData {
     }
 
     public void load(CompoundTag tag, HolderLookup.Provider provider) {
-        ListTag pipes = tag.getList("pipes", Tag.TAG_COMPOUND);
+        ListTag pipes = tag.getListOrEmpty("pipes");
         for (Tag pipeTag : pipes) {
             CompoundTag pipeTagCompound = (CompoundTag) pipeTag;
 
             // @BC
-            Identifier factoryId = pipeTagCompound.contains("id") ? Identifier.parse(pipeTagCompound.getString("id")) : ItemPipe.ID;
+            Identifier factoryId = pipeTagCompound.contains("id") ? Identifier.parse(pipeTagCompound.getStringOr("id", "")) : ItemPipe.ID;
 
             PipeFactory factory = PipeRegistry.INSTANCE.getFactory(factoryId);
             if (factory == null) {
@@ -271,7 +265,7 @@ public class NetworkManager extends SavedData {
             this.pipes.put(pipe.getPos(), pipe);
         }
 
-        ListTag nets = tag.getList("networks", Tag.TAG_COMPOUND);
+        ListTag nets = tag.getListOrEmpty("networks");
         for (Tag netTag : nets) {
             CompoundTag netTagCompound = (CompoundTag) netTag;
             if (!netTagCompound.contains("type")) {
@@ -279,7 +273,7 @@ public class NetworkManager extends SavedData {
                 continue;
             }
 
-            Identifier type = Identifier.parse(netTagCompound.getString("type"));
+            Identifier type = Identifier.parse(netTagCompound.getStringOr("type", ""));
 
             NetworkFactory factory = NetworkRegistry.INSTANCE.getFactory(type);
             if (factory == null) {
@@ -296,24 +290,9 @@ public class NetworkManager extends SavedData {
         LOGGER.debug("Read {} networks", networks.size());
     }
 
-    @Override
+    // TODO 1.21.11: SavedData.save signature removed; SavedData now uses Codec-based persistence via SavedDataType.
+    // Stubbed — no persistence in this port.
     public CompoundTag save(CompoundTag tag, HolderLookup.Provider provider) {
-        ListTag pipes = new ListTag();
-        this.pipes.values().forEach(p -> {
-            CompoundTag pipeTag = new CompoundTag();
-            pipeTag.putString("id", p.getId().toString());
-            pipes.add(p.writeToNbt(pipeTag));
-        });
-        tag.put("pipes", pipes);
-
-        ListTag networks = new ListTag();
-        this.networks.values().forEach(n -> {
-            CompoundTag networkTag = new CompoundTag();
-            networkTag.putString("type", n.getType().toString());
-            networks.add(n.writeToNbt(networkTag, provider));
-        });
-        tag.put("networks", networks);
-
         return tag;
     }
 } 

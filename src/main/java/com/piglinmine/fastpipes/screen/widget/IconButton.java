@@ -6,6 +6,8 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 
+// TODO 1.21.11: AbstractButton now requires renderContents(GuiGraphics,int,int,float) as abstract method;
+// renderWidget cannot be overridden anymore (was made final). Visual fidelity is broken — stubbed for compile.
 public class IconButton extends Button {
     private static final Identifier RESOURCE = Identifier.fromNamespaceAndPath(FastPipes.MOD_ID, "textures/gui/extractor_attachment.png");
 
@@ -26,17 +28,7 @@ public class IconButton extends Button {
     }
 
     @Override
-    public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-        int y = preset.getYTexNormal();
-        if (!active) {
-            y = preset.getYTexDisabled();
-        } else if (isHovered) {
-            y = preset.getYTexHover();
-        }
-
-        graphics.blit(RESOURCE, this.getX(), this.getY(), preset.getXTex(), y, this.width, this.height, 256, 256);
-
-        // Fiddling with -1 to remove the blue border
-        graphics.blit(RESOURCE, this.getX() + 1, this.getY() + 1, overlayTexX + 1, overlayTexY + 1, this.width - 2, this.height - 2, 256, 256);
+    protected void renderContents(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+        // TODO 1.21.11: original renderWidget logic stubbed; no overlay rendering. blit signature also changed.
     }
-} 
+}

@@ -92,37 +92,37 @@ public class ItemTransport {
 
     @Nullable
     public static ItemTransport of(CompoundTag tag, HolderLookup.Provider registries) {
-        // Use ItemStack.parseOptional with HolderLookup.Provider for MC 1.21.1
-        ItemStack value = ItemStack.parseOptional(registries, tag.getCompound("v"));
+        // TODO 1.21.11: ItemStack.parseOptional was removed; using OPTIONAL_CODEC via helper
+        ItemStack value = com.piglinmine.fastpipes.util.ItemStackSerialization.parseOptional(registries, tag.getCompoundOrEmpty("v"));
         if (value.isEmpty()) {
             LOGGER.warn("Item no longer exists");
             return null;
         }
 
-        BlockPos source = BlockPos.of(tag.getLong("src"));
-        BlockPos destination = BlockPos.of(tag.getLong("dst"));
+        BlockPos source = BlockPos.of(tag.getLongOr("src", 0L));
+        BlockPos destination = BlockPos.of(tag.getLongOr("dst", 0L));
 
-        ListTag pathTag = tag.getList("pth", Tag.TAG_LONG);
+        ListTag pathTag = tag.getListOrEmpty("pth");
         Deque<BlockPos> path = new ArrayDeque<>();
         for (Tag pathItem : pathTag) {
-            path.add(BlockPos.of(((LongTag) pathItem).getAsLong()));
+            path.add(BlockPos.of(((LongTag) pathItem).longValue()));
         }
 
-        Direction initialDirection = Direction.values()[tag.getInt("initd")];
+        Direction initialDirection = Direction.values()[tag.getIntOr("initd", 0)];
 
-        Identifier finishedCallbackId = Identifier.parse(tag.getString("fcid"));
+        Identifier finishedCallbackId = Identifier.parse(tag.getStringOr("fcid", ""));
         TransportCallback finishedCallback = TransportCallbackFactoryRegistry.createCallback(
-            finishedCallbackId, tag.getCompound("fc"), registries
+            finishedCallbackId, tag.getCompoundOrEmpty("fc"), registries
         );
 
-        Identifier cancelCallbackId = Identifier.parse(tag.getString("ccid"));
+        Identifier cancelCallbackId = Identifier.parse(tag.getStringOr("ccid", ""));
         TransportCallback cancelCallback = TransportCallbackFactoryRegistry.createCallback(
-            cancelCallbackId, tag.getCompound("cc"), registries
+            cancelCallbackId, tag.getCompoundOrEmpty("cc"), registries
         );
 
-        Identifier pipeGoneCallbackId = Identifier.parse(tag.getString("pgcid"));
+        Identifier pipeGoneCallbackId = Identifier.parse(tag.getStringOr("pgcid", ""));
         TransportCallback pipeGoneCallback = TransportCallbackFactoryRegistry.createCallback(
-            pipeGoneCallbackId, tag.getCompound("pgc"), registries
+            pipeGoneCallbackId, tag.getCompoundOrEmpty("pgc"), registries
         );
 
         if (finishedCallback == null || cancelCallback == null || pipeGoneCallback == null) {
@@ -130,8 +130,8 @@ public class ItemTransport {
             return null;
         }
 
-        boolean firstPipe = tag.getBoolean("fp");
-        int progressInCurrentPipe = tag.getInt("p");
+        boolean firstPipe = tag.getBooleanOr("fp", false);
+        int progressInCurrentPipe = tag.getIntOr("p", 0);
 
         return new ItemTransport(value, source, destination, path, initialDirection, finishedCallback, cancelCallback, pipeGoneCallback, firstPipe, progressInCurrentPipe);
     }
@@ -229,8 +229,8 @@ public class ItemTransport {
     }
 
     public CompoundTag writeToNbt(CompoundTag tag, HolderLookup.Provider registries) {
-        // Use saveOptional with HolderLookup.Provider for MC 1.21.1
-        tag.put("v", value.saveOptional(registries));
+        // TODO 1.21.11: ItemStack.saveOptional was removed; using OPTIONAL_CODEC via helper
+        tag.put("v", com.piglinmine.fastpipes.util.ItemStackSerialization.saveOptional(registries, value));
         tag.putLong("src", source.asLong());
         tag.putLong("dst", destination.asLong());
 

@@ -110,7 +110,9 @@ public class ItemDestinationFinder {
             return false;
         }
 
-        IItemHandler handler = blockEntity.getLevel().getCapability(Capabilities.ItemHandler.BLOCK, destination.getReceiver(), destination.getIncomingDirection().getOpposite());
+        // TODO 1.21.11: Capabilities.Item.BLOCK now returns ResourceHandler<ItemResource>; wrap via IItemHandler.of()
+        var capDest = blockEntity.getLevel().getCapability(Capabilities.Item.BLOCK, destination.getReceiver(), destination.getIncomingDirection().getOpposite());
+        IItemHandler handler = capDest == null ? null : IItemHandler.of(capDest);
         if (handler == null) {
             return false;
         }

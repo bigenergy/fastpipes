@@ -36,9 +36,9 @@ public class ItemBounceBackTransportCallback implements TransportCallback {
 
     @Nullable
     public static ItemBounceBackTransportCallback of(CompoundTag tag, HolderLookup.Provider registries) {
-        BlockPos bounceBackItemHandlerPosition = BlockPos.of(tag.getLong("bbihpos"));
-        Direction bounceBackDirection = Direction.values()[tag.getInt("bbdir")];
-        ItemStack toInsert = ItemStack.parseOptional(registries, tag.getCompound("s"));
+        BlockPos bounceBackItemHandlerPosition = BlockPos.of(tag.getLongOr("bbihpos", 0L));
+        Direction bounceBackDirection = Direction.values()[tag.getIntOr("bbdir", 0)];
+        ItemStack toInsert = com.piglinmine.fastpipes.util.ItemStackSerialization.parseOptional(registries, tag.getCompoundOrEmpty("s"));
 
         if (toInsert.isEmpty()) {
             LOGGER.warn("Item no longer exists");
@@ -53,7 +53,9 @@ public class ItemBounceBackTransportCallback implements TransportCallback {
         ItemStack remaining = toInsert.copy();
 
         // 1) Try original source first
-        IItemHandler sourceHandler = level.getCapability(Capabilities.ItemHandler.BLOCK, bounceBackItemHandlerPosition, bounceBackDirection);
+        // TODO 1.21.11: Capabilities.Item.BLOCK now returns ResourceHandler<ItemResource>; wrap via IItemHandler.of()
+        var capBounceSrc = level.getCapability(Capabilities.Item.BLOCK, bounceBackItemHandlerPosition, bounceBackDirection);
+        IItemHandler sourceHandler = capBounceSrc == null ? null : IItemHandler.of(capBounceSrc);
         if (sourceHandler != null) {
             remaining = ItemHandlerHelper.insertItem(sourceHandler, remaining, false);
             if (remaining.isEmpty()) return;
@@ -64,7 +66,9 @@ public class ItemBounceBackTransportCallback implements TransportCallback {
             for (Destination dest : network.getDestinations(DestinationType.ITEM_HANDLER)) {
                 if (remaining.isEmpty()) break;
                 if (dest.getReceiver().equals(bounceBackItemHandlerPosition)) continue;
-                IItemHandler altHandler = level.getCapability(Capabilities.ItemHandler.BLOCK, dest.getReceiver(), dest.getIncomingDirection().getOpposite());
+                // TODO 1.21.11: Capabilities.Item.BLOCK now returns ResourceHandler<ItemResource>; wrap via IItemHandler.of()
+                var capBounceAlt = level.getCapability(Capabilities.Item.BLOCK, dest.getReceiver(), dest.getIncomingDirection().getOpposite());
+                IItemHandler altHandler = capBounceAlt == null ? null : IItemHandler.of(capBounceAlt);
                 if (altHandler == null) continue;
                 remaining = ItemHandlerHelper.insertItem(altHandler, remaining, false);
             }
@@ -94,7 +98,7 @@ public class ItemBounceBackTransportCallback implements TransportCallback {
     public CompoundTag writeToNbt(CompoundTag tag, HolderLookup.Provider registries) {
         tag.putLong("bbihpos", bounceBackItemHandlerPosition.asLong());
         tag.putInt("bbdir", bounceBackDirection.ordinal());
-        tag.put("s", toInsert.saveOptional(registries));
+        tag.put("s", com.piglinmine.fastpipes.util.ItemStackSerialization.saveOptional(registries, toInsert));
         return tag;
     }
 } 

@@ -69,7 +69,7 @@ public class EnergyPipeBlockEntity extends PipeBlockEntity {
     // continue working when the underlying network changes.
     @Nullable
     public IEnergyStorage getEnergyStorage(@Nullable Direction side) {
-        if (level == null || level.isClientSide) {
+        if (level == null || level.isClientSide()) {
             return clientEnergyStorage;
         }
         return stableStorage;
@@ -88,7 +88,7 @@ public class EnergyPipeBlockEntity extends PipeBlockEntity {
     private class DelegatingEnergyStorage implements IEnergyStorage {
         @Nullable
         private IEnergyStorage current() {
-            if (level == null || level.isClientSide) return null;
+            if (level == null || level.isClientSide()) return null;
             NetworkManager mgr = NetworkManager.get(level);
             Pipe pipe = mgr.getPipe(worldPosition);
             if (pipe instanceof EnergyPipe energyPipe) {

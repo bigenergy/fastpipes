@@ -121,7 +121,9 @@ public class ItemPipeBlockEntity extends PipeBlockEntity {
         if (d.getReceiver().equals(sourcePos)) return false;
         BlockEntity be = level.getBlockEntity(d.getReceiver());
         if (be == null) return false;
-        IItemHandler handler = level.getCapability(Capabilities.ItemHandler.BLOCK, d.getReceiver(), d.getIncomingDirection().getOpposite());
+        // TODO 1.21.11: Capabilities.Item.BLOCK now returns ResourceHandler<ItemResource>; wrap via IItemHandler.of()
+        var capItemPipeBE = level.getCapability(Capabilities.Item.BLOCK, d.getReceiver(), d.getIncomingDirection().getOpposite());
+        IItemHandler handler = capItemPipeBE == null ? null : IItemHandler.of(capItemPipeBE);
         if (handler == null) return false;
         Attachment att = d.getConnectedPipe().getAttachmentManager().getAttachment(d.getIncomingDirection());
         if (att != null && !att.canInsert(stack)) return false;

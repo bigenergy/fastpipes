@@ -59,7 +59,8 @@ public class FluidInventory {
             FluidStack stack = getFluid(i);
 
             if (!stack.isEmpty()) {
-                tag.put(String.format(NBT_SLOT, i), stack.saveOptional(registries));
+                // TODO 1.21.11: FluidStack.saveOptional was removed; using OPTIONAL_CODEC via helper
+                tag.put(String.format(NBT_SLOT, i), com.piglinmine.fastpipes.util.ItemStackSerialization.saveOptionalFluid(registries, stack));
             }
         }
 
@@ -71,7 +72,8 @@ public class FluidInventory {
             String key = String.format(NBT_SLOT, i);
 
             if (tag.contains(key)) {
-                fluids[i] = FluidStack.parseOptional(registries, tag.getCompound(key));
+                // TODO 1.21.11: FluidStack.parseOptional was removed; using OPTIONAL_CODEC via helper. getCompound returns Optional<CompoundTag>.
+                fluids[i] = com.piglinmine.fastpipes.util.ItemStackSerialization.parseOptionalFluid(registries, tag.getCompoundOrEmpty(key));
             }
         }
     }

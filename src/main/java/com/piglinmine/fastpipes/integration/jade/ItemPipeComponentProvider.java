@@ -22,8 +22,8 @@ public enum ItemPipeComponentProvider implements IBlockComponentProvider, IServe
         CompoundTag serverData = accessor.getServerData();
 
         if (serverData.contains("Speed")) {
-            int speed = serverData.getInt("Speed");
-            int itemsInTransit = serverData.getInt("ItemsInTransit");
+            int speed = serverData.getIntOr("Speed", 0);
+            int itemsInTransit = serverData.getIntOr("ItemsInTransit", 0);
 
             tooltip.add(Component.translatable("jade.fastpipes.item_speed", speed));
             if (itemsInTransit > 0) {

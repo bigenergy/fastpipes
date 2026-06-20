@@ -3,13 +3,12 @@ package com.piglinmine.fastpipes.blockentity;
 import com.piglinmine.fastpipes.FPipesBlockEntities;
 import com.piglinmine.fastpipes.menu.TerminalContainerMenu;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 import net.minecraft.core.Direction;
 import net.neoforged.neoforge.items.IItemHandler;
@@ -34,34 +33,26 @@ public class TerminalBlockEntity extends BaseBlockEntity {
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.saveAdditional(tag, registries);
-        ListTag list = new ListTag();
+    protected void saveAdditional(ValueOutput output) {
+        super.saveAdditional(output);
+        ValueOutput.TypedOutputList<ItemStack> list = output.list("CraftGrid", ItemStack.OPTIONAL_CODEC);
         for (ItemStack stack : craftGrid) {
-            if (stack.isEmpty()) {
-                list.add(new CompoundTag());
-            } else {
-                list.add(stack.save(registries));
-            }
+            list.add(stack);
         }
-        tag.put("CraftGrid", list);
-        tag.putInt("SortMode", sortModeOrdinal);
+        output.putInt("SortMode", sortModeOrdinal);
     }
 
     @Override
-    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.loadAdditional(tag, registries);
-        if (tag.contains("CraftGrid")) {
-            ListTag list = tag.getList("CraftGrid", CompoundTag.TAG_COMPOUND);
-            for (int i = 0; i < Math.min(list.size(), 9); i++) {
-                CompoundTag itemTag = list.getCompound(i);
-                craftGrid[i] = itemTag.isEmpty() ? ItemStack.EMPTY :
-                    ItemStack.parse(registries, itemTag).orElse(ItemStack.EMPTY);
-            }
+    protected void loadAdditional(ValueInput input) {
+        super.loadAdditional(input);
+        Arrays.fill(craftGrid, ItemStack.EMPTY);
+        ValueInput.TypedInputList<ItemStack> list = input.listOrEmpty("CraftGrid", ItemStack.OPTIONAL_CODEC);
+        int i = 0;
+        for (ItemStack stack : list) {
+            if (i >= 9) break;
+            craftGrid[i++] = stack;
         }
-        if (tag.contains("SortMode")) {
-            sortModeOrdinal = tag.getInt("SortMode");
-        }
+        sortModeOrdinal = input.getIntOr("SortMode", 0);
     }
 
     public ItemStack[] getCraftGrid() {
@@ -104,7 +95,7 @@ public class TerminalBlockEntity extends BaseBlockEntity {
 
     private boolean isStaleLock() {
         if (activeUser == null) return true;
-        if (level == null || level.isClientSide) return false;
+        if (level == null || level.isClientSide()) return false;
         MinecraftServer server = level.getServer();
         if (server == null) return true;
         ServerPlayer owner = server.getPlayerList().getPlayer(activeUser);

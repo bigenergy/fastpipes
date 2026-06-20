@@ -33,18 +33,20 @@ public enum PipeAttachmentProvider implements IBlockComponentProvider, IServerDa
         CompoundTag data = accessor.getServerData();
         if (!data.contains(NBT_KEY)) return;
 
-        ListTag list = data.getList(NBT_KEY, Tag.TAG_COMPOUND);
+        // TODO 1.21.11: CompoundTag.getList(String, int) removed in favor of getListOrEmpty(String);
+        // ListTag.getCompound(int) now returns Optional<CompoundTag>.
+        ListTag list = data.getListOrEmpty(NBT_KEY);
         if (list.isEmpty()) return;
 
         for (int i = 0; i < list.size(); i++) {
-            CompoundTag att = list.getCompound(i);
+            CompoundTag att = list.getCompoundOrEmpty(i);
             renderAttachment(tooltip, att);
         }
     }
 
     private void renderAttachment(ITooltip tooltip, CompoundTag att) {
-        String itemId = att.contains("itemId") ? att.getString("itemId") : att.getString("id");
-        Direction side = Direction.values()[att.getInt("side")];
+        String itemId = att.contains("itemId") ? att.getStringOr("itemId", "") : att.getStringOr("id", "");
+        Direction side = Direction.values()[att.getIntOr("side", 0)];
 
         Component sideName = Component.translatable("misc.fastpipes.direction." + side.getName());
         Component typeName = Component.translatable("item." + itemId.replace(":", "."));
@@ -55,27 +57,27 @@ public enum PipeAttachmentProvider implements IBlockComponentProvider, IServerDa
 
         if (att.contains("redstone")) {
             tooltip.add(line("misc.fastpipes.redstone_mode",
-                "misc.fastpipes.redstone_mode." + att.getString("redstone").toLowerCase()));
+                "misc.fastpipes.redstone_mode." + att.getStringOr("redstone", "").toLowerCase()));
         }
         if (att.contains("bw")) {
             tooltip.add(line("misc.fastpipes.mode",
-                "misc.fastpipes.mode." + att.getString("bw").toLowerCase()));
+                "misc.fastpipes.mode." + att.getStringOr("bw", "").toLowerCase()));
         }
         if (att.contains("routing")) {
             tooltip.add(line("misc.fastpipes.routing_mode",
-                "misc.fastpipes.routing_mode." + att.getString("routing").toLowerCase()));
+                "misc.fastpipes.routing_mode." + att.getStringOr("routing", "").toLowerCase()));
         }
         if (att.contains("stackSize")) {
             tooltip.add(Component.literal("  ")
                 .append(Component.translatable("jade.fastpipes.stack_size").withStyle(ChatFormatting.GRAY))
                 .append(Component.literal(": "))
-                .append(Component.literal(String.valueOf(att.getInt("stackSize"))).withStyle(ChatFormatting.WHITE)));
+                .append(Component.literal(String.valueOf(att.getIntOr("stackSize", 0))).withStyle(ChatFormatting.WHITE)));
         }
         if (att.contains("exact")) {
             tooltip.add(line("misc.fastpipes.exact_mode",
-                "misc.fastpipes.exact_mode." + (att.getBoolean("exact") ? "on" : "off")));
+                "misc.fastpipes.exact_mode." + (att.getBooleanOr("exact", false) ? "on" : "off")));
         }
-        if (att.contains("fluidMode") && att.getBoolean("fluidMode")) {
+        if (att.contains("fluidMode") && att.getBooleanOr("fluidMode", false)) {
             tooltip.add(Component.literal("  ")
                 .append(Component.translatable("jade.fastpipes.fluid_mode").withStyle(ChatFormatting.AQUA)));
         }

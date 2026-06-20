@@ -138,7 +138,7 @@ public abstract class Pipe {
 
         disconnectedSides.clear();
         if (tag.contains("disc")) {
-            int bits = tag.getByte("disc") & 0xFF;
+            int bits = tag.getByteOr("disc", (byte) 0) & 0xFF;
             for (Direction dir : Direction.values()) {
                 if ((bits & (1 << dir.get3DDataValue())) != 0) {
                     disconnectedSides.add(dir);
@@ -147,7 +147,7 @@ public abstract class Pipe {
         }
 
         if (tag.contains("color")) {
-            color = DyeColor.byId(tag.getByte("color") & 0xFF);
+            color = DyeColor.byId(tag.getByteOr("color", (byte) 0) & 0xFF);
         } else {
             color = null;
         }

@@ -52,7 +52,7 @@ public class ItemPipeBlock extends PipeBlock implements EntityBlock {
         // Color check: colored pipes only connect to same color or uncolored pipes
         // Uncolored pipes connect to everything
         // Only check on server — client trusts server-sent block state
-        if (world instanceof Level lvl && !lvl.isClientSide) {
+        if (world instanceof Level lvl && !lvl.isClientSide()) {
             // Get color directly from Pipe objects in NetworkManager (bypasses block entity)
             Pipe myPipe = NetworkManager.get(lvl).getPipe(pos);
             Pipe theirPipe = NetworkManager.get(lvl).getPipe(pos.relative(direction));
@@ -80,7 +80,7 @@ public class ItemPipeBlock extends PipeBlock implements EntityBlock {
         if (facingState.getBlock() instanceof ItemPipeBlock) return false;
 
         if (world instanceof Level level) {
-            return level.getCapability(Capabilities.ItemHandler.BLOCK, pos.relative(direction), direction.getOpposite()) != null;
+            return level.getCapability(Capabilities.Item.BLOCK, pos.relative(direction), direction.getOpposite()) != null;
         }
         return false;
     }
@@ -93,6 +93,6 @@ public class ItemPipeBlock extends PipeBlock implements EntityBlock {
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
-        return level.isClientSide ? (levelTicker, pos, stateTicker, blockEntity) -> ItemPipeBlockEntity.tick((ItemPipeBlockEntity) blockEntity) : null;
+        return level.isClientSide() ? (levelTicker, pos, stateTicker, blockEntity) -> ItemPipeBlockEntity.tick((ItemPipeBlockEntity) blockEntity) : null;
     }
 } 

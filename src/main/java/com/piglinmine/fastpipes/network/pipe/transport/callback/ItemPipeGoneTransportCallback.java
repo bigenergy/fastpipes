@@ -31,7 +31,7 @@ public class ItemPipeGoneTransportCallback implements TransportCallback {
 
     @Nullable
     public static ItemPipeGoneTransportCallback of(CompoundTag tag, HolderLookup.Provider registries) {
-        ItemStack stack = ItemStack.parseOptional(registries, tag.getCompound("s"));
+        ItemStack stack = com.piglinmine.fastpipes.util.ItemStackSerialization.parseOptional(registries, tag.getCompoundOrEmpty("s"));
 
         if (stack.isEmpty()) {
             LOGGER.warn("Item no longer exists");
@@ -49,7 +49,9 @@ public class ItemPipeGoneTransportCallback implements TransportCallback {
         if (network != null) {
             for (Destination dest : network.getDestinations(DestinationType.ITEM_HANDLER)) {
                 if (remaining.isEmpty()) break;
-                IItemHandler handler = level.getCapability(Capabilities.ItemHandler.BLOCK, dest.getReceiver(), dest.getIncomingDirection().getOpposite());
+                // TODO 1.21.11: Capabilities.Item.BLOCK now returns ResourceHandler<ItemResource>; wrap via IItemHandler.of()
+                var capGone = level.getCapability(Capabilities.Item.BLOCK, dest.getReceiver(), dest.getIncomingDirection().getOpposite());
+                IItemHandler handler = capGone == null ? null : IItemHandler.of(capGone);
                 if (handler == null) continue;
                 remaining = ItemHandlerHelper.insertItem(handler, remaining, false);
             }
@@ -74,7 +76,7 @@ public class ItemPipeGoneTransportCallback implements TransportCallback {
 
     @Override
     public CompoundTag writeToNbt(CompoundTag tag, HolderLookup.Provider registries) {
-        tag.put("s", stack.saveOptional(registries));
+        tag.put("s", com.piglinmine.fastpipes.util.ItemStackSerialization.saveOptional(registries, stack));
         return tag;
     }
 } 

@@ -24,10 +24,10 @@ public enum FluidPipeComponentProvider implements IBlockComponentProvider, IServ
         CompoundTag serverData = accessor.getServerData();
 
         if (serverData.contains("TransferRate")) {
-            int transferRate = serverData.getInt("TransferRate");
-            int stored = serverData.getInt("FluidStored");
-            int capacity = serverData.getInt("FluidCapacity");
-            String fluidName = serverData.getString("FluidName");
+            int transferRate = serverData.getIntOr("TransferRate", 0);
+            int stored = serverData.getIntOr("FluidStored", 0);
+            int capacity = serverData.getIntOr("FluidCapacity", 0);
+            String fluidName = serverData.getStringOr("FluidName", "");
 
             tooltip.add(Component.translatable("jade.fastpipes.fluid_transfer_rate", transferRate));
             if (!fluidName.isEmpty() && stored > 0) {

@@ -22,7 +22,7 @@ public enum EnergyPipeComponentProvider implements IBlockComponentProvider, ISer
         CompoundTag serverData = accessor.getServerData();
         
         if (serverData.contains("EnergyStored") && serverData.contains("MaxEnergyStored") && serverData.contains("TransferRate")) {
-            int transferRate = serverData.getInt("TransferRate");
+            int transferRate = serverData.getIntOr("TransferRate", 0);
             
             // Show transfer rate only (energy bar is shown automatically by Jade)
             tooltip.add(Component.translatable("jade.fastpipes.transfer_rate", transferRate));

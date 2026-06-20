@@ -20,7 +20,7 @@ public class ItemNetworkFactory implements NetworkFactory {
 
     @Override
     public Network create(CompoundTag tag) {
-        ItemNetwork network = new ItemNetwork(BlockPos.of(tag.getLong("origin")), tag.getString("id"));
+        ItemNetwork network = new ItemNetwork(BlockPos.of(tag.getLongOr("origin", 0L)), tag.getStringOr("id", ""));
 
         LOGGER.debug("Deserialized item network {}", network.getId());
 

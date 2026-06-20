@@ -7,10 +7,11 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.LevelReader;
 import net.neoforged.neoforge.common.ItemAbility;
 
-import java.util.List;
+import java.util.function.Consumer;
 
 public class WrenchItem extends Item {
     /**
@@ -36,10 +37,10 @@ public class WrenchItem extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
-        super.appendHoverText(stack, context, tooltip, flag);
-        tooltip.add(Component.translatable("tooltip.fastpipes.wrench.hint1").withStyle(ChatFormatting.DARK_GRAY, ChatFormatting.ITALIC));
-        tooltip.add(Component.translatable("tooltip.fastpipes.wrench.hint2").withStyle(ChatFormatting.DARK_GRAY, ChatFormatting.ITALIC));
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> tooltipAdder, TooltipFlag flag) {
+        super.appendHoverText(stack, context, display, tooltipAdder, flag);
+        tooltipAdder.accept(Component.translatable("tooltip.fastpipes.wrench.hint1").withStyle(ChatFormatting.DARK_GRAY, ChatFormatting.ITALIC));
+        tooltipAdder.accept(Component.translatable("tooltip.fastpipes.wrench.hint2").withStyle(ChatFormatting.DARK_GRAY, ChatFormatting.ITALIC));
     }
 
     /**

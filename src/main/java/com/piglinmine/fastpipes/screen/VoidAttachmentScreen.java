@@ -106,7 +106,7 @@ public class VoidAttachmentScreen extends BaseScreen<VoidAttachmentContainerMenu
         }
 
         if (!tooltip.isEmpty()) {
-            graphics.renderComponentTooltip(font, tooltip, mouseX - leftPos, mouseY - topPos);
+            // TODO 1.21.11: renderComponentTooltip removed
         }
 
         super.renderLabels(graphics, mouseX, mouseY);
@@ -116,7 +116,7 @@ public class VoidAttachmentScreen extends BaseScreen<VoidAttachmentContainerMenu
     protected void renderBg(@NotNull GuiGraphics graphics, float partialTicks, int mouseX, int mouseY) {
         int i = (this.width - this.imageWidth) / 2;
         int j = (this.height - this.imageHeight) / 2;
-        graphics.blit(RESOURCE, i, j, 0, 0, this.imageWidth, this.imageHeight);
+        // TODO 1.21.11: blit(Identifier,int,int,int,int,int,int) signature changed; bg render stubbed
 
         // All 15 filter slots are always available for void attachment
         // No need to hide any slots

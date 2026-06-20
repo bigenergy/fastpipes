@@ -1,9 +1,11 @@
 package com.piglinmine.fastpipes.network.pipe.attachment;
 
+import com.mojang.serialization.DataResult;
 import com.piglinmine.fastpipes.network.pipe.Pipe;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
@@ -97,16 +99,17 @@ public class ServerAttachmentManager implements AttachmentManager {
     }
 
     public void readFromNbt(CompoundTag tag) {
-        ListTag attch = tag.getList("attch", Tag.TAG_COMPOUND);
+        ListTag attch = tag.getListOrEmpty("attch");
         for (Tag item : attch) {
-            CompoundTag attchTag = (CompoundTag) item;
+            if (!(item instanceof CompoundTag attchTag)) continue;
 
-            AttachmentFactory factory = AttachmentRegistry.INSTANCE.getFactory(Identifier.parse(attchTag.getString("typ")));
+            String typ = attchTag.getStringOr("typ", "");
+            AttachmentFactory factory = AttachmentRegistry.INSTANCE.getFactory(Identifier.parse(typ));
             if (factory != null) {
                 Attachment attachment = factory.createFromNbt(pipe, attchTag);
                 setAttachment(attachment.getDirection(), attachment);
             } else {
-                LOGGER.warn("Attachment {} no longer exists", attchTag.getString("typ"));
+                LOGGER.warn("Attachment {} no longer exists", typ);
             }
         }
     }
@@ -121,7 +124,15 @@ public class ServerAttachmentManager implements AttachmentManager {
         for (Direction dir : Direction.values()) {
             if (hasAttachment(dir)) {
                 tag.putString("attch_" + dir.ordinal(), getAttachment(dir).getId().toString());
-                tag.put("pb_" + dir.ordinal(), getAttachment(dir).getDrop().saveOptional(pipe.getLevel().registryAccess()));
+                ItemStack drop = getAttachment(dir).getDrop();
+                // TODO 1.21.11: ItemStack.saveOptional was removed; use OPTIONAL_CODEC directly.
+                // Use the registry-aware NbtOps so component-bearing items round-trip cleanly.
+                var ops = pipe.getLevel().registryAccess().createSerializationContext(NbtOps.INSTANCE);
+                DataResult<Tag> encoded = ItemStack.OPTIONAL_CODEC.encodeStart(ops, drop);
+                Tag encodedTag = encoded.result().orElse(null);
+                if (encodedTag != null) {
+                    tag.put("pb_" + dir.ordinal(), encodedTag);
+                }
             }
         }
     }

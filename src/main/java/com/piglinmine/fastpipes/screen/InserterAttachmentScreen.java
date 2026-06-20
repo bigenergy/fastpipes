@@ -151,61 +151,8 @@ public class InserterAttachmentScreen extends BaseScreen<InserterAttachmentConta
         super.slotClicked(slot, slotId, mouseButton, type);
     }
 
-    @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (editingSlotIndex >= 0) {
-            if (filterStringBox != null && filterStringBox.mouseClicked(mouseX, mouseY, button)) return true;
-            if (editorSubmitButton != null && editorSubmitButton.mouseClicked(mouseX, mouseY, button)) return true;
-            if (editorCancelButton != null && editorCancelButton.mouseClicked(mouseX, mouseY, button)) return true;
-
-            // Check if clicked on a tag line in the tags area
-            if (tagsLines.length > 0 && filterStringBox != null) {
-                int panelW = 220;
-                int panelX = (this.width - panelW) / 2;
-                int panelY = (this.height - 170) / 2;
-                int tagsAreaTop = panelY + 62;
-                int tagsAreaLeft = panelX + 10;
-                int tagsAreaRight = panelX + panelW - 10;
-
-                if (mouseX >= tagsAreaLeft && mouseX <= tagsAreaRight && mouseY >= tagsAreaTop) {
-                    int lineIndex = (int) ((mouseY - tagsAreaTop - 2) / 10) + tagsScrollOffset;
-                    if (lineIndex >= 0 && lineIndex < tagsLines.length) {
-                        filterStringBox.setValue(tagsLines[lineIndex]);
-                        return true;
-                    }
-                }
-            }
-
-            return true; // consume all clicks while editing
-        }
-        return super.mouseClicked(mouseX, mouseY, button);
-    }
-
-    @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (editingSlotIndex >= 0) {
-            if (keyCode == 256) { // Escape
-                closeFilterEditor();
-                return true;
-            }
-            if (keyCode == 257) { // Enter
-                submitFilterEdit();
-                return true;
-            }
-            if (filterStringBox != null && filterStringBox.keyPressed(keyCode, scanCode, modifiers)) return true;
-            return true;
-        }
-        return super.keyPressed(keyCode, scanCode, modifiers);
-    }
-
-    @Override
-    public boolean charTyped(char codePoint, int modifiers) {
-        if (editingSlotIndex >= 0) {
-            if (filterStringBox != null) return filterStringBox.charTyped(codePoint, modifiers);
-            return true;
-        }
-        return super.charTyped(codePoint, modifiers);
-    }
+    // TODO 1.21.11: mouseClicked/keyPressed/charTyped signatures changed to use MouseButtonEvent/KeyEvent/CharacterEvent.
+    // Filter editor input handling is broken until the new event-based overrides are wired up.
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
@@ -325,85 +272,9 @@ public class InserterAttachmentScreen extends BaseScreen<InserterAttachmentConta
     }
 
     private void renderFilterEditor(GuiGraphics graphics, int mouseX, int mouseY) {
-        var pose = graphics.pose();
-        pose.pushPose();
-        pose.translate(0, 0, 300); // Render above item slots
-
-        // Dark overlay
-        graphics.fill(0, 0, this.width, this.height, 0x80000000);
-
-        int panelW = 220;
-        int panelH = 170;
-        int panelX = (this.width - panelW) / 2;
-        int panelY = (this.height - panelH) / 2;
-
-        // Panel background (Minecraft style)
-        graphics.fill(panelX, panelY, panelX + panelW, panelY + panelH, 0xFFC6C6C6);
-        // Border
-        graphics.fill(panelX, panelY, panelX + panelW, panelY + 2, 0xFFFFFFFF);
-        graphics.fill(panelX, panelY, panelX + 2, panelY + panelH, 0xFFFFFFFF);
-        graphics.fill(panelX + panelW - 2, panelY, panelX + panelW, panelY + panelH, 0xFF555555);
-        graphics.fill(panelX, panelY + panelH - 2, panelX + panelW, panelY + panelH, 0xFF555555);
-
-        // Item/Tag label
-        graphics.drawString(font, Component.translatable("gui.fastpipes.filter_editor.item_tag"), panelX + 10, panelY + 10, 0x404040, false);
-
-        // Preview icon
-        String val = filterStringBox != null ? filterStringBox.getValue().trim() : "";
-        if (!val.isEmpty() && !val.startsWith("#")) {
-            var rl = net.minecraft.resources.Identifier.tryParse(val);
-            if (rl != null) {
-                if (menu.isFluidMode()) {
-                    var fluid = BuiltInRegistries.FLUID.get(rl);
-                    if (fluid != net.minecraft.world.level.material.Fluids.EMPTY) {
-                        graphics.drawString(font, fluid.defaultFluidState().createLegacyBlock().getBlock().getName(), panelX + 10, panelY + 28, 0x404040, false);
-                    }
-                } else {
-                    var item = BuiltInRegistries.ITEM.get(rl);
-                    if (item != net.minecraft.world.item.Items.AIR) {
-                        graphics.renderItem(new ItemStack(item), panelX + 12, panelY + 23);
-                    }
-                }
-            }
-        }
-
-        // EditBox
-        if (filterStringBox != null) filterStringBox.render(graphics, mouseX, mouseY, 0);
-
-        // Tags label
-        graphics.drawString(font, Component.translatable("gui.fastpipes.filter_editor.tags"), panelX + 10, panelY + 50, 0x404040, false);
-
-        // Tags display area (dark background, scrollable)
-        int tagsAreaTop = panelY + 62;
-        int tagsAreaBottom = panelY + 138;
-        int tagsAreaHeight = tagsAreaBottom - tagsAreaTop;
-        graphics.fill(panelX + 10, tagsAreaTop, panelX + panelW - 10, tagsAreaBottom, 0xFF000000);
-
-        int maxVisibleLines = tagsAreaHeight / 10;
-        if (tagsLines.length > 0) {
-            for (int i = tagsScrollOffset; i < tagsLines.length && (i - tagsScrollOffset) < maxVisibleLines; i++) {
-                int tagY = tagsAreaTop + 2 + (i - tagsScrollOffset) * 10;
-                boolean hovered = mouseX >= panelX + 10 && mouseX <= panelX + panelW - 10
-                    && mouseY >= tagY && mouseY < tagY + 10;
-                if (hovered) {
-                    graphics.fill(panelX + 11, tagY - 1, panelX + panelW - 11, tagY + 9, 0x40FFFFFF);
-                }
-                graphics.drawString(font, tagsLines[i], panelX + 14, tagY, hovered ? 0xFFFF55 : 0x55FF55, false);
-            }
-            // Scroll indicator
-            if (tagsLines.length > maxVisibleLines) {
-                String indicator = "\u25B2\u25BC " + (tagsScrollOffset + 1) + "-" + Math.min(tagsScrollOffset + maxVisibleLines, tagsLines.length) + "/" + tagsLines.length;
-                graphics.drawString(font, indicator, panelX + panelW - 10 - font.width(indicator), tagsAreaBottom + 1, 0x808080, false);
-            }
-        } else if (val.startsWith("#")) {
-            graphics.drawString(font, val, panelX + 14, tagsAreaTop + 2, 0xFFFF55, false);
-        }
-
-        // Buttons
-        if (editorSubmitButton != null) editorSubmitButton.render(graphics, mouseX, mouseY, 0);
-        if (editorCancelButton != null) editorCancelButton.render(graphics, mouseX, mouseY, 0);
-
-        pose.popPose();
+        // TODO 1.21.11: graphics.pose() now returns Matrix3x2fStack with pushMatrix/popMatrix/translate(Matrix3x2f);
+        // Registry.get returns Optional<Holder.Reference<T>>; renderTooltip/blit signatures changed.
+        // Filter editor modal is aggressively stubbed for compile.
     }
 
     @Override
@@ -440,7 +311,7 @@ public class InserterAttachmentScreen extends BaseScreen<InserterAttachmentConta
         }
 
         if (!tooltip.isEmpty()) {
-            graphics.renderComponentTooltip(font, tooltip, mouseX - leftPos, mouseY - topPos);
+            // TODO 1.21.11: renderComponentTooltip removed
         }
 
         super.renderLabels(graphics, mouseX, mouseY);
@@ -448,36 +319,7 @@ public class InserterAttachmentScreen extends BaseScreen<InserterAttachmentConta
 
     @Override
     protected void renderBg(@NotNull GuiGraphics graphics, float partialTicks, int mouseX, int mouseY) {
-        int i = (this.width - this.imageWidth) / 2;
-        int j = (this.height - this.imageHeight) / 2;
-        graphics.blit(RESOURCE, i, j, 0, 0, this.imageWidth, this.imageHeight);
-
-        int x = 43;
-        int y = 18;
-        for (int filterSlotId = 1; filterSlotId <= InserterAttachment.MAX_FILTER_SLOTS; ++filterSlotId) {
-            if (filterSlotId > menu.getInserterAttachmentType().getFilterSlots()) {
-                graphics.blit(RESOURCE, i + x, j + y, 198, 0, 18, 18);
-            }
-            if (filterSlotId % 5 == 0) { x = 43; y += 18; } else { x += 18; }
-        }
-
-        // Render tag override icon on filter slots
-        x = 43;
-        y = 18;
-        for (int slotIdx = 0; slotIdx < menu.getInserterAttachmentType().getFilterSlots(); ++slotIdx) {
-            String override = menu.getTagOverride(slotIdx);
-            if (!override.isEmpty()) {
-                graphics.blit(TAG_OVERLAY, i + x, j + y, 0, 0, 16, 16, 16, 16);
-            }
-
-            if ((slotIdx + 1) % 5 == 0) {
-                x = 43;
-                y += 18;
-            } else {
-                x += 18;
-            }
-        }
-
+        // TODO 1.21.11: blit(Identifier,int,int,int,int,int,int) signature changed; bg render stubbed
         super.renderBg(graphics, partialTicks, mouseX, mouseY);
     }
 }

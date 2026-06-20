@@ -83,7 +83,9 @@ public class EnergyNetwork extends Network {
                     continue;
                 }
 
-                IEnergyStorage handler = blockEntity.getLevel().getCapability(Capabilities.EnergyStorage.BLOCK, destination.getReceiver(), destination.getIncomingDirection().getOpposite());
+                // TODO 1.21.11: Capabilities.Energy.BLOCK now returns EnergyHandler not IEnergyStorage; wrap via IEnergyStorage.of()
+                var capEnergyHandler = blockEntity.getLevel().getCapability(Capabilities.Energy.BLOCK, destination.getReceiver(), destination.getIncomingDirection().getOpposite());
+                IEnergyStorage handler = capEnergyHandler == null ? null : IEnergyStorage.of(capEnergyHandler);
                 if (handler == null) {
                     continue;
                 }

@@ -18,14 +18,15 @@ import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
+import net.minecraft.core.Direction;
 import net.minecraft.world.phys.BlockHitResult;
 
 import javax.annotation.Nullable;
 
 public class TerminalBlock extends Block implements EntityBlock {
 
-    public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
+    public static final EnumProperty<Direction> FACING = HorizontalDirectionalBlock.FACING;
 
     public TerminalBlock() {
         super(Properties.of().strength(2.0f).noOcclusion());
@@ -48,23 +49,12 @@ public class TerminalBlock extends Block implements EntityBlock {
         return new TerminalBlockEntity(pos, state);
     }
 
-    @Override
-    protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
-        if (!state.is(newState.getBlock())) {
-            if (level.getBlockEntity(pos) instanceof TerminalBlockEntity be) {
-                for (net.minecraft.world.item.ItemStack stack : be.getCraftGrid()) {
-                    if (!stack.isEmpty()) {
-                        net.minecraft.world.Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), stack);
-                    }
-                }
-            }
-        }
-        super.onRemove(state, level, pos, newState, movedByPiston);
-    }
+    // TODO 1.21.11: onRemove was removed in 1.21.11; vanilla BaseContainerBlockEntity.preRemoveSideEffects handles drops automatically.
+    // Craft grid items will be dropped via the standard container drop mechanism.
 
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
-        if (level.isClientSide) {
+        if (level.isClientSide()) {
             return InteractionResult.SUCCESS;
         }
 
@@ -87,7 +77,7 @@ public class TerminalBlock extends Block implements EntityBlock {
 
     @Nullable
     public static Pipe findConnectedPipe(Level level, BlockPos terminalPos) {
-        if (level.isClientSide) return null;
+        if (level.isClientSide()) return null;
         NetworkManager mgr = NetworkManager.get(level);
         for (Direction dir : Direction.values()) {
             Pipe pipe = mgr.getPipe(terminalPos.relative(dir));

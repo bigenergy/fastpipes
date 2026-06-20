@@ -108,19 +108,21 @@ public class NetworkGraphScanner {
 
                 if (blockEntity != null) {
                     // Check for Item Handler capability
-                    var itemHandler = request.getLevel().getCapability(Capabilities.ItemHandler.BLOCK, request.getPos(), request.getDirection().getOpposite());
+                    var itemHandler = request.getLevel().getCapability(Capabilities.Item.BLOCK, request.getPos(), request.getDirection().getOpposite());
                     if (itemHandler != null) {
                         destinations.add(new Destination(DestinationType.ITEM_HANDLER, request.getPos(), request.getDirection(), connectedPipe));
                     }
 
                     // Check for Fluid Handler capability
-                    var fluidHandler = request.getLevel().getCapability(Capabilities.FluidHandler.BLOCK, request.getPos(), request.getDirection().getOpposite());
+                    var fluidHandler = request.getLevel().getCapability(Capabilities.Fluid.BLOCK, request.getPos(), request.getDirection().getOpposite());
                     if (fluidHandler != null) {
                         destinations.add(new Destination(DestinationType.FLUID_HANDLER, request.getPos(), request.getDirection(), connectedPipe));
                     }
 
                     // Check for Energy Storage capability
-                    var energyStorage = request.getLevel().getCapability(Capabilities.EnergyStorage.BLOCK, request.getPos(), request.getDirection().getOpposite());
+                    // TODO 1.21.11: Capabilities.Energy.BLOCK returns EnergyHandler; wrap with IEnergyStorage.of() to check instanceof
+                    var energyCap = request.getLevel().getCapability(Capabilities.Energy.BLOCK, request.getPos(), request.getDirection().getOpposite());
+                    var energyStorage = energyCap == null ? null : net.neoforged.neoforge.energy.IEnergyStorage.of(energyCap);
                     if (energyStorage != null && !(energyStorage instanceof EnergyPipeEnergyStorage)) {
                         destinations.add(new Destination(DestinationType.ENERGY_STORAGE, request.getPos(), request.getDirection(), connectedPipe));
                     }

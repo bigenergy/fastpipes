@@ -48,7 +48,7 @@ public class FluidPipeBlock extends PipeBlock implements EntityBlock {
 
         // Color check: colored pipes only connect to same color or uncolored pipes
         // Only check on server — client trusts server-sent block state
-        if (level instanceof Level lvl && !lvl.isClientSide) {
+        if (level instanceof Level lvl && !lvl.isClientSide()) {
             Pipe myPipe = NetworkManager.get(lvl).getPipe(pos);
             Pipe theirPipe = NetworkManager.get(lvl).getPipe(pos.relative(direction));
             if (myPipe != null && theirPipe != null) {
@@ -71,7 +71,7 @@ public class FluidPipeBlock extends PipeBlock implements EntityBlock {
         if (facingState.getBlock() instanceof FluidPipeBlock) return false;
 
         if (world instanceof Level level) {
-            return level.getCapability(Capabilities.FluidHandler.BLOCK, pos.relative(direction), direction.getOpposite()) != null;
+            return level.getCapability(Capabilities.Fluid.BLOCK, pos.relative(direction), direction.getOpposite()) != null;
         }
         return false;
     }

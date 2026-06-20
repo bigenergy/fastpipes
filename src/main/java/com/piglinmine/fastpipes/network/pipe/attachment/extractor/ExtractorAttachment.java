@@ -124,12 +124,16 @@ public class ExtractorAttachment extends Attachment {
         }
 
         if (network instanceof ItemNetwork) {
-            IItemHandler itemHandler = blockEntity.getLevel().getCapability(Capabilities.ItemHandler.BLOCK, destinationPos, getDirection().getOpposite());
+            // TODO 1.21.11: Capabilities.Item.BLOCK now returns ResourceHandler<ItemResource>; wrap via IItemHandler.of()
+            var capExtractorItem = blockEntity.getLevel().getCapability(Capabilities.Item.BLOCK, destinationPos, getDirection().getOpposite());
+            IItemHandler itemHandler = capExtractorItem == null ? null : IItemHandler.of(capExtractorItem);
             if (itemHandler != null) {
                 update((ItemNetwork) network, destinationPos, itemHandler);
             }
         } else if (network instanceof FluidNetwork) {
-            IFluidHandler fluidHandler = blockEntity.getLevel().getCapability(Capabilities.FluidHandler.BLOCK, destinationPos, getDirection().getOpposite());
+            // TODO 1.21.11: Capabilities.Fluid.BLOCK now returns ResourceHandler<FluidResource>; wrap via IFluidHandler.of()
+            var capExtractorFluid = blockEntity.getLevel().getCapability(Capabilities.Fluid.BLOCK, destinationPos, getDirection().getOpposite());
+            IFluidHandler fluidHandler = capExtractorFluid == null ? null : IFluidHandler.of(capExtractorFluid);
             if (fluidHandler != null) {
                 update((FluidNetwork) network, fluidHandler);
             }
@@ -173,11 +177,13 @@ public class ExtractorAttachment extends Attachment {
             }
 
             // Pre-check destination capacity — don't extract if items can't fit there.
-            IItemHandler destHandler = pipe.getLevel().getCapability(
-                Capabilities.ItemHandler.BLOCK,
+            // TODO 1.21.11: Capabilities.Item.BLOCK now returns ResourceHandler<ItemResource>; wrap via IItemHandler.of()
+            var capExtractorDest = pipe.getLevel().getCapability(
+                Capabilities.Item.BLOCK,
                 destination.getReceiver(),
                 destination.getIncomingDirection().getOpposite()
             );
+            IItemHandler destHandler = capExtractorDest == null ? null : IItemHandler.of(capExtractorDest);
             if (destHandler == null) {
                 slot++;
                 continue;
@@ -371,7 +377,8 @@ public class ExtractorAttachment extends Attachment {
     @Override
     public CompoundTag writeToNbt(CompoundTag tag) {
         tag.putByte("rm", (byte) redstoneMode.ordinal());
-        tag.put("itemfilter", itemFilter.serializeNBT(pipe.getLevel().registryAccess()));
+        // TODO 1.21.11: ItemStackHandler.serializeNBT/deserializeNBT replaced by serialize(ValueOutput)/deserialize(ValueInput); filter persistence broken
+        tag.put("itemfilter", new CompoundTag());
         tag.putByte("bw", (byte) blacklistWhitelist.ordinal());
         tag.putInt("rr", itemDestinationFinder.getRoundRobinIndex());
         tag.putByte("routingm", (byte) routingMode.ordinal());

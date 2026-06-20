@@ -84,12 +84,14 @@ public record UpdateFilterEntryMessage(BlockPos pos, Direction direction, int sl
             Identifier id = Identifier.tryParse(filter);
             if (id == null) return;
             if (attachment.isFluidMode()) {
-                Fluid fluid = BuiltInRegistries.FLUID.get(id);
+                // TODO 1.21.11: Registry.get(id) now returns Optional<Holder.Reference<T>>
+                Fluid fluid = BuiltInRegistries.FLUID.get(id).map(net.minecraft.core.Holder::value).orElse(Fluids.EMPTY);
                 if (fluid != Fluids.EMPTY) {
                     attachment.getFluidFilter().setFluid(slot, new FluidStack(fluid, 1000));
                 }
             } else {
-                Item item = BuiltInRegistries.ITEM.get(id);
+                // TODO 1.21.11: Registry.get(id) now returns Optional<Holder.Reference<T>>
+                Item item = BuiltInRegistries.ITEM.get(id).map(net.minecraft.core.Holder::value).orElse(Items.AIR);
                 if (item != Items.AIR) {
                     attachment.getItemFilter().setStackInSlot(slot, new ItemStack(item));
                 }
@@ -119,12 +121,14 @@ public record UpdateFilterEntryMessage(BlockPos pos, Direction direction, int sl
             Identifier id = Identifier.tryParse(filter);
             if (id == null) return;
             if (attachment.isFluidMode()) {
-                Fluid fluid = BuiltInRegistries.FLUID.get(id);
+                // TODO 1.21.11: Registry.get(id) now returns Optional<Holder.Reference<T>>
+                Fluid fluid = BuiltInRegistries.FLUID.get(id).map(net.minecraft.core.Holder::value).orElse(Fluids.EMPTY);
                 if (fluid != Fluids.EMPTY) {
                     attachment.getFluidFilter().setFluid(slot, new FluidStack(fluid, 1000));
                 }
             } else {
-                Item item = BuiltInRegistries.ITEM.get(id);
+                // TODO 1.21.11: Registry.get(id) now returns Optional<Holder.Reference<T>>
+                Item item = BuiltInRegistries.ITEM.get(id).map(net.minecraft.core.Holder::value).orElse(Items.AIR);
                 if (item != Items.AIR) {
                     attachment.getItemFilter().setStackInSlot(slot, new ItemStack(item));
                 }

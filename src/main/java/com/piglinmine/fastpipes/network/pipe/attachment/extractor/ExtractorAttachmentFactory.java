@@ -25,48 +25,49 @@ public class ExtractorAttachmentFactory implements AttachmentFactory {
 
     @Override
     public Attachment createFromNbt(Pipe pipe, CompoundTag tag) {
-        Direction dir = DirectionUtil.safeGet((byte) tag.getInt("dir"));
+        Direction dir = DirectionUtil.safeGet((byte) tag.getIntOr("dir", 0));
 
         ExtractorAttachment attachment = new ExtractorAttachment(pipe, dir, type);
 
         if (tag.contains("itemfilter")) {
-            attachment.getItemFilter().deserializeNBT(pipe.getLevel().registryAccess(), tag.getCompound("itemfilter"));
+            // TODO 1.21.11: ItemStackHandler.deserializeNBT replaced by deserialize(ValueInput); filter persistence broken
         }
 
         if (tag.contains("rm")) {
-            attachment.setRedstoneMode(RedstoneMode.get(tag.getByte("rm")));
+            attachment.setRedstoneMode(RedstoneMode.get(tag.getByteOr("rm", (byte) 0)));
         }
 
         if (tag.contains("bw")) {
-            attachment.setBlacklistWhitelist(BlacklistWhitelist.get(tag.getByte("bw")));
+            attachment.setBlacklistWhitelist(BlacklistWhitelist.get(tag.getByteOr("bw", (byte) 0)));
         }
 
         if (tag.contains("rr")) {
-            attachment.setRoundRobinIndex(tag.getInt("rr"));
+            attachment.setRoundRobinIndex(tag.getIntOr("rr", 0));
         }
 
         if (tag.contains("routingm")) {
-            attachment.setRoutingMode(RoutingMode.get(tag.getByte("routingm")));
+            attachment.setRoutingMode(RoutingMode.get(tag.getByteOr("routingm", (byte) 0)));
         }
 
         if (tag.contains("stacksi")) {
-            attachment.setStackSize(tag.getInt("stacksi"));
+            attachment.setStackSize(tag.getIntOr("stacksi", 0));
         }
 
         if (tag.contains("exa")) {
-            attachment.setExactMode(tag.getBoolean("exa"));
+            attachment.setExactMode(tag.getBooleanOr("exa", false));
         }
 
         if (tag.contains("fluidfilter")) {
-            attachment.getFluidFilter().readFromNbt(tag.getCompound("fluidfilter"), pipe.getLevel().registryAccess());
+            attachment.getFluidFilter().readFromNbt(tag.getCompoundOrEmpty("fluidfilter"), pipe.getLevel().registryAccess());
         }
 
         if (tag.contains("tagov")) {
-            CompoundTag overrides = tag.getCompound("tagov");
+            CompoundTag overrides = tag.getCompoundOrEmpty("tagov");
             for (int i = 0; i < ExtractorAttachment.MAX_FILTER_SLOTS; i++) {
                 String key = "s" + i;
                 if (overrides.contains(key)) {
-                    attachment.setTagOverride(i, overrides.getString(key));
+                    // TODO 1.21.11: CompoundTag.getString now returns Optional<String>
+                    attachment.setTagOverride(i, overrides.getString(key).orElse(""));
                 }
             }
         }

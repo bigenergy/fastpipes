@@ -124,7 +124,7 @@ public class FastPipesNetwork {
 
     // Convenience methods for sending packets
     public static void sendInArea(Level level, BlockPos pos, int radius, Object message) {
-        if (level.isClientSide) return;
+        if (level.isClientSide()) return;
 
         if (message instanceof ItemTransportMessage msg) {
             PacketDistributor.sendToPlayersNear((net.minecraft.server.level.ServerLevel) level, null, 
@@ -137,29 +137,29 @@ public class FastPipesNetwork {
 
     public static void sendToServer(Object message) {
         if (message instanceof ChangeRedstoneModeMessage msg) {
-            PacketDistributor.sendToServer(msg);
+            net.neoforged.neoforge.client.network.ClientPacketDistributor.sendToServer(msg);
         } else if (message instanceof ChangeBlacklistWhitelistMessage msg) {
-            PacketDistributor.sendToServer(msg);
+            net.neoforged.neoforge.client.network.ClientPacketDistributor.sendToServer(msg);
         } else if (message instanceof ChangeRoutingModeMessage msg) {
-            PacketDistributor.sendToServer(msg);
+            net.neoforged.neoforge.client.network.ClientPacketDistributor.sendToServer(msg);
         } else if (message instanceof ChangeStackSizeMessage msg) {
-            PacketDistributor.sendToServer(msg);
+            net.neoforged.neoforge.client.network.ClientPacketDistributor.sendToServer(msg);
         } else if (message instanceof ChangeExactModeMessage msg) {
-            PacketDistributor.sendToServer(msg);
+            net.neoforged.neoforge.client.network.ClientPacketDistributor.sendToServer(msg);
         } else if (message instanceof UpdateFilterEntryMessage msg) {
-            PacketDistributor.sendToServer(msg);
+            net.neoforged.neoforge.client.network.ClientPacketDistributor.sendToServer(msg);
         } else if (message instanceof TerminalExtractMessage msg) {
-            PacketDistributor.sendToServer(msg);
+            net.neoforged.neoforge.client.network.ClientPacketDistributor.sendToServer(msg);
         } else if (message instanceof TerminalInsertMessage msg) {
-            PacketDistributor.sendToServer(msg);
+            net.neoforged.neoforge.client.network.ClientPacketDistributor.sendToServer(msg);
         } else if (message instanceof TerminalSearchMessage msg) {
-            PacketDistributor.sendToServer(msg);
+            net.neoforged.neoforge.client.network.ClientPacketDistributor.sendToServer(msg);
         } else if (message instanceof TerminalCraftMessage msg) {
-            PacketDistributor.sendToServer(msg);
+            net.neoforged.neoforge.client.network.ClientPacketDistributor.sendToServer(msg);
         } else if (message instanceof TerminalRecipeTransferMessage msg) {
-            PacketDistributor.sendToServer(msg);
+            net.neoforged.neoforge.client.network.ClientPacketDistributor.sendToServer(msg);
         } else if (message instanceof TerminalSortMessage msg) {
-            PacketDistributor.sendToServer(msg);
+            net.neoforged.neoforge.client.network.ClientPacketDistributor.sendToServer(msg);
         }
     }
 

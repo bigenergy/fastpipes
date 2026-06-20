@@ -25,20 +25,20 @@ public class VoidAttachmentFactory implements AttachmentFactory {
 
     @Override
     public Attachment createFromNbt(Pipe pipe, CompoundTag tag) {
-        Direction dir = DirectionUtil.safeGet((byte) tag.getInt("dir"));
+        Direction dir = DirectionUtil.safeGet((byte) tag.getIntOr("dir", 0));
         VoidAttachment attachment = new VoidAttachment(pipe, dir, type);
 
         if (tag.contains("bw")) {
-            attachment.setBlacklistWhitelist(BlacklistWhitelist.get(tag.getByte("bw")));
+            attachment.setBlacklistWhitelist(BlacklistWhitelist.get(tag.getByteOr("bw", (byte) 0)));
         }
         if (tag.contains("exa")) {
-            attachment.setExactMode(tag.getBoolean("exa"));
+            attachment.setExactMode(tag.getBooleanOr("exa", false));
         }
         if (tag.contains("itemfilter")) {
-            attachment.getItemFilter().deserializeNBT(pipe.getLevel().registryAccess(), tag.getCompound("itemfilter"));
+            // TODO 1.21.11: ItemStackHandler.deserializeNBT replaced by deserialize(ValueInput); filter persistence broken
         }
         if (tag.contains("fluidfilter")) {
-            attachment.getFluidFilter().readFromNbt(tag.getCompound("fluidfilter"), pipe.getLevel().registryAccess());
+            attachment.getFluidFilter().readFromNbt(tag.getCompoundOrEmpty("fluidfilter"), pipe.getLevel().registryAccess());
         }
 
         return attachment;

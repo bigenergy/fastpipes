@@ -51,7 +51,7 @@ public class EnergyPipeBlock extends PipeBlock implements EntityBlock {
 
         // Color check: colored pipes only connect to same color or uncolored pipes
         // Only check on server — client trusts server-sent block state
-        if (level instanceof Level lvl && !lvl.isClientSide) {
+        if (level instanceof Level lvl && !lvl.isClientSide()) {
             Pipe myPipe = NetworkManager.get(lvl).getPipe(pos);
             Pipe theirPipe = NetworkManager.get(lvl).getPipe(pos.relative(direction));
             if (myPipe != null && theirPipe != null) {
@@ -70,7 +70,9 @@ public class EnergyPipeBlock extends PipeBlock implements EntityBlock {
         if (be instanceof EnergyPipeBlockEntity epe && epe.isDisconnected(direction)) return false;
 
         if (world instanceof Level level) {
-            IEnergyStorage energyStorage = level.getCapability(Capabilities.EnergyStorage.BLOCK, pos.relative(direction), direction.getOpposite());
+            // TODO 1.21.11: Capabilities.Energy.BLOCK now returns EnergyHandler not IEnergyStorage; wrap via IEnergyStorage.of()
+            var cap = level.getCapability(Capabilities.Energy.BLOCK, pos.relative(direction), direction.getOpposite());
+            IEnergyStorage energyStorage = cap == null ? null : IEnergyStorage.of(cap);
             if (energyStorage == null) {
                 return false;
             }

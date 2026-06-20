@@ -32,15 +32,15 @@ public enum TerminalInfoProvider implements IBlockComponentProvider, IServerData
         CompoundTag data = accessor.getServerData();
         if (!data.contains("Connected")) return;
 
-        boolean connected = data.getBoolean("Connected");
+        boolean connected = data.getBooleanOr("Connected", false);
         if (!connected) {
             tooltip.add(Component.translatable("jade.fastpipes.terminal.disconnected")
                 .withStyle(ChatFormatting.RED));
             return;
         }
 
-        int uniqueStacks = data.getInt("UniqueStacks");
-        long totalItems = data.getLong("TotalItems");
+        int uniqueStacks = data.getIntOr("UniqueStacks", 0);
+        long totalItems = data.getLongOr("TotalItems", 0L);
 
         tooltip.add(Component.literal("• ")
             .append(Component.translatable("jade.fastpipes.terminal.unique_stacks").withStyle(ChatFormatting.GRAY))
@@ -56,7 +56,7 @@ public enum TerminalInfoProvider implements IBlockComponentProvider, IServerData
             tooltip.add(Component.literal("• ")
                 .append(Component.translatable("jade.fastpipes.terminal.in_use_by").withStyle(ChatFormatting.GRAY))
                 .append(Component.literal(": "))
-                .append(Component.literal(data.getString("ActiveUser")).withStyle(ChatFormatting.YELLOW)));
+                .append(Component.literal(data.getStringOr("ActiveUser", "")).withStyle(ChatFormatting.YELLOW)));
         }
     }
 
@@ -81,8 +81,10 @@ public enum TerminalInfoProvider implements IBlockComponentProvider, IServerData
                 if (!scanned.add(neighborPos)) continue;
                 if (NetworkManager.get(accessor.getLevel()).getPipe(neighborPos) != null) continue;
 
-                IItemHandler handler = accessor.getLevel().getCapability(
-                    Capabilities.ItemHandler.BLOCK, neighborPos, dir.getOpposite());
+                // TODO 1.21.11: Capabilities.Item.BLOCK now returns ResourceHandler<ItemResource>; wrap via IItemHandler.of()
+                var capJade = accessor.getLevel().getCapability(
+                    Capabilities.Item.BLOCK, neighborPos, dir.getOpposite());
+                IItemHandler handler = capJade == null ? null : IItemHandler.of(capJade);
                 if (handler == null) continue;
 
                 for (int i = 0; i < handler.getSlots(); i++) {

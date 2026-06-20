@@ -37,9 +37,9 @@ public class ItemInsertTransportCallback implements TransportCallback {
 
     @Nullable
     public static ItemInsertTransportCallback of(CompoundTag tag, HolderLookup.Provider registries) {
-        BlockPos itemHandlerPosition = BlockPos.of(tag.getLong("ihpos"));
-        ItemStack toInsert = ItemStack.parseOptional(registries, tag.getCompound("s"));
-        Direction incomingDirection = Direction.values()[tag.getInt("incdir")];
+        BlockPos itemHandlerPosition = BlockPos.of(tag.getLongOr("ihpos", 0L));
+        ItemStack toInsert = com.piglinmine.fastpipes.util.ItemStackSerialization.parseOptional(registries, tag.getCompoundOrEmpty("s"));
+        Direction incomingDirection = Direction.values()[tag.getIntOr("incdir", 0)];
 
         if (toInsert.isEmpty()) {
             LOGGER.warn("Item no longer exists");
@@ -74,7 +74,9 @@ public class ItemInsertTransportCallback implements TransportCallback {
         }
 
         // Use NeoForge Capabilities API instead of Forge CapabilityItemHandler
-        IItemHandler itemHandler = level.getCapability(Capabilities.ItemHandler.BLOCK, itemHandlerPosition, incomingDirection.getOpposite());
+        // TODO 1.21.11: Capabilities.Item.BLOCK now returns ResourceHandler<ItemResource>; wrap via IItemHandler.of()
+        var capInsertItem = level.getCapability(Capabilities.Item.BLOCK, itemHandlerPosition, incomingDirection.getOpposite());
+        IItemHandler itemHandler = capInsertItem == null ? null : IItemHandler.of(capInsertItem);
         if (itemHandler == null) {
             LOGGER.warn("Destination item handler is no longer exposing a capability at " + itemHandlerPosition);
             cancelCallback.call(network, level, currentPos, cancelCallback);
@@ -106,7 +108,7 @@ public class ItemInsertTransportCallback implements TransportCallback {
     @Override
     public CompoundTag writeToNbt(CompoundTag tag, HolderLookup.Provider registries) {
         tag.putLong("ihpos", itemHandlerPosition.asLong());
-        tag.put("s", toInsert.saveOptional(registries));
+        tag.put("s", com.piglinmine.fastpipes.util.ItemStackSerialization.saveOptional(registries, toInsert));
         tag.putInt("incdir", incomingDirection.ordinal());
 
         return tag;

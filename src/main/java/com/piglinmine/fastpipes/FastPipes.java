@@ -26,7 +26,7 @@ public class FastPipes {
         FPipesCreativeModeTabs.CREATIVE_MODE_TABS.register(modEventBus);
 
         // Client-only setup
-        if (FMLEnvironment.dist == Dist.CLIENT) {
+        if (FMLEnvironment.getDist() == Dist.CLIENT) {
             modEventBus.register(ClientSetup.class);
         }
 

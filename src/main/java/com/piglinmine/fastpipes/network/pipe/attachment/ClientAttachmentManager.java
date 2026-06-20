@@ -68,12 +68,14 @@ public class ClientAttachmentManager implements AttachmentManager {
             String pickBlockKey = "pb_" + dir.ordinal();
 
             if (tag.contains(attachmentKey)) {
-                attachmentState[dir.ordinal()] = Identifier.parse(tag.getString(attachmentKey));
-                
+                // TODO 1.21.11: CompoundTag.getString now returns Optional<String>
+                attachmentState[dir.ordinal()] = Identifier.parse(tag.getString(attachmentKey).orElse(""));
+
                 if (tag.contains(pickBlockKey)) {
-                    pickBlocks[dir.ordinal()] = ItemStack.parseOptional(
+                    // TODO 1.21.11: ItemStack.parseOptional was removed; using OPTIONAL_CODEC via helper
+                    pickBlocks[dir.ordinal()] = com.piglinmine.fastpipes.util.ItemStackSerialization.parseOptional(
                         Minecraft.getInstance().level.registryAccess(),
-                        tag.getCompound(pickBlockKey)
+                        tag.getCompoundOrEmpty(pickBlockKey)
                     );
                 }
             } else {

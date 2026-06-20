@@ -35,9 +35,11 @@ public class TerminalRecipeTransferHandler implements IRecipeTransferHandler<Ter
         return Optional.of(FPipesContainerMenus.TERMINAL.get());
     }
 
+    // TODO 1.21.11: JEI RecipeType<RecipeHolder<CraftingRecipe>> changed to IRecipeHolderType<CraftingRecipe>
     @Override
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public RecipeType<RecipeHolder<CraftingRecipe>> getRecipeType() {
-        return RecipeTypes.CRAFTING;
+        return (RecipeType) (Object) RecipeTypes.CRAFTING;
     }
 
     @Override

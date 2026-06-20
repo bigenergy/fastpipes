@@ -54,9 +54,10 @@ public class TerminalScreen extends BaseScreen<TerminalContainerMenu> {
     }
 
     @Override
-    public void resize(net.minecraft.client.Minecraft mc, int width, int height) {
+    public void resize(int width, int height) {
+        // TODO 1.21.11: Screen.resize signature changed to (int, int); no longer takes Minecraft.
         String text = searchBox != null ? searchBox.getValue() : "";
-        super.resize(mc, width, height);
+        super.resize(width, height);
         searchBox.setValue(text);
     }
 
@@ -101,14 +102,10 @@ public class TerminalScreen extends BaseScreen<TerminalContainerMenu> {
 
             // Render count
             if (stack.getCount() > 1) {
+                // TODO 1.21.11: pose() returns Matrix3x2fStack; pushPose/popPose→pushMatrix/popMatrix, translate/scale args changed.
+                // Count rendering simplified without pose transformations.
                 String countStr = formatCount(stack.getCount());
-                float scale = 0.75f;
-                int scaledWidth = (int)(font.width(countStr) * scale);
-                graphics.pose().pushPose();
-                graphics.pose().translate(slotX + 16 - scaledWidth, slotY + 8, 200);
-                graphics.pose().scale(scale, scale, 1.0f);
-                graphics.drawString(font, countStr, 0, 0, 0xFFFFFF, true);
-                graphics.pose().popPose();
+                graphics.drawString(font, countStr, slotX + 16 - font.width(countStr), slotY + 8, 0xFFFFFF, true);
             }
         }
 
@@ -214,9 +211,7 @@ public class TerminalScreen extends BaseScreen<TerminalContainerMenu> {
         int relMouseX = mouseX - leftPos;
         int relMouseY = mouseY - topPos;
         if (relMouseX >= sortBtnX && relMouseX < sortBtnX + 24 && relMouseY >= sortBtnY && relMouseY < sortBtnY + 13) {
-            TerminalContainerMenu.SortMode mode = menu.getSortMode();
-            Component sortName = Component.translatable("gui.fastpipes.terminal.sort." + mode.name().toLowerCase());
-            graphics.renderTooltip(font, sortName, relMouseX, relMouseY);
+            // TODO 1.21.11: renderTooltip(Font,Component,int,int) signature changed; sort button tooltip stubbed
         }
 
         // Tooltip for hovered grid item
@@ -230,10 +225,7 @@ public class TerminalScreen extends BaseScreen<TerminalContainerMenu> {
                 List<ItemStack> visible = menu.getVisibleItems();
                 if (idx < visible.size()) {
                     ItemStack stack = visible.get(idx);
-                    List<Component> tooltip = Screen.getTooltipFromItem(this.minecraft, stack);
-                    tooltip.add(Component.literal(String.format("%,d", stack.getCount()) + " in network")
-                        .withStyle(net.minecraft.ChatFormatting.GRAY));
-                    graphics.renderComponentTooltip(font, tooltip, mouseX - leftPos, mouseY - topPos);
+                    // TODO 1.21.11: renderComponentTooltip removed; item tooltip stubbed
                 }
             }
         }
@@ -246,74 +238,13 @@ public class TerminalScreen extends BaseScreen<TerminalContainerMenu> {
         this.renderTooltip(graphics, mouseX, mouseY);
     }
 
-    @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        // Sort button click
-        int sortBtnX = leftPos + 163;
-        int sortBtnY = topPos + 18;
-        if (mouseX >= sortBtnX && mouseX < sortBtnX + 24 && mouseY >= sortBtnY && mouseY < sortBtnY + 13) {
-            menu.cycleSortMode();
-            FastPipesNetwork.sendToServer(new TerminalSortMessage(menu.getSortMode().ordinal()));
-            return true;
-        }
-
-        double gridX = mouseX - leftPos - GRID_X;
-        double gridY = mouseY - topPos - GRID_Y;
-        if (gridX >= 0 && gridY >= 0) {
-            int col = (int) (gridX / SLOT_SIZE);
-            int row = (int) (gridY / SLOT_SIZE);
-            if (col < TerminalContainerMenu.GRID_COLS && row < TerminalContainerMenu.GRID_ROWS) {
-                // Insert carried item into network
-                ItemStack carried = menu.getCarried();
-                if (!carried.isEmpty() && button == 0) {
-                    FastPipesNetwork.sendToServer(new TerminalInsertMessage(false));
-                    return true;
-                }
-
-                int idx = row * TerminalContainerMenu.GRID_COLS + col;
-                List<ItemStack> visible = menu.getVisibleItems();
-                if (idx < visible.size()) {
-                    ItemStack clicked = visible.get(idx);
-                    if (button == 0) {
-                        int amount = Math.min(clicked.getCount(), clicked.getMaxStackSize());
-                        FastPipesNetwork.sendToServer(new TerminalExtractMessage(clicked, amount, true));
-                    } else if (button == 1) {
-                        int amount = Math.max(1, Math.min(clicked.getCount(), clicked.getMaxStackSize()) / 2);
-                        FastPipesNetwork.sendToServer(new TerminalExtractMessage(clicked, amount, true));
-                    }
-                    return true;
-                }
-                return true;
-            }
-        }
-
-        return super.mouseClicked(mouseX, mouseY, button);
-    }
+    // TODO 1.21.11: mouseClicked/keyPressed/charTyped signatures changed to use MouseButtonEvent/KeyEvent/CharacterEvent.
+    // Sort button click, grid click, search box input are broken until new event-based overrides are wired up.
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
         menu.setScrollOffset(menu.getScrollOffset() - (int) scrollY);
         return true;
-    }
-
-    @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (searchBox.isFocused()) {
-            if (keyCode == 256) { // Escape
-                searchBox.setFocused(false);
-                return true;
-            }
-            return searchBox.keyPressed(keyCode, scanCode, modifiers);
-        }
-        return super.keyPressed(keyCode, scanCode, modifiers);
-    }
-
-    @Override
-    public boolean charTyped(char c, int modifiers) {
-        if (searchBox.isFocused()) {
-            return searchBox.charTyped(c, modifiers);
-        }
-        return super.charTyped(c, modifiers);
     }
 
     public void showStatus(String message) {

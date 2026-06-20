@@ -55,7 +55,7 @@ public class ItemPipe extends Pipe {
         // Type is set in constructor, no need to read from NBT
         
         if (tag.contains("transports")) {
-            ListTag transportList = tag.getList("transports", Tag.TAG_COMPOUND);
+            ListTag transportList = tag.getListOrEmpty("transports");
             for (Tag transportTag : transportList) {
                 ItemTransport transport = ItemTransport.of((CompoundTag) transportTag, level.registryAccess());
                 if (transport != null) {

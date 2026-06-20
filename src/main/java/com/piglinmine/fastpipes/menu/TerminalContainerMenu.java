@@ -76,7 +76,7 @@ public class TerminalContainerMenu extends BaseContainerMenu {
         addPlayerInventory(8, 204);
 
         // Load saved crafting grid from block entity
-        if (!player.level().isClientSide) {
+        if (!player.level().isClientSide()) {
             if (player.level().getBlockEntity(terminalPos) instanceof TerminalBlockEntity be) {
                 loading = true;
                 for (int i = 0; i < 9; i++) {
@@ -95,7 +95,7 @@ public class TerminalContainerMenu extends BaseContainerMenu {
     }
 
     private void persistSortMode() {
-        if (player.level().isClientSide) return;
+        if (player.level().isClientSide()) return;
         if (player.level().getBlockEntity(terminalPos) instanceof TerminalBlockEntity be) {
             be.setSortModeOrdinal(sortMode.ordinal());
         }
@@ -116,7 +116,7 @@ public class TerminalContainerMenu extends BaseContainerMenu {
     @Override
     public void broadcastChanges() {
         super.broadcastChanges();
-        if (!player.level().isClientSide) {
+        if (!player.level().isClientSide()) {
             tickCounter++;
             // Fast sync every 4 ticks during first second (client needs time to create menu)
             // Then periodic sync every second
@@ -128,7 +128,7 @@ public class TerminalContainerMenu extends BaseContainerMenu {
     }
 
     public void refreshNetworkItems() {
-        if (player.level().isClientSide) return;
+        if (player.level().isClientSide()) return;
 
         Map<ItemStackKey, Long> aggregated = new LinkedHashMap<>();
 
@@ -274,7 +274,7 @@ public class TerminalContainerMenu extends BaseContainerMenu {
      * @param toCursor true = put on cursor, false = put in player inventory
      */
     public void extractItem(ItemStack stack, int amount, boolean toCursor) {
-        if (player.level().isClientSide) return;
+        if (player.level().isClientSide()) return;
 
         Pipe connectedPipe = TerminalBlock.findConnectedPipe(player.level(), terminalPos);
         if (connectedPipe == null || connectedPipe.getNetwork() == null) {
@@ -335,7 +335,7 @@ public class TerminalContainerMenu extends BaseContainerMenu {
      * Insert item from player cursor into network.
      */
     public void insertItem(ItemStack toInsert) {
-        if (player.level().isClientSide || toInsert.isEmpty()) return;
+        if (player.level().isClientSide() || toInsert.isEmpty()) return;
 
         Pipe connectedPipe = TerminalBlock.findConnectedPipe(player.level(), terminalPos);
         if (connectedPipe == null || connectedPipe.getNetwork() == null) {
@@ -358,7 +358,7 @@ public class TerminalContainerMenu extends BaseContainerMenu {
      * Insert a stack into the network, returns whatever couldn't be inserted.
      */
     public ItemStack insertIntoNetwork(ItemStack stack) {
-        if (player.level().isClientSide || stack.isEmpty()) return stack;
+        if (player.level().isClientSide() || stack.isEmpty()) return stack;
         Pipe connectedPipe = TerminalBlock.findConnectedPipe(player.level(), terminalPos);
         return insertIntoNetworkDirect(stack, connectedPipe);
     }
@@ -367,7 +367,7 @@ public class TerminalContainerMenu extends BaseContainerMenu {
      * Try to craft using items from the network.
      */
     public void performCraft(boolean craftAll) {
-        if (player.level().isClientSide) return;
+        if (player.level().isClientSide()) return;
 
         Level level = player.level();
         CraftingInput input = craftMatrix.asCraftInput();
@@ -438,7 +438,7 @@ public class TerminalContainerMenu extends BaseContainerMenu {
     @Override
     public void removed(Player player) {
         saveCraftGrid();
-        if (!player.level().isClientSide
+        if (!player.level().isClientSide()
             && player.level().getBlockEntity(terminalPos) instanceof TerminalBlockEntity be) {
             be.release(player.getUUID());
         }
@@ -446,7 +446,7 @@ public class TerminalContainerMenu extends BaseContainerMenu {
     }
 
     private void saveCraftGrid() {
-        if (player.level().isClientSide) return;
+        if (player.level().isClientSide()) return;
         if (player.level().getBlockEntity(terminalPos) instanceof TerminalBlockEntity be) {
             for (int i = 0; i < craftMatrix.getContainerSize(); i++) {
                 be.setCraftGrid(i, craftMatrix.getItem(i).copy());
@@ -458,7 +458,7 @@ public class TerminalContainerMenu extends BaseContainerMenu {
      * Handle JEI recipe transfer — fill craft grid from player inventory + network.
      */
     public void handleRecipeTransfer(List<ItemStack> ingredients) {
-        if (player.level().isClientSide) return;
+        if (player.level().isClientSide()) return;
 
         Pipe connectedPipe = TerminalBlock.findConnectedPipe(player.level(), terminalPos);
 
@@ -506,8 +506,8 @@ public class TerminalContainerMenu extends BaseContainerMenu {
     }
 
     private ItemStack findAndExtractFromPlayerInventory(ItemStack wanted, int amount) {
-        for (int i = 0; i < player.getInventory().items.size(); i++) {
-            ItemStack invStack = player.getInventory().items.get(i);
+        for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
+            ItemStack invStack = player.getInventory().getItem(i);
             if (!invStack.isEmpty() && ItemStack.isSameItemSameComponents(invStack, wanted)) {
                 return player.getInventory().removeItem(i, amount);
             }
@@ -600,7 +600,7 @@ public class TerminalContainerMenu extends BaseContainerMenu {
     }
 
     private void updateCraftResult() {
-        if (player.level().isClientSide) return;
+        if (player.level().isClientSide()) return;
         Level level = player.level();
         CraftingInput input = craftMatrix.asCraftInput();
 
@@ -644,9 +644,11 @@ public class TerminalContainerMenu extends BaseContainerMenu {
                 // Skip positions that are pipes themselves
                 if (NetworkManager.get(level).getPipe(neighborPos) != null) continue;
 
-                IItemHandler handler = level.getCapability(
-                    Capabilities.ItemHandler.BLOCK, neighborPos, dir.getOpposite()
+                // TODO 1.21.11: Capabilities.Item.BLOCK now returns ResourceHandler<ItemResource>; wrap via IItemHandler.of()
+                var capTerm = level.getCapability(
+                    Capabilities.Item.BLOCK, neighborPos, dir.getOpposite()
                 );
+                IItemHandler handler = capTerm == null ? null : IItemHandler.of(capTerm);
                 if (handler != null) {
                     result.add(new ConnectedInventory(neighborPos, dir.getOpposite(), handler));
                 }
@@ -680,17 +682,17 @@ public class TerminalContainerMenu extends BaseContainerMenu {
 
         @Override
         public int getSlots() {
-            return player.getInventory().items.size();
+            return player.getInventory().getContainerSize();
         }
 
         @Override
         public ItemStack getStackInSlot(int slot) {
-            return player.getInventory().items.get(slot);
+            return player.getInventory().getItem(slot);
         }
 
         @Override
         public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
-            ItemStack existing = player.getInventory().items.get(slot);
+            ItemStack existing = player.getInventory().getItem(slot);
             if (stack.isEmpty()) return ItemStack.EMPTY;
 
             if (!existing.isEmpty()) {
@@ -707,7 +709,7 @@ public class TerminalContainerMenu extends BaseContainerMenu {
                 if (!simulate) {
                     ItemStack placed = stack.copy();
                     placed.setCount(canAdd);
-                    player.getInventory().items.set(slot, placed);
+                    player.getInventory().setItem(slot, placed);
                 }
                 if (canAdd >= stack.getCount()) return ItemStack.EMPTY;
                 ItemStack leftover = stack.copy();

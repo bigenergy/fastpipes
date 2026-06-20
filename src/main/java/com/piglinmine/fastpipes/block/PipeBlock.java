@@ -39,6 +39,9 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.level.redstone.Orientation;
+import net.minecraft.world.level.ScheduledTickAccess;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
@@ -94,10 +97,10 @@ public abstract class PipeBlock extends Block implements EntityBlock, SimpleWate
 
     @Override
     @SuppressWarnings("deprecation")
-    public void neighborChanged(BlockState state, Level level, BlockPos pos, Block block, BlockPos fromPos, boolean isMoving) {
-        super.neighborChanged(state, level, pos, block, fromPos, isMoving);
+    public void neighborChanged(BlockState state, Level level, BlockPos pos, Block block, @Nullable Orientation orientation, boolean isMoving) {
+        super.neighborChanged(state, level, pos, block, orientation, isMoving);
 
-        if (!level.isClientSide) {
+        if (!level.isClientSide()) {
             Pipe pipe = NetworkManager.get(level).getPipe(pos);
 
             if (pipe != null && pipe.getNetwork() != null) {
@@ -113,7 +116,7 @@ public abstract class PipeBlock extends Block implements EntityBlock, SimpleWate
 
         // Dye: right-click with dye to color pipe
         if (held.getItem() instanceof DyeItem dyeItem) {
-            if (!level.isClientSide) {
+            if (!level.isClientSide()) {
                 Pipe pipe = NetworkManager.get(level).getPipe(pos);
                 if (pipe != null) {
                     DyeColor newColor = dyeItem.getDyeColor();
@@ -167,7 +170,7 @@ public abstract class PipeBlock extends Block implements EntityBlock, SimpleWate
 
         // Water bucket: right-click to remove color
         if (held.is(Items.WATER_BUCKET)) {
-            if (!level.isClientSide) {
+            if (!level.isClientSide()) {
                 Pipe pipe = NetworkManager.get(level).getPipe(pos);
                 if (pipe != null && pipe.getColor() != null) {
                     pipe.setColor(null);
@@ -208,7 +211,7 @@ public abstract class PipeBlock extends Block implements EntityBlock, SimpleWate
 
         // Wrench: shift+right-click to break pipe (supports cross-mod wrenches via ItemAbility)
         if (WrenchItem.isWrench(held) && player.isCrouching()) {
-            if (!level.isClientSide) {
+            if (!level.isClientSide()) {
                 level.destroyBlock(pos, !player.isCreative(), player);
             }
             return InteractionResult.SUCCESS;
@@ -257,7 +260,7 @@ public abstract class PipeBlock extends Block implements EntityBlock, SimpleWate
     }
 
     private InteractionResult toggleDisconnect(Level level, BlockPos pos, Direction dir) {
-        if (!level.isClientSide) {
+        if (!level.isClientSide()) {
             Pipe pipe = NetworkManager.get(level).getPipe(pos);
 
             if (pipe != null) {
@@ -293,7 +296,7 @@ public abstract class PipeBlock extends Block implements EntityBlock, SimpleWate
     }
 
     private InteractionResult addAttachment(Player player, Level level, BlockPos pos, ItemStack attachment, Direction dir) {
-        if (!level.isClientSide) {
+        if (!level.isClientSide()) {
             Pipe pipe = NetworkManager.get(level).getPipe(pos);
 
             if (pipe != null && !pipe.getAttachmentManager().hasAttachment(dir)) {
@@ -318,7 +321,7 @@ public abstract class PipeBlock extends Block implements EntityBlock, SimpleWate
     }
 
     private InteractionResult removeAttachment(Level level, BlockPos pos, Direction dir, Player player) {
-        if (!level.isClientSide) {
+        if (!level.isClientSide()) {
             Pipe pipe = NetworkManager.get(level).getPipe(pos);
 
             if (pipe != null && pipe.getAttachmentManager().hasAttachment(dir)) {
@@ -365,15 +368,19 @@ public abstract class PipeBlock extends Block implements EntityBlock, SimpleWate
 
     @Override
     @SuppressWarnings("deprecation")
-    public BlockState updateShape(BlockState state, Direction dir, BlockState facingState, LevelAccessor world, BlockPos pos, BlockPos facingPos) {
+    public BlockState updateShape(BlockState state, LevelReader level, ScheduledTickAccess scheduledTickAccess, BlockPos pos, Direction direction, BlockPos neighborPos, BlockState neighborState, RandomSource random) {
         if (state.getValue(BlockStateProperties.WATERLOGGED)) {
-            world.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(world));
+            scheduledTickAccess.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(level));
         }
         // On client, don't recalculate connections — trust the server-sent block state.
-        if (world instanceof Level lvl && lvl.isClientSide) {
+        if (level instanceof Level lvl && lvl.isClientSide()) {
             return state;
         }
-        return getState(state, world, pos);
+        // TODO 1.21.11: getState requires LevelAccessor; LevelReader from updateShape may be ok if hasConnection only reads
+        if (level instanceof LevelAccessor accessor) {
+            return getState(state, accessor, pos);
+        }
+        return state;
     }
 
     @Override

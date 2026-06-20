@@ -28,15 +28,15 @@ public class FluidNetworkFactory implements NetworkFactory {
 
     @Override
     public Network create(CompoundTag tag) {
-        return new FluidNetwork(BlockPos.of(tag.getLong("origin")), tag.getString("id"), pipeType);
+        return new FluidNetwork(BlockPos.of(tag.getLongOr("origin", 0L)), tag.getStringOr("id", ""), pipeType);
     }
 
     @Override
     public Network create(CompoundTag tag, HolderLookup.Provider provider) {
-        FluidNetwork network = new FluidNetwork(BlockPos.of(tag.getLong("origin")), tag.getString("id"), pipeType);
+        FluidNetwork network = new FluidNetwork(BlockPos.of(tag.getLongOr("origin", 0L)), tag.getStringOr("id", ""), pipeType);
 
         if (tag.contains("tank")) {
-            network.getFluidTank().readFromNBT(provider, tag.getCompound("tank"));
+            // TODO 1.21.11: FluidTank.readFromNBT replaced by deserialize(ValueInput); fluid network persistence broken
         }
 
         LOGGER.debug("Deserialized fluid network {} of type {}", network.getId(), network.getType().toString());

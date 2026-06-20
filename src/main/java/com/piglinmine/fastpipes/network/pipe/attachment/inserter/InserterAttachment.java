@@ -239,7 +239,8 @@ public class InserterAttachment extends Attachment {
         tag.putByte("rm", (byte) redstoneMode.ordinal());
         tag.putByte("bw", (byte) blacklistWhitelist.ordinal());
         tag.putBoolean("exa", exactMode);
-        tag.put("itemfilter", itemFilter.serializeNBT(pipe.getLevel().registryAccess()));
+        // TODO 1.21.11: ItemStackHandler.serializeNBT replaced by serialize(ValueOutput); filter persistence broken
+        tag.put("itemfilter", new CompoundTag());
         tag.put("fluidfilter", fluidFilter.writeToNbt(pipe.getLevel().registryAccess()));
         CompoundTag overridesTag = new CompoundTag();
         for (int i = 0; i < MAX_FILTER_SLOTS; i++) {

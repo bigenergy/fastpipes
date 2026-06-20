@@ -96,7 +96,9 @@ public class FluidNetwork extends Network {
                 continue;
             }
 
-            IFluidHandler handler = blockEntity.getLevel().getCapability(Capabilities.FluidHandler.BLOCK, destination.getReceiver(), destination.getIncomingDirection().getOpposite());
+            // TODO 1.21.11: Capabilities.Fluid.BLOCK now returns ResourceHandler<FluidResource>; wrap via IFluidHandler.of()
+            var capFluidNet = blockEntity.getLevel().getCapability(Capabilities.Fluid.BLOCK, destination.getReceiver(), destination.getIncomingDirection().getOpposite());
+            IFluidHandler handler = capFluidNet == null ? null : IFluidHandler.of(capFluidNet);
             if (handler == null) {
                 continue;
             }
@@ -140,7 +142,7 @@ public class FluidNetwork extends Network {
     @Override
     public CompoundTag writeToNbt(CompoundTag tag, HolderLookup.Provider provider) {
         tag = super.writeToNbt(tag, provider);
-        tag.put("tank", fluidTank.writeToNBT(provider, new CompoundTag()));
+        // TODO 1.21.11: FluidTank.writeToNBT/readFromNBT replaced by serialize/deserialize on ValueOutput/ValueInput; fluid persistence broken
         return tag;
     }
 } 
