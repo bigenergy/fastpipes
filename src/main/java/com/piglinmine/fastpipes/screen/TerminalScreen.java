@@ -236,7 +236,19 @@ public class TerminalScreen extends BaseScreen<TerminalContainerMenu> {
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        this.renderBackground(graphics, mouseX, mouseY, partialTick);
+        // 1.21.11: Screen.renderWithTooltipAndSubtitles (outer driver) ALREADY calls
+        // renderBackground() before render() and advances the stratum, so we MUST NOT call
+        // renderBackground() again here — doing so re-fills the panel on the SAME stratum as
+        // the labels that get drawn during super.render → renderContents → renderLabels, which
+        // can hide them. AbstractContainerScreen.render() in 1.21.11 splits into
+        //   renderContents (translates pose, calls renderBg via renderBackground chain is handled
+        //                   externally; calls renderLabels in local coords)
+        //   renderCarriedItem
+        //   renderSnapbackItem
+        // It no longer calls renderTooltip itself, so we set the hovered-slot tooltip via the
+        // explicit renderTooltip() call below. mouseX/mouseY here are SCREEN-absolute (NOT
+        // translated), which is what setTooltipForNextFrame expects since the tooltip is drawn
+        // by renderDeferredElements after the pose stack has been popped.
         super.render(graphics, mouseX, mouseY, partialTick);
         this.renderTooltip(graphics, mouseX, mouseY);
     }
@@ -265,41 +277,56 @@ public class TerminalScreen extends BaseScreen<TerminalContainerMenu> {
             }
         }
 
-        // Network grid click — extract item to cursor / inventory
+        // Network grid click. The grid is NOT a vanilla slot, so vanilla mouseClicked would
+        // treat any click here as a "drop outside" — we must intercept first.
         int gridMouseX = (int) (mouseX - leftPos - GRID_X);
         int gridMouseY = (int) (mouseY - topPos - GRID_Y);
+        boolean inGrid = false;
+        int gridIdx = -1;
         if (gridMouseX >= 0 && gridMouseY >= 0) {
             int col = gridMouseX / SLOT_SIZE;
             int row = gridMouseY / SLOT_SIZE;
             if (col < TerminalContainerMenu.GRID_COLS && row < TerminalContainerMenu.GRID_ROWS) {
-                int idx = row * TerminalContainerMenu.GRID_COLS + col;
-                List<ItemStack> visible = menu.getVisibleItems();
-                if (idx < visible.size()) {
-                    ItemStack stack = visible.get(idx);
-                    if (!stack.isEmpty()) {
-                        com.mojang.blaze3d.platform.Window window = net.minecraft.client.Minecraft.getInstance().getWindow();
-                        boolean shift = com.mojang.blaze3d.platform.InputConstants.isKeyDown(window, com.mojang.blaze3d.platform.InputConstants.KEY_LSHIFT)
-                            || com.mojang.blaze3d.platform.InputConstants.isKeyDown(window, com.mojang.blaze3d.platform.InputConstants.KEY_RSHIFT);
-                        int amount;
-                        if (button == 1) {
-                            amount = Math.min(stack.getCount(), stack.getMaxStackSize() / 2);
-                            if (amount <= 0) amount = 1;
-                        } else {
-                            amount = Math.min(stack.getCount(), stack.getMaxStackSize());
-                        }
-                        FastPipesNetwork.sendToServer(new TerminalExtractMessage(stack.copy(), amount, !shift));
-                        return true;
-                    }
-                }
+                inGrid = true;
+                gridIdx = row * TerminalContainerMenu.GRID_COLS + col;
             }
         }
 
-        // Insert from cursor into network — clicking on the area between grid and player inv
-        // delegates to the menu so the cursor stack gets consumed.
-        ItemStack carried = menu.getCarried();
-        if (!carried.isEmpty()) {
-            // Allow vanilla slot handling to fire (clicked on a slot)
-            // — fall through to super so slotClicked is invoked correctly.
+        if (inGrid) {
+            ItemStack carried = menu.getCarried();
+            // PRIORITY 1: if the cursor is holding an item, ANY left/right click on the grid
+            // inserts it into the network. This makes terminals behave like other storage GUIs
+            // where dropping an item over the listing inserts it. Previously this only worked
+            // via shift+click on a player slot, which is unintuitive.
+            if (!carried.isEmpty() && (button == 0 || button == 1)) {
+                FastPipesNetwork.sendToServer(new TerminalInsertMessage(button == 0));
+                return true;
+            }
+
+            // PRIORITY 2: cursor empty AND there's a network item under the cursor → extract.
+            List<ItemStack> visible = menu.getVisibleItems();
+            if (gridIdx >= 0 && gridIdx < visible.size()) {
+                ItemStack stack = visible.get(gridIdx);
+                if (!stack.isEmpty()) {
+                    com.mojang.blaze3d.platform.Window window = net.minecraft.client.Minecraft.getInstance().getWindow();
+                    boolean shift = com.mojang.blaze3d.platform.InputConstants.isKeyDown(window, com.mojang.blaze3d.platform.InputConstants.KEY_LSHIFT)
+                        || com.mojang.blaze3d.platform.InputConstants.isKeyDown(window, com.mojang.blaze3d.platform.InputConstants.KEY_RSHIFT);
+                    int amount;
+                    if (button == 1) {
+                        // Right-click: half stack
+                        amount = Math.min(stack.getCount(), Math.max(1, stack.getMaxStackSize() / 2));
+                    } else {
+                        // Left-click: full stack (capped at maxStackSize)
+                        amount = Math.min(stack.getCount(), stack.getMaxStackSize());
+                    }
+                    // shift = into inventory, otherwise onto cursor
+                    FastPipesNetwork.sendToServer(new TerminalExtractMessage(stack.copy(), amount, !shift));
+                    return true;
+                }
+            }
+
+            // Click on empty grid cell with empty cursor → swallow so vanilla doesn't drop.
+            return true;
         }
 
         return super.mouseClicked(event, doubleClick);

@@ -1,7 +1,62 @@
 {
-  "variants": {
-    "": {
-      "model": "fastpipes:block/pipe/item/basic/core"
+  "multipart": [
+    {
+      "apply": {
+        "model": "fastpipes:block/pipe/fluid/improved/core"
+      }
+    },
+    {
+      "when": {
+        "north": "true"
+      },
+      "apply": {
+        "model": "fastpipes:block/pipe/fluid/improved/extension"
+      }
+    },
+    {
+      "when": {
+        "east": "true"
+      },
+      "apply": {
+        "model": "fastpipes:block/pipe/fluid/improved/extension",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "south": "true"
+      },
+      "apply": {
+        "model": "fastpipes:block/pipe/fluid/improved/extension",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "west": "true"
+      },
+      "apply": {
+        "model": "fastpipes:block/pipe/fluid/improved/extension",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "up": "true"
+      },
+      "apply": {
+        "model": "fastpipes:block/pipe/fluid/improved/extension",
+        "x": 270
+      }
+    },
+    {
+      "when": {
+        "down": "true"
+      },
+      "apply": {
+        "model": "fastpipes:block/pipe/fluid/improved/extension",
+        "x": 90
+      }
     }
-  }
+  ]
 }
