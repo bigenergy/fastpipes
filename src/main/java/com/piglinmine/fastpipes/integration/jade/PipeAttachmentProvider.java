@@ -1,40 +1,26 @@
 package com.piglinmine.fastpipes.integration.jade;
 
-import com.piglinmine.fastpipes.blockentity.PipeBlockEntity;
-import com.piglinmine.fastpipes.network.NetworkManager;
-import com.piglinmine.fastpipes.network.pipe.Pipe;
-import com.piglinmine.fastpipes.network.pipe.attachment.Attachment;
-import com.piglinmine.fastpipes.network.pipe.attachment.extractor.ExtractorAttachment;
-import com.piglinmine.fastpipes.network.pipe.attachment.inserter.InserterAttachment;
-import com.piglinmine.fastpipes.network.pipe.attachment.sensor.SensorAttachment;
-import com.piglinmine.fastpipes.network.pipe.attachment.void_attachment.VoidAttachment;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Direction;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IBlockComponentProvider;
-import snownee.jade.api.IServerDataProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.config.IPluginConfig;
 
-public enum PipeAttachmentProvider implements IBlockComponentProvider, IServerDataProvider<BlockAccessor> {
+public enum PipeAttachmentProvider implements IBlockComponentProvider {
     INSTANCE;
 
-    private static final String NBT_KEY = "Attachments";
+    static final String NBT_KEY = "Attachments";
 
     @Override
     public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
         CompoundTag data = accessor.getServerData();
         if (!data.contains(NBT_KEY)) return;
 
-        // TODO 1.21.11: CompoundTag.getList(String, int) removed in favor of getListOrEmpty(String);
-        // ListTag.getCompound(int) now returns Optional<CompoundTag>.
         ListTag list = data.getListOrEmpty(NBT_KEY);
         if (list.isEmpty()) return;
 
@@ -88,58 +74,6 @@ public enum PipeAttachmentProvider implements IBlockComponentProvider, IServerDa
             .append(Component.translatable(labelKey).withStyle(ChatFormatting.GRAY))
             .append(Component.literal(": "))
             .append(Component.translatable(valueKey).withStyle(ChatFormatting.WHITE));
-    }
-
-    @Override
-    public void appendServerData(CompoundTag data, BlockAccessor accessor) {
-        if (!(accessor.getBlockEntity() instanceof PipeBlockEntity)) return;
-
-        NetworkManager mgr = NetworkManager.get(accessor.getLevel());
-        Pipe pipe = mgr.getPipe(accessor.getPosition());
-        if (pipe == null) return;
-
-        ListTag list = new ListTag();
-        for (Direction dir : Direction.values()) {
-            if (!pipe.getAttachmentManager().hasAttachment(dir)) continue;
-            Attachment att = pipe.getAttachmentManager().getAttachment(dir);
-            CompoundTag tag = new CompoundTag();
-            tag.putString("id", att.getId().toString());
-
-            var dropItem = att.getDrop().getItem();
-            Identifier itemKey = BuiltInRegistries.ITEM.getKey(dropItem);
-            if (itemKey != null) {
-                tag.putString("itemId", itemKey.toString());
-            }
-            tag.putInt("side", dir.ordinal());
-
-            if (att instanceof ExtractorAttachment ex) {
-                tag.putString("redstone", ex.getRedstoneMode().name());
-                tag.putString("bw", ex.getBlacklistWhitelist().name());
-                tag.putString("routing", ex.getRoutingMode().name());
-                tag.putInt("stackSize", ex.getStackSize());
-                tag.putBoolean("exact", ex.isExactMode());
-                tag.putBoolean("fluidMode", ex.isFluidMode());
-            } else if (att instanceof InserterAttachment ins) {
-                tag.putString("redstone", ins.getRedstoneMode().name());
-                tag.putString("bw", ins.getBlacklistWhitelist().name());
-                tag.putBoolean("exact", ins.isExactMode());
-                tag.putBoolean("fluidMode", ins.isFluidMode());
-            } else if (att instanceof SensorAttachment sen) {
-                tag.putString("bw", sen.getBlacklistWhitelist().name());
-                tag.putBoolean("exact", sen.isExactMode());
-                tag.putBoolean("fluidMode", sen.isFluidMode());
-            } else if (att instanceof VoidAttachment vd) {
-                tag.putString("bw", vd.getBlacklistWhitelist().name());
-                tag.putBoolean("exact", vd.isExactMode());
-                tag.putBoolean("fluidMode", vd.isFluidMode());
-            }
-
-            list.add(tag);
-        }
-
-        if (!list.isEmpty()) {
-            data.put(NBT_KEY, list);
-        }
     }
 
     @Override

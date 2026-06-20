@@ -6,8 +6,10 @@ import com.piglinmine.fastpipes.network.NetworkManager;
 import com.piglinmine.fastpipes.network.pipe.Pipe;
 import com.piglinmine.fastpipes.network.pipe.fluid.FluidPipeType;
 import com.piglinmine.fastpipes.network.pipe.shape.PipeShapeCache;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
@@ -16,6 +18,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.capabilities.Capabilities;
+
+import java.util.function.Consumer;
 
 public class FluidPipeBlock extends PipeBlock implements EntityBlock {
     private final FluidPipeType type;
@@ -81,6 +85,18 @@ public class FluidPipeBlock extends PipeBlock implements EntityBlock {
             return level.getCapability(Capabilities.Fluid.BLOCK, pos.relative(direction), direction.getOpposite()) != null;
         }
         return false;
+    }
+
+    @Override
+    public void appendPipeTooltip(Consumer<Component> tooltip) {
+        String tierName = type.name();
+        tooltip.accept(Component.translatable("misc.fastpipes.tier", tierDisplay(tierName)).withStyle(tierColor(tierName)));
+        tooltip.accept(Component.translatable("tooltip.fastpipes.fluid_pipe.transfer_rate",
+            Component.literal(type.getTransferRate() + " mB/t").withStyle(ChatFormatting.WHITE))
+            .withStyle(ChatFormatting.GRAY));
+        tooltip.accept(Component.translatable("tooltip.fastpipes.fluid_pipe.capacity",
+            Component.literal(type.getCapacity() + " mB").withStyle(ChatFormatting.WHITE))
+            .withStyle(ChatFormatting.GRAY));
     }
 
     @Override

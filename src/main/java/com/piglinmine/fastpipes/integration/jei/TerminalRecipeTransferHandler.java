@@ -9,9 +9,9 @@ import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.ingredient.IRecipeSlotView;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.recipe.RecipeIngredientRole;
-import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.transfer.IRecipeTransferError;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
+import mezz.jei.api.recipe.types.IRecipeType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
@@ -35,11 +35,9 @@ public class TerminalRecipeTransferHandler implements IRecipeTransferHandler<Ter
         return Optional.of(FPipesContainerMenus.TERMINAL.get());
     }
 
-    // TODO 1.21.11: JEI RecipeType<RecipeHolder<CraftingRecipe>> changed to IRecipeHolderType<CraftingRecipe>
     @Override
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    public RecipeType<RecipeHolder<CraftingRecipe>> getRecipeType() {
-        return (RecipeType) (Object) RecipeTypes.CRAFTING;
+    public IRecipeType<RecipeHolder<CraftingRecipe>> getRecipeType() {
+        return RecipeTypes.CRAFTING;
     }
 
     @Override

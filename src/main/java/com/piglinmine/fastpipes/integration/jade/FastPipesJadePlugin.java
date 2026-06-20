@@ -23,13 +23,11 @@ public class FastPipesJadePlugin implements IWailaPlugin {
 
     @Override
     public void register(IWailaCommonRegistration registration) {
-        // TODO 1.21.11: Jade 1.21.6+ rejects data providers that also implement IComponentProvider.
-        // Our *ComponentProvider enums implement both IServerDataProvider and IBlockComponentProvider,
-        // so registerBlockDataProvider(...) crashes with IllegalArgumentException.
-        // Fix: split each enum into two classes (one data-only, one component-only) and re-register
-        // the data-only halves here. For now we skip data registration — tooltips still show via
-        // registerClient(...) below, but server-synced fields (Speed, ItemsInTransit, etc.) will
-        // read empty CompoundTag on the client and the relevant lines are omitted.
+        registration.registerBlockDataProvider(EnergyPipeDataProvider.INSTANCE, EnergyPipeBlock.class);
+        registration.registerBlockDataProvider(ItemPipeDataProvider.INSTANCE, ItemPipeBlock.class);
+        registration.registerBlockDataProvider(FluidPipeDataProvider.INSTANCE, FluidPipeBlock.class);
+        registration.registerBlockDataProvider(PipeAttachmentDataProvider.INSTANCE, PipeBlock.class);
+        registration.registerBlockDataProvider(TerminalDataProvider.INSTANCE, TerminalBlock.class);
     }
 
     @Override

@@ -12,8 +12,10 @@ import com.piglinmine.fastpipes.network.pipe.attachment.sensor.SensorAttachment;
 import com.piglinmine.fastpipes.network.pipe.shape.PipeShapeCache;
 import com.piglinmine.fastpipes.network.pipe.shape.PipeShapeProps;
 import com.piglinmine.fastpipes.util.Raytracer;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -50,6 +52,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
 
 import javax.annotation.Nullable;
+import java.util.function.Consumer;
 
 public abstract class PipeBlock extends Block implements EntityBlock, SimpleWaterloggedBlock {
     public static final BooleanProperty NORTH = BooleanProperty.create("north");
@@ -492,4 +495,26 @@ public abstract class PipeBlock extends Block implements EntityBlock, SimpleWate
     protected abstract boolean hasConnection(LevelAccessor world, BlockPos pos, Direction direction);
 
     protected abstract boolean hasInvConnection(LevelAccessor world, BlockPos pos, Direction direction);
-} 
+
+    /** Subclasses override to add tier/rate/capacity lines to the pipe item's hover tooltip. */
+    public void appendPipeTooltip(Consumer<Component> tooltip) {
+        // default: no-op
+    }
+
+    public static ChatFormatting tierColor(String tier) {
+        return switch (tier) {
+            case "BASIC" -> ChatFormatting.GRAY;
+            case "IMPROVED" -> ChatFormatting.YELLOW;
+            case "ADVANCED" -> ChatFormatting.GREEN;
+            case "ELITE" -> ChatFormatting.AQUA;
+            case "ULTIMATE" -> ChatFormatting.LIGHT_PURPLE;
+            case "CREATIVE" -> ChatFormatting.DARK_PURPLE;
+            default -> ChatFormatting.WHITE;
+        };
+    }
+
+    public static String tierDisplay(String tier) {
+        if (tier == null || tier.isEmpty()) return tier;
+        return tier.charAt(0) + tier.substring(1).toLowerCase();
+    }
+}
