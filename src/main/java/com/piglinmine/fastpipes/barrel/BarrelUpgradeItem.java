@@ -11,8 +11,8 @@ import java.util.function.Consumer;
 public class BarrelUpgradeItem extends Item {
     private final BarrelTier targetTier;
 
-    public BarrelUpgradeItem(BarrelTier targetTier) {
-        super(new Properties().stacksTo(16));
+    public BarrelUpgradeItem(BarrelTier targetTier, Item.Properties properties) {
+        super(properties.stacksTo(16));
         this.targetTier = targetTier;
     }
 

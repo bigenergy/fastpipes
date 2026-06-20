@@ -15,6 +15,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
@@ -29,8 +30,8 @@ public class TieredBarrelBlock extends Block implements EntityBlock {
 
     private final BarrelTier tier;
 
-    public TieredBarrelBlock(BarrelTier tier) {
-        super(Properties.of().strength(2.5f));
+    public TieredBarrelBlock(BarrelTier tier, BlockBehaviour.Properties properties) {
+        super(properties.strength(2.5f));
         this.tier = tier;
         this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH));
     }

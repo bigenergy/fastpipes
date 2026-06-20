@@ -7,6 +7,7 @@ import com.piglinmine.fastpipes.block.FluidPipeBlock;
 import com.piglinmine.fastpipes.block.ItemPipeBlock;
 import com.piglinmine.fastpipes.block.TerminalBlock;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import com.piglinmine.fastpipes.network.pipe.energy.EnergyPipeType;
 import com.piglinmine.fastpipes.network.pipe.fluid.FluidPipeType;
 import com.piglinmine.fastpipes.network.pipe.item.ItemPipeType;
@@ -17,86 +18,105 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 
 public class FPipesBlocks {
     private static final PipeShapeCache PIPE_SHAPE_CACHE = new PipeShapeCache(new PipeShapeFactory());
-    
+
     public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(FastPipes.MOD_ID);
 
+    // 1.21.11: Use registerBlock(name, factory, propertiesSupplier) so DeferredRegister
+    // calls Properties.setId(...) with the block's ResourceKey before construction.
+    // The bare BLOCKS.register(name, () -> new Block(Properties.of())) path leaves the id
+    // unset and crashes in BlockBehaviour$Properties.effectiveDrops with "Block id not set".
+
     // Item Pipes
-    public static final DeferredBlock<ItemPipeBlock> BASIC_ITEM_PIPE = BLOCKS.register(
-        "basic_item_pipe", 
-        () -> new ItemPipeBlock(PIPE_SHAPE_CACHE, ItemPipeType.BASIC)
+    public static final DeferredBlock<ItemPipeBlock> BASIC_ITEM_PIPE = BLOCKS.registerBlock(
+        "basic_item_pipe",
+        props -> new ItemPipeBlock(PIPE_SHAPE_CACHE, ItemPipeType.BASIC, props),
+        BlockBehaviour.Properties.of()
     );
-    public static final DeferredBlock<ItemPipeBlock> IMPROVED_ITEM_PIPE = BLOCKS.register(
-        "improved_item_pipe", 
-        () -> new ItemPipeBlock(PIPE_SHAPE_CACHE, ItemPipeType.IMPROVED)
+    public static final DeferredBlock<ItemPipeBlock> IMPROVED_ITEM_PIPE = BLOCKS.registerBlock(
+        "improved_item_pipe",
+        props -> new ItemPipeBlock(PIPE_SHAPE_CACHE, ItemPipeType.IMPROVED, props),
+        BlockBehaviour.Properties.of()
     );
-    public static final DeferredBlock<ItemPipeBlock> ADVANCED_ITEM_PIPE = BLOCKS.register(
-        "advanced_item_pipe", 
-        () -> new ItemPipeBlock(PIPE_SHAPE_CACHE, ItemPipeType.ADVANCED)
+    public static final DeferredBlock<ItemPipeBlock> ADVANCED_ITEM_PIPE = BLOCKS.registerBlock(
+        "advanced_item_pipe",
+        props -> new ItemPipeBlock(PIPE_SHAPE_CACHE, ItemPipeType.ADVANCED, props),
+        BlockBehaviour.Properties.of()
     );
 
     // Fluid Pipes
-    public static final DeferredBlock<FluidPipeBlock> BASIC_FLUID_PIPE = BLOCKS.register(
-        "basic_fluid_pipe", 
-        () -> new FluidPipeBlock(PIPE_SHAPE_CACHE, FluidPipeType.BASIC)
+    public static final DeferredBlock<FluidPipeBlock> BASIC_FLUID_PIPE = BLOCKS.registerBlock(
+        "basic_fluid_pipe",
+        props -> new FluidPipeBlock(PIPE_SHAPE_CACHE, FluidPipeType.BASIC, props),
+        BlockBehaviour.Properties.of()
     );
-    public static final DeferredBlock<FluidPipeBlock> IMPROVED_FLUID_PIPE = BLOCKS.register(
-        "improved_fluid_pipe", 
-        () -> new FluidPipeBlock(PIPE_SHAPE_CACHE, FluidPipeType.IMPROVED)
+    public static final DeferredBlock<FluidPipeBlock> IMPROVED_FLUID_PIPE = BLOCKS.registerBlock(
+        "improved_fluid_pipe",
+        props -> new FluidPipeBlock(PIPE_SHAPE_CACHE, FluidPipeType.IMPROVED, props),
+        BlockBehaviour.Properties.of()
     );
-    public static final DeferredBlock<FluidPipeBlock> ADVANCED_FLUID_PIPE = BLOCKS.register(
-        "advanced_fluid_pipe", 
-        () -> new FluidPipeBlock(PIPE_SHAPE_CACHE, FluidPipeType.ADVANCED)
+    public static final DeferredBlock<FluidPipeBlock> ADVANCED_FLUID_PIPE = BLOCKS.registerBlock(
+        "advanced_fluid_pipe",
+        props -> new FluidPipeBlock(PIPE_SHAPE_CACHE, FluidPipeType.ADVANCED, props),
+        BlockBehaviour.Properties.of()
     );
-    public static final DeferredBlock<FluidPipeBlock> ELITE_FLUID_PIPE = BLOCKS.register(
-        "elite_fluid_pipe", 
-        () -> new FluidPipeBlock(PIPE_SHAPE_CACHE, FluidPipeType.ELITE)
+    public static final DeferredBlock<FluidPipeBlock> ELITE_FLUID_PIPE = BLOCKS.registerBlock(
+        "elite_fluid_pipe",
+        props -> new FluidPipeBlock(PIPE_SHAPE_CACHE, FluidPipeType.ELITE, props),
+        BlockBehaviour.Properties.of()
     );
-    public static final DeferredBlock<FluidPipeBlock> ULTIMATE_FLUID_PIPE = BLOCKS.register(
-        "ultimate_fluid_pipe", 
-        () -> new FluidPipeBlock(PIPE_SHAPE_CACHE, FluidPipeType.ULTIMATE)
+    public static final DeferredBlock<FluidPipeBlock> ULTIMATE_FLUID_PIPE = BLOCKS.registerBlock(
+        "ultimate_fluid_pipe",
+        props -> new FluidPipeBlock(PIPE_SHAPE_CACHE, FluidPipeType.ULTIMATE, props),
+        BlockBehaviour.Properties.of()
     );
 
     // Energy Pipes
-    public static final DeferredBlock<EnergyPipeBlock> BASIC_ENERGY_PIPE = BLOCKS.register(
-        "basic_energy_pipe", 
-        () -> new EnergyPipeBlock(PIPE_SHAPE_CACHE, EnergyPipeType.BASIC)
+    public static final DeferredBlock<EnergyPipeBlock> BASIC_ENERGY_PIPE = BLOCKS.registerBlock(
+        "basic_energy_pipe",
+        props -> new EnergyPipeBlock(PIPE_SHAPE_CACHE, EnergyPipeType.BASIC, props),
+        BlockBehaviour.Properties.of()
     );
-    public static final DeferredBlock<EnergyPipeBlock> IMPROVED_ENERGY_PIPE = BLOCKS.register(
-        "improved_energy_pipe", 
-        () -> new EnergyPipeBlock(PIPE_SHAPE_CACHE, EnergyPipeType.IMPROVED)
+    public static final DeferredBlock<EnergyPipeBlock> IMPROVED_ENERGY_PIPE = BLOCKS.registerBlock(
+        "improved_energy_pipe",
+        props -> new EnergyPipeBlock(PIPE_SHAPE_CACHE, EnergyPipeType.IMPROVED, props),
+        BlockBehaviour.Properties.of()
     );
-    public static final DeferredBlock<EnergyPipeBlock> ADVANCED_ENERGY_PIPE = BLOCKS.register(
-        "advanced_energy_pipe", 
-        () -> new EnergyPipeBlock(PIPE_SHAPE_CACHE, EnergyPipeType.ADVANCED)
+    public static final DeferredBlock<EnergyPipeBlock> ADVANCED_ENERGY_PIPE = BLOCKS.registerBlock(
+        "advanced_energy_pipe",
+        props -> new EnergyPipeBlock(PIPE_SHAPE_CACHE, EnergyPipeType.ADVANCED, props),
+        BlockBehaviour.Properties.of()
     );
-    public static final DeferredBlock<EnergyPipeBlock> ELITE_ENERGY_PIPE = BLOCKS.register(
-        "elite_energy_pipe", 
-        () -> new EnergyPipeBlock(PIPE_SHAPE_CACHE, EnergyPipeType.ELITE)
+    public static final DeferredBlock<EnergyPipeBlock> ELITE_ENERGY_PIPE = BLOCKS.registerBlock(
+        "elite_energy_pipe",
+        props -> new EnergyPipeBlock(PIPE_SHAPE_CACHE, EnergyPipeType.ELITE, props),
+        BlockBehaviour.Properties.of()
     );
-    public static final DeferredBlock<EnergyPipeBlock> ULTIMATE_ENERGY_PIPE = BLOCKS.register(
+    public static final DeferredBlock<EnergyPipeBlock> ULTIMATE_ENERGY_PIPE = BLOCKS.registerBlock(
         "ultimate_energy_pipe",
-        () -> new EnergyPipeBlock(PIPE_SHAPE_CACHE, EnergyPipeType.ULTIMATE)
+        props -> new EnergyPipeBlock(PIPE_SHAPE_CACHE, EnergyPipeType.ULTIMATE, props),
+        BlockBehaviour.Properties.of()
     );
 
     // Terminal
-    public static final DeferredBlock<TerminalBlock> TERMINAL = BLOCKS.register(
+    public static final DeferredBlock<TerminalBlock> TERMINAL = BLOCKS.registerBlock(
         "terminal",
-        TerminalBlock::new
+        TerminalBlock::new,
+        BlockBehaviour.Properties.of()
     );
 
     // Tiered Barrels
-    public static final DeferredBlock<TieredBarrelBlock> OAK_BARREL = BLOCKS.register(
-        "oak_barrel", () -> new TieredBarrelBlock(BarrelTier.OAK));
-    public static final DeferredBlock<TieredBarrelBlock> COPPER_BARREL = BLOCKS.register(
-        "copper_barrel", () -> new TieredBarrelBlock(BarrelTier.COPPER));
-    public static final DeferredBlock<TieredBarrelBlock> IRON_BARREL = BLOCKS.register(
-        "iron_barrel", () -> new TieredBarrelBlock(BarrelTier.IRON));
-    public static final DeferredBlock<TieredBarrelBlock> GOLD_BARREL = BLOCKS.register(
-        "gold_barrel", () -> new TieredBarrelBlock(BarrelTier.GOLD));
-    public static final DeferredBlock<TieredBarrelBlock> DIAMOND_BARREL = BLOCKS.register(
-        "diamond_barrel", () -> new TieredBarrelBlock(BarrelTier.DIAMOND));
-    public static final DeferredBlock<TieredBarrelBlock> NETHERITE_BARREL = BLOCKS.register(
-        "netherite_barrel", () -> new TieredBarrelBlock(BarrelTier.NETHERITE));
+    public static final DeferredBlock<TieredBarrelBlock> OAK_BARREL = BLOCKS.registerBlock(
+        "oak_barrel", props -> new TieredBarrelBlock(BarrelTier.OAK, props), BlockBehaviour.Properties.of());
+    public static final DeferredBlock<TieredBarrelBlock> COPPER_BARREL = BLOCKS.registerBlock(
+        "copper_barrel", props -> new TieredBarrelBlock(BarrelTier.COPPER, props), BlockBehaviour.Properties.of());
+    public static final DeferredBlock<TieredBarrelBlock> IRON_BARREL = BLOCKS.registerBlock(
+        "iron_barrel", props -> new TieredBarrelBlock(BarrelTier.IRON, props), BlockBehaviour.Properties.of());
+    public static final DeferredBlock<TieredBarrelBlock> GOLD_BARREL = BLOCKS.registerBlock(
+        "gold_barrel", props -> new TieredBarrelBlock(BarrelTier.GOLD, props), BlockBehaviour.Properties.of());
+    public static final DeferredBlock<TieredBarrelBlock> DIAMOND_BARREL = BLOCKS.registerBlock(
+        "diamond_barrel", props -> new TieredBarrelBlock(BarrelTier.DIAMOND, props), BlockBehaviour.Properties.of());
+    public static final DeferredBlock<TieredBarrelBlock> NETHERITE_BARREL = BLOCKS.registerBlock(
+        "netherite_barrel", props -> new TieredBarrelBlock(BarrelTier.NETHERITE, props), BlockBehaviour.Properties.of());
 
     public static Block getBarrelBlock(BarrelTier tier) {
         return switch (tier) {
@@ -108,4 +128,4 @@ public class FPipesBlocks {
             case NETHERITE -> NETHERITE_BARREL.get();
         };
     }
-} 
+}

@@ -14,6 +14,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.energy.IEnergyStorage;
@@ -22,8 +23,8 @@ import org.jetbrains.annotations.Nullable;
 public class EnergyPipeBlock extends PipeBlock implements EntityBlock {
     private final EnergyPipeType type;
 
-    public EnergyPipeBlock(PipeShapeCache shapeCache, EnergyPipeType type) {
-        super(shapeCache);
+    public EnergyPipeBlock(PipeShapeCache shapeCache, EnergyPipeType type, BlockBehaviour.Properties properties) {
+        super(shapeCache, properties);
         this.type = type;
     }
 

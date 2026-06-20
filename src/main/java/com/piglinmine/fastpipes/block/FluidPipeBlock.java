@@ -13,14 +13,15 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.capabilities.Capabilities;
 
 public class FluidPipeBlock extends PipeBlock implements EntityBlock {
     private final FluidPipeType type;
 
-    public FluidPipeBlock(PipeShapeCache shapeCache, FluidPipeType type) {
-        super(shapeCache);
+    public FluidPipeBlock(PipeShapeCache shapeCache, FluidPipeType type, BlockBehaviour.Properties properties) {
+        super(shapeCache, properties);
         this.type = type;
     }
 

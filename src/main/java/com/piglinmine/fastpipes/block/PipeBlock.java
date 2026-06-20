@@ -68,8 +68,10 @@ public abstract class PipeBlock extends Block implements EntityBlock, SimpleWate
 
     private final PipeShapeCache shapeCache;
 
-    public PipeBlock(PipeShapeCache shapeCache) {
-        super(BlockBehaviour.Properties.of()
+    // 1.21.11: Properties must carry the registry id (set by DeferredRegister.Blocks.registerBlock).
+    // Subclasses receive Properties from the factory and apply pipe-specific tuning here.
+    public PipeBlock(PipeShapeCache shapeCache, BlockBehaviour.Properties properties) {
+        super(properties
             .destroyTime(0.35F)
             .explosionResistance(0.35F)
             .noOcclusion()

@@ -15,6 +15,7 @@ import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import org.jetbrains.annotations.Nullable;
@@ -22,8 +23,8 @@ import org.jetbrains.annotations.Nullable;
 public class ItemPipeBlock extends PipeBlock implements EntityBlock {
     private final ItemPipeType type;
 
-    public ItemPipeBlock(PipeShapeCache shapeCache, ItemPipeType type) {
-        super(shapeCache);
+    public ItemPipeBlock(PipeShapeCache shapeCache, ItemPipeType type, BlockBehaviour.Properties properties) {
+        super(shapeCache, properties);
         this.type = type;
     }
 

@@ -21,8 +21,8 @@ public class WrenchItem extends Item {
     public static final ItemAbility WRENCH_ROTATE = ItemAbility.get("wrench_rotate");
     public static final ItemAbility WRENCH_DISASSEMBLE = ItemAbility.get("wrench_disassemble");
 
-    public WrenchItem() {
-        super(new Item.Properties().stacksTo(1));
+    public WrenchItem(Item.Properties properties) {
+        super(properties.stacksTo(1));
     }
 
     @Override

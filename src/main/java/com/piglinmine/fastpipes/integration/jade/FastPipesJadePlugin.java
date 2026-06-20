@@ -6,11 +6,6 @@ import com.piglinmine.fastpipes.block.FluidPipeBlock;
 import com.piglinmine.fastpipes.block.ItemPipeBlock;
 import com.piglinmine.fastpipes.block.PipeBlock;
 import com.piglinmine.fastpipes.block.TerminalBlock;
-import com.piglinmine.fastpipes.blockentity.EnergyPipeBlockEntity;
-import com.piglinmine.fastpipes.blockentity.FluidPipeBlockEntity;
-import com.piglinmine.fastpipes.blockentity.ItemPipeBlockEntity;
-import com.piglinmine.fastpipes.blockentity.PipeBlockEntity;
-import com.piglinmine.fastpipes.blockentity.TerminalBlockEntity;
 import net.minecraft.resources.Identifier;
 import snownee.jade.api.IWailaClientRegistration;
 import snownee.jade.api.IWailaCommonRegistration;
@@ -28,11 +23,13 @@ public class FastPipesJadePlugin implements IWailaPlugin {
 
     @Override
     public void register(IWailaCommonRegistration registration) {
-        registration.registerBlockDataProvider(EnergyPipeComponentProvider.INSTANCE, EnergyPipeBlockEntity.class);
-        registration.registerBlockDataProvider(ItemPipeComponentProvider.INSTANCE, ItemPipeBlockEntity.class);
-        registration.registerBlockDataProvider(FluidPipeComponentProvider.INSTANCE, FluidPipeBlockEntity.class);
-        registration.registerBlockDataProvider(PipeAttachmentProvider.INSTANCE, PipeBlockEntity.class);
-        registration.registerBlockDataProvider(TerminalInfoProvider.INSTANCE, TerminalBlockEntity.class);
+        // TODO 1.21.11: Jade 1.21.6+ rejects data providers that also implement IComponentProvider.
+        // Our *ComponentProvider enums implement both IServerDataProvider and IBlockComponentProvider,
+        // so registerBlockDataProvider(...) crashes with IllegalArgumentException.
+        // Fix: split each enum into two classes (one data-only, one component-only) and re-register
+        // the data-only halves here. For now we skip data registration — tooltips still show via
+        // registerClient(...) below, but server-synced fields (Speed, ItemsInTransit, etc.) will
+        // read empty CompoundTag on the client and the relevant lines are omitted.
     }
 
     @Override

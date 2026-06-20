@@ -14,8 +14,8 @@ import java.util.function.Consumer;
 public class AttachmentItem extends Item {
     private final AttachmentFactory type;
 
-    public AttachmentItem(AttachmentFactory type) {
-        super(new Item.Properties());
+    public AttachmentItem(AttachmentFactory type, Item.Properties properties) {
+        super(properties);
 
         this.type = type;
     }
