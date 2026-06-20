@@ -40,20 +40,22 @@ public class EnergyNetwork extends Network {
             .mapToInt(p -> ((EnergyPipe) p).getType().getCapacity())
             .sum();
 
-        // Effective tier = LOWEST tier among present pipes (bottleneck model).
-        // Energy can only traverse the network as fast as its slowest pipe — prevents
-        // a single Ultimate pipe from upgrading an entire Basic network's transfer rate.
-        // Capacity is still summed (you do get more buffer from mixing tiers).
-        EnergyPipeType slowestType = result.getFoundPipes()
+        // Effective tier kept around for getType()/legacy uses (the network's own
+        // EnergyStorage maxReceive/maxExtract are no longer the throughput bottleneck —
+        // each boundary pipe rate-limits I/O individually via EnergyPipeBlockEntity).
+        // Use the FASTEST tier so the shared buffer's max-rate isn't an artificial cap.
+        EnergyPipeType fastestType = result.getFoundPipes()
             .stream()
             .filter(p -> p instanceof EnergyPipe)
             .map(p -> ((EnergyPipe) p).getType())
-            .min(java.util.Comparator.comparingInt(EnergyPipeType::getTier))
+            .max(java.util.Comparator.comparingInt(EnergyPipeType::getTier))
             .orElse(pipeType);
-        this.pipeType = slowestType;
+        this.pipeType = fastestType;
 
-        energyStorage.setCapacityAndMaxExtract(totalCapacity);
-        energyStorage.setMaxReceive(slowestType.getTransferRate());
+        energyStorage.setCapacity(totalCapacity);
+        // Network-level rates effectively unbounded — boundary pipes do the limiting.
+        energyStorage.setMaxReceive(Integer.MAX_VALUE);
+        energyStorage.setMaxExtract(Integer.MAX_VALUE);
 
         if (energyStorage.getEnergyStored() > energyStorage.getMaxEnergyStored()) {
             energyStorage.setStored(energyStorage.getMaxEnergyStored());
@@ -92,7 +94,13 @@ public class EnergyNetwork extends Network {
                     continue;
                 }
 
-                int toOffer = Math.min(pipeType.getTransferRate(), energyStorage.getEnergyStored());
+                // Per-boundary-pipe throughput: the pipe directly adjacent to this receiver
+                // determines how fast energy can flow out. A Basic outlet limits to 250 RF/t
+                // even if the trunk is Ultimate; an Ultimate outlet runs at its full rate.
+                int outputRate = (destination.getConnectedPipe() instanceof EnergyPipe)
+                    ? ((EnergyPipe) destination.getConnectedPipe()).getType().getTransferRate()
+                    : pipeType.getTransferRate();
+                int toOffer = Math.min(outputRate, energyStorage.getEnergyStored());
                 if (toOffer <= 0) {
                     break;
                 }
