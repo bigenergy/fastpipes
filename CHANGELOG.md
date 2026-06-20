@@ -1,4 +1,14 @@
 # Changelog
+## [1.3.4] - 2026-06-20
+
+### Fixed
+- Crash on load with Sable / contraption mods — pipes on simulated platforms no longer throw when sending block updates
+- NPE when adding/removing attachments on a temporarily networkless pipe — caused desync (broken render, duplicate drop)
+- Copper Barrel Upgrade now accepts both `minecraft:barrel` and `fastpipes:oak_barrel`
+
+### Changed
+- Mixed-tier energy networks: per-pipe throughput instead of MIN-tier bottleneck. Each boundary pipe rate-limits its own I/O, capacity still sums across all pipes
+
 ## [1.3.3] - 2026-05-15
 
 ### Added
