@@ -74,7 +74,15 @@ public abstract class Pipe {
 
     public void sendBlockUpdate() {
         BlockState state = level.getBlockState(pos);
-        level.sendBlockUpdated(pos, state, state, 1 | 2);
+        try {
+            level.sendBlockUpdated(pos, state, state, 1 | 2);
+        } catch (UnsupportedOperationException e) {
+            // Pipe may live in a non-vanilla "world" context (e.g. Sable contraption plots,
+            // Create simulated mounted contraptions) where block updates aren't supported.
+            // The visual sync isn't critical — just skip it. Without this guard the entire
+            // network tick aborts and the save becomes unloadable.
+            logger.debug("Skipping block update at {} — host level rejected the change: {}", pos, e.getMessage());
+        }
     }
 
     public boolean isDisconnected(Direction dir) {
