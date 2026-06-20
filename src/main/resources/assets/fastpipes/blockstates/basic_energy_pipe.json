@@ -7,7 +7,14 @@
     },
     {
       "when": {
-        "north": "true"
+        "OR": [
+          {
+            "north": "true"
+          },
+          {
+            "inv_north": "true"
+          }
+        ]
       },
       "apply": {
         "model": "fastpipes:block/pipe/energy/basic/extension"
@@ -15,7 +22,14 @@
     },
     {
       "when": {
-        "east": "true"
+        "OR": [
+          {
+            "east": "true"
+          },
+          {
+            "inv_east": "true"
+          }
+        ]
       },
       "apply": {
         "model": "fastpipes:block/pipe/energy/basic/extension",
@@ -24,7 +38,14 @@
     },
     {
       "when": {
-        "south": "true"
+        "OR": [
+          {
+            "south": "true"
+          },
+          {
+            "inv_south": "true"
+          }
+        ]
       },
       "apply": {
         "model": "fastpipes:block/pipe/energy/basic/extension",
@@ -33,7 +54,14 @@
     },
     {
       "when": {
-        "west": "true"
+        "OR": [
+          {
+            "west": "true"
+          },
+          {
+            "inv_west": "true"
+          }
+        ]
       },
       "apply": {
         "model": "fastpipes:block/pipe/energy/basic/extension",
@@ -42,7 +70,14 @@
     },
     {
       "when": {
-        "up": "true"
+        "OR": [
+          {
+            "up": "true"
+          },
+          {
+            "inv_up": "true"
+          }
+        ]
       },
       "apply": {
         "model": "fastpipes:block/pipe/energy/basic/extension",
@@ -51,7 +86,14 @@
     },
     {
       "when": {
-        "down": "true"
+        "OR": [
+          {
+            "down": "true"
+          },
+          {
+            "inv_down": "true"
+          }
+        ]
       },
       "apply": {
         "model": "fastpipes:block/pipe/energy/basic/extension",

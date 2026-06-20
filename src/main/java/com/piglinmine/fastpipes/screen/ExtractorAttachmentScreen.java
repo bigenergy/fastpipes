@@ -476,7 +476,9 @@ public class ExtractorAttachmentScreen extends BaseScreen<ExtractorAttachmentCon
         for (int slotIdx = 0; slotIdx < menu.getExtractorAttachmentType().getFilterSlots(); ++slotIdx) {
             String override = menu.getTagOverride(slotIdx);
             if (!override.isEmpty()) {
-                graphics.blit(TAG_OVERLAY, i + x, j + y, 0, 0, 16, 16, 16, 16);
+                graphics.blit(
+                    net.minecraft.client.renderer.RenderPipelines.GUI_TEXTURED,
+                    TAG_OVERLAY, i + x, j + y, 0f, 0f, 16, 16, 16, 16);
             }
 
             if ((slotIdx + 1) % 5 == 0) {
