@@ -1,6 +1,6 @@
 package com.piglinmine.fastpipes.barrel;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
@@ -8,22 +8,16 @@ import net.minecraft.world.entity.player.Inventory;
 public class TieredBarrelScreen extends AbstractContainerScreen<TieredBarrelContainerMenu> {
 
     public TieredBarrelScreen(TieredBarrelContainerMenu menu, Inventory playerInv, Component title) {
-        super(menu, playerInv, title);
-        BarrelTier tier = menu.getTier();
-        this.imageWidth = 176;
-        this.imageHeight = 114 + tier.getRows() * 18;
+        super(menu, playerInv, title, 176, 114 + menu.getTier().getRows() * 18);
         this.inventoryLabelY = this.imageHeight - 94;
     }
 
-    @Override
-    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        this.renderBackground(graphics, mouseX, mouseY, partialTick);
-        super.render(graphics, mouseX, mouseY, partialTick);
-        this.renderTooltip(graphics, mouseX, mouseY);
-    }
+    // 26.1.2: Screen.render() / renderTooltip() / renderBg() removed.
+    // extractBackground / extractContents / extractTooltip are now framework-driven.
 
     @Override
-    protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
+    public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+        super.extractBackground(graphics, mouseX, mouseY, partialTick);
         int x = this.leftPos;
         int y = this.topPos;
 
@@ -42,7 +36,7 @@ public class TieredBarrelScreen extends AbstractContainerScreen<TieredBarrelCont
         }
     }
 
-    private void drawSlotBg(GuiGraphics graphics, int sx, int sy) {
+    private void drawSlotBg(GuiGraphicsExtractor graphics, int sx, int sy) {
         graphics.fill(sx, sy, sx + 18, sy + 1, 0xFF373737);
         graphics.fill(sx, sy, sx + 1, sy + 18, 0xFF373737);
         graphics.fill(sx + 17, sy + 1, sx + 18, sy + 18, 0xFFFFFFFF);

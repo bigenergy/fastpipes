@@ -1,7 +1,7 @@
 plugins {
     id 'java-library'
     id 'maven-publish'
-    id 'net.neoforged.moddev' version '2.0.140'
+    id 'net.neoforged.moddev' version '2.0.141'
     id 'idea'
 }
 
@@ -12,7 +12,7 @@ base {
     archivesName = mod_id
 }
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+java.toolchain.languageVersion = JavaLanguageVersion.of(25)
 
 repositories {
     mavenLocal()
@@ -42,18 +42,8 @@ neoForge {
             systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
         }
 
-        gameTestServer {
-            type = "gameTestServer"
-            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
-        }
-
-        clientData {
+        data {
             clientData()
-            programArguments.addAll '--mod', project.mod_id, '--all', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath()
-        }
-
-        serverData {
-            serverData()
             programArguments.addAll '--mod', project.mod_id, '--all', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath()
         }
 
@@ -77,14 +67,12 @@ configurations {
 }
 
 dependencies {
-    // JEI Integration for NeoForge 1.21.11
-    compileOnly "mezz.jei:jei-${minecraft_version}-common-api:${jei_version}"
-    compileOnly "mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}"
+    // JEI: full neoforge jar at compile + runtime (needed for internal mixin classes)
+    compileOnly  "mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}"
     localRuntime "mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}"
 
-    // Jade for NeoForge 1.21.11 — via CurseMaven (Jade-1.21.11-NeoForge-21.1.7.jar)
-    compileOnly "curse.maven:jade-324717:${jade_file_id}"
-    localRuntime "curse.maven:jade-324717:${jade_file_id}"
+    // Jade via CurseMaven (Jade-mc26.1-NeoForge-26.1.5.jar)
+    implementation "curse.maven:jade-324717:${jade_file_id}"
 }
 
 var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {

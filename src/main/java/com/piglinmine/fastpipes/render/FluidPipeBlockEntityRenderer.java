@@ -10,14 +10,12 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
 import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
-import net.minecraft.client.renderer.state.CameraRenderState;
-import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.client.renderer.block.FluidModel;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.neoforged.neoforge.fluids.FluidStack;
 import org.jspecify.annotations.Nullable;
 
@@ -64,9 +62,23 @@ public class FluidPipeBlockEntityRenderer
             return;
         }
 
-        IClientFluidTypeExtensions ext = IClientFluidTypeExtensions.of(fluidStack.getFluid());
-        Identifier stillTexture = ext.getStillTexture(fluidStack);
-        int color = ext.getTintColor(fluidStack);
+        // 26.1.2: IClientFluidTypeExtensions.getStillTexture / getTintColor were removed.
+        // Fluid sprites + tint are now obtained from the FluidModel registered for the
+        // FluidState via ModelManager#getFluidStateModelSet(). The tint source provides
+        // the color (-1 == untinted), and the still material's sprite is the still texture.
+        FluidModel model = Minecraft.getInstance()
+                .getModelManager()
+                .getFluidStateModelSet()
+                .get(fluidStack.getFluid().defaultFluidState());
+
+        int color;
+        if (model.fluidTintSource() != null) {
+            // We don't have a real BlockState/BlockAndTintGetter for the carried fluid here;
+            // the in-hand tint (color(BlockState)) is fine for the pipe-interior rendering.
+            color = model.fluidTintSource().color(net.minecraft.world.level.block.Blocks.AIR.defaultBlockState());
+        } else {
+            color = -1; // untinted (white)
+        }
 
         int a = (color >> 24) & 0xFF;
         if (a == 0) a = 255;
@@ -75,10 +87,7 @@ public class FluidPipeBlockEntityRenderer
         state.b = color & 0xFF;
         state.a = a;
 
-        state.sprite = Minecraft.getInstance()
-                .getAtlasManager()
-                .getAtlasOrThrow(TextureAtlas.LOCATION_BLOCKS)
-                .getSprite(stillTexture);
+        state.sprite = model.stillMaterial().sprite();
 
         state.north = blockState.getValue(FluidPipeBlock.NORTH);
         state.east = blockState.getValue(FluidPipeBlock.EAST);

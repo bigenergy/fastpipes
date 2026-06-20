@@ -1,7 +1,7 @@
 package com.piglinmine.fastpipes.screen.widget;
 
 import com.piglinmine.fastpipes.FastPipes;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
@@ -10,7 +10,7 @@ import net.minecraft.resources.Identifier;
 /**
  * 1.21.11 port notes:
  *  - Button.renderWidget was made final; we override the new abstract renderContents(...) instead.
- *  - GuiGraphics.blit no longer takes a bare (Identifier, ints...) overload — every textured blit
+ *  - GuiGraphicsExtractor.blit no longer takes a bare (Identifier, ints...) overload — every textured blit
  *    now requires a RenderPipeline as the first arg and uses the
  *    (pipeline, atlas, x, y, u, v, w, h, texW, texH) signature.
  */
@@ -34,7 +34,7 @@ public class IconButton extends Button {
     }
 
     @Override
-    protected void renderContents(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+    protected void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
         int yTex = preset.getYTexNormal();
         if (!active) {
             yTex = preset.getYTexDisabled();

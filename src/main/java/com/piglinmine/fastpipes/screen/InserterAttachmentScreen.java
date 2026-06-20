@@ -10,7 +10,7 @@ import com.piglinmine.fastpipes.menu.slot.FluidFilterSlot;
 import com.piglinmine.fastpipes.screen.widget.IconButton;
 import com.piglinmine.fastpipes.screen.widget.IconButtonPreset;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -18,7 +18,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.fluids.FluidStack;
@@ -50,9 +50,7 @@ public class InserterAttachmentScreen extends BaseScreen<InserterAttachmentConta
     private String[] tagsLines = new String[0];
 
     public InserterAttachmentScreen(InserterAttachmentContainerMenu container, Inventory inv, Component title) {
-        super(container, inv, title);
-        this.imageWidth = 176;
-        this.imageHeight = 193;
+        super(container, inv, title, 176, 193);
     }
 
     @Override
@@ -139,7 +137,7 @@ public class InserterAttachmentScreen extends BaseScreen<InserterAttachmentConta
     }
 
     @Override
-    protected void slotClicked(Slot slot, int slotId, int mouseButton, ClickType type) {
+    protected void slotClicked(Slot slot, int slotId, int mouseButton, ContainerInput type) {
         if (slot instanceof FilterSlot || slot instanceof FluidFilterSlot) {
             if (mouseButton == 1) {
                 // Right-click: open editor for existing filter entry
@@ -185,7 +183,7 @@ public class InserterAttachmentScreen extends BaseScreen<InserterAttachmentConta
             if (!stack.isEmpty()) {
                 currentValue = BuiltInRegistries.ITEM.getKey(stack.getItem()).toString();
                 StringBuilder sb = new StringBuilder();
-                stack.getTags().forEach(tag -> {
+                stack.typeHolder().tags().forEach(tag -> {
                     if (sb.length() > 0) sb.append("\n");
                     sb.append("#").append(tag.location());
                 });
@@ -273,29 +271,29 @@ public class InserterAttachmentScreen extends BaseScreen<InserterAttachmentConta
         tagsScrollOffset = 0;
     }
 
-    private void renderFilterEditor(GuiGraphics graphics, int mouseX, int mouseY) {
+    private void renderFilterEditor(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
         // TODO 1.21.11: graphics.pose() now returns Matrix3x2fStack with pushMatrix/popMatrix/translate(Matrix3x2f);
         // Registry.get returns Optional<Holder.Reference<T>>; renderTooltip/blit signatures changed.
         // Filter editor modal is aggressively stubbed for compile.
     }
 
+    // 26.1.2: render() / renderTooltip() / renderBackground() removed — driven by the framework.
+    // Filter-editor modal is layered atop extractContents().
     @Override
-    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        this.renderBackground(graphics, mouseX, mouseY, partialTick);
+    public void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
         if (editingSlotIndex >= 0) {
-            super.render(graphics, -1, -1, partialTick);
+            super.extractContents(graphics, -1, -1, a);
             renderFilterEditor(graphics, mouseX, mouseY);
         } else {
-            super.render(graphics, mouseX, mouseY, partialTick);
-            this.renderTooltip(graphics, mouseX, mouseY);
+            super.extractContents(graphics, mouseX, mouseY, a);
         }
     }
 
     @Override
-    protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
+    protected void extractLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
 
         if (editingSlotIndex >= 0) {
-            super.renderLabels(graphics, mouseX, mouseY);
+            super.extractLabels(graphics, mouseX, mouseY);
             return;
         }
 
@@ -319,11 +317,11 @@ public class InserterAttachmentScreen extends BaseScreen<InserterAttachmentConta
             graphics.setComponentTooltipForNextFrame(font, tooltip, mouseX, mouseY);
         }
 
-        super.renderLabels(graphics, mouseX, mouseY);
+        super.extractLabels(graphics, mouseX, mouseY);
     }
 
     @Override
-    protected void renderBg(@NotNull GuiGraphics graphics, float partialTicks, int mouseX, int mouseY) {
+    public void extractBackground(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
         int i = (this.width - this.imageWidth) / 2;
         int j = (this.height - this.imageHeight) / 2;
         graphics.blit(net.minecraft.client.renderer.RenderPipelines.GUI_TEXTURED,
@@ -363,6 +361,6 @@ public class InserterAttachmentScreen extends BaseScreen<InserterAttachmentConta
             }
         }
 
-        super.renderBg(graphics, partialTicks, mouseX, mouseY);
+        super.extractBackground(graphics, mouseX, mouseY, partialTicks);
     }
 }

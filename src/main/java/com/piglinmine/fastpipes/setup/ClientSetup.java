@@ -44,10 +44,13 @@ public class ClientSetup {
         event.registerModel(PipeBakedModel.MODEL_TYPE, PipeBakedModel.Unbaked.MAP_CODEC);
     }
 
+    // 26.1.2: RegisterColorHandlersEvent.Block was removed; block color is now a
+    // list of BlockTintSource layers wired into BlockColors via the BlockTintSources subclass.
     @SubscribeEvent
-    public static void registerBlockColors(RegisterColorHandlersEvent.Block event) {
-        PipeBlockColor handler = new PipeBlockColor();
-        event.register(handler,
+    public static void registerBlockColors(RegisterColorHandlersEvent.BlockTintSources event) {
+        java.util.List<net.minecraft.client.color.block.BlockTintSource> layers =
+            java.util.List.of(new PipeBlockColor());
+        event.register(layers,
             FPipesBlocks.BASIC_ITEM_PIPE.get(),
             FPipesBlocks.IMPROVED_ITEM_PIPE.get(),
             FPipesBlocks.ADVANCED_ITEM_PIPE.get(),

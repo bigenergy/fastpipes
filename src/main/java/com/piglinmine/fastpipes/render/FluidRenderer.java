@@ -8,7 +8,7 @@ import javax.annotation.Nonnull;
 // RenderSystem.setShaderColor/setShaderTexture immediate-mode pipeline used by this
 // renderer were removed/relocated. The old JEI-derived FluidStackRenderer logic
 // (drawTextureWithMasking + tiled sprite drawing) is preserved only as commented
-// intent; render(...) is now a no-op. Needs porting to the new GuiGraphics/Tesselator API.
+// intent; render(...) is now a no-op. Needs porting to the new GuiGraphicsExtractor/Tesselator API.
 public class FluidRenderer {
     public static final FluidRenderer INSTANCE = new FluidRenderer(1000, 16, 16, 16);
 

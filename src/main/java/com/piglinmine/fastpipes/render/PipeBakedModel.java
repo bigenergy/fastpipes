@@ -8,17 +8,18 @@ import com.piglinmine.fastpipes.FastPipes;
 import com.piglinmine.fastpipes.block.PipeBlock;
 import com.piglinmine.fastpipes.blockentity.PipeBlockEntity;
 import com.piglinmine.fastpipes.network.pipe.attachment.AttachmentManager;
-import net.minecraft.client.renderer.block.model.BlockModelPart;
-import net.minecraft.client.renderer.block.model.BlockStateModel;
-import net.minecraft.client.renderer.block.model.Variant;
+import net.minecraft.client.renderer.block.dispatch.BlockStateModelPart;
+import net.minecraft.client.renderer.block.dispatch.BlockStateModel;
+import net.minecraft.client.renderer.block.dispatch.Variant;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.ModelBaker;
 import net.minecraft.client.resources.model.ResolvableModel;
+import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.level.BlockAndTintGetter;
+import net.minecraft.client.renderer.block.BlockAndTintGetter;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.client.model.DynamicBlockStateModel;
@@ -44,33 +45,50 @@ import java.util.Map;
  * used historically.
  */
 public class PipeBakedModel implements DynamicBlockStateModel {
-    private final BlockModelPart corePart;
-    private final BlockModelPart[] extensionParts;
-    private final BlockModelPart[] straightParts;
-    private final BlockModelPart[] inventoryAttachmentParts;
-    private final Map<Identifier, BlockModelPart[]> attachmentParts;
-    private final TextureAtlasSprite particleIcon;
+    private final BlockStateModelPart corePart;
+    private final BlockStateModelPart[] extensionParts;
+    private final BlockStateModelPart[] straightParts;
+    private final BlockStateModelPart[] inventoryAttachmentParts;
+    private final Map<Identifier, BlockStateModelPart[]> attachmentParts;
+    private final Material.Baked particleMaterial;
+    private final int materialFlags;
 
-    public PipeBakedModel(BlockModelPart corePart,
-                          BlockModelPart[] extensionParts,
-                          BlockModelPart[] straightParts,
-                          BlockModelPart[] inventoryAttachmentParts,
-                          Map<Identifier, BlockModelPart[]> attachmentParts) {
+    public PipeBakedModel(BlockStateModelPart corePart,
+                          BlockStateModelPart[] extensionParts,
+                          BlockStateModelPart[] straightParts,
+                          BlockStateModelPart[] inventoryAttachmentParts,
+                          Map<Identifier, BlockStateModelPart[]> attachmentParts) {
         this.corePart = corePart;
         this.extensionParts = extensionParts;
         this.straightParts = straightParts;
         this.inventoryAttachmentParts = inventoryAttachmentParts;
         this.attachmentParts = attachmentParts;
-        this.particleIcon = corePart.particleIcon();
+        // 26.1.2: BlockStateModelPart exposes particleMaterial() (not particleIcon()).
+        this.particleMaterial = corePart.particleMaterial();
+        // OR together the material flags of every sub-part so the chunk batcher sets up
+        // the correct layers (translucent / animated).
+        int flags = corePart.materialFlags();
+        for (BlockStateModelPart p : extensionParts) flags |= p.materialFlags();
+        for (BlockStateModelPart p : straightParts) flags |= p.materialFlags();
+        for (BlockStateModelPart p : inventoryAttachmentParts) flags |= p.materialFlags();
+        for (BlockStateModelPart[] arr : attachmentParts.values()) {
+            for (BlockStateModelPart p : arr) flags |= p.materialFlags();
+        }
+        this.materialFlags = flags;
     }
 
     @Override
-    public TextureAtlasSprite particleIcon() {
-        return particleIcon;
+    public Material.Baked particleMaterial() {
+        return particleMaterial;
     }
 
     @Override
-    public void collectParts(BlockAndTintGetter level, BlockPos pos, BlockState state, RandomSource random, List<BlockModelPart> parts) {
+    public int materialFlags() {
+        return materialFlags;
+    }
+
+    @Override
+    public void collectParts(BlockAndTintGetter level, BlockPos pos, BlockState state, RandomSource random, List<BlockStateModelPart> parts) {
         boolean north = getBool(state, PipeBlock.NORTH);
         boolean east = getBool(state, PipeBlock.EAST);
         boolean south = getBool(state, PipeBlock.SOUTH);
@@ -140,7 +158,7 @@ public class PipeBakedModel implements DynamicBlockStateModel {
             for (Direction dir : Direction.values()) {
                 Identifier id = attachmentState[dir.ordinal()];
                 if (id == null) continue;
-                BlockModelPart[] parts6 = attachmentParts.get(id);
+                BlockStateModelPart[] parts6 = attachmentParts.get(id);
                 if (parts6 != null) {
                     parts.add(parts6[dir.ordinal()]);
                 }
@@ -209,13 +227,13 @@ public class PipeBakedModel implements DynamicBlockStateModel {
 
         @Override
         public BlockStateModel bake(ModelBaker baker) {
-            BlockModelPart corePart = core.bake(baker);
+            BlockStateModelPart corePart = core.bake(baker);
 
-            BlockModelPart[] extensionParts = bakeAllSides(baker, extension);
-            BlockModelPart[] straightParts = bakeAllSides(baker, straight);
-            BlockModelPart[] inventoryAttachmentParts = bakeAllSides(baker, inventoryAttachment);
+            BlockStateModelPart[] extensionParts = bakeAllSides(baker, extension);
+            BlockStateModelPart[] straightParts = bakeAllSides(baker, straight);
+            BlockStateModelPart[] inventoryAttachmentParts = bakeAllSides(baker, inventoryAttachment);
 
-            Map<Identifier, BlockModelPart[]> attachmentParts = new HashMap<>();
+            Map<Identifier, BlockStateModelPart[]> attachmentParts = new HashMap<>();
             for (Map.Entry<Identifier, Variant> e : attachments.entrySet()) {
                 attachmentParts.put(e.getKey(), bakeAllSides(baker, e.getValue()));
             }
@@ -223,8 +241,8 @@ public class PipeBakedModel implements DynamicBlockStateModel {
             return new PipeBakedModel(corePart, extensionParts, straightParts, inventoryAttachmentParts, attachmentParts);
         }
 
-        private static BlockModelPart[] bakeAllSides(ModelBaker baker, Variant base) {
-            BlockModelPart[] out = new BlockModelPart[Direction.values().length];
+        private static BlockStateModelPart[] bakeAllSides(ModelBaker baker, Variant base) {
+            BlockStateModelPart[] out = new BlockStateModelPart[Direction.values().length];
             for (Direction dir : Direction.values()) {
                 out[dir.ordinal()] = rotateForDirection(base, dir).bake(baker);
             }

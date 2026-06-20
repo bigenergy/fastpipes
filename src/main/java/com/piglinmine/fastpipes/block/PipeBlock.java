@@ -120,11 +120,13 @@ public abstract class PipeBlock extends Block implements EntityBlock, SimpleWate
         ItemStack held = player.getMainHandItem();
 
         // Dye: right-click with dye to color pipe
-        if (held.getItem() instanceof DyeItem dyeItem) {
+        // 26.1.2: DyeItem.getDyeColor() removed; the color is now a DataComponents.DYE on the stack.
+        if (held.getItem() instanceof DyeItem) {
             if (!level.isClientSide()) {
                 Pipe pipe = NetworkManager.get(level).getPipe(pos);
                 if (pipe != null) {
-                    DyeColor newColor = dyeItem.getDyeColor();
+                    DyeColor newColor = held.get(net.minecraft.core.component.DataComponents.DYE);
+                    if (newColor == null) return InteractionResult.PASS;
                     if (pipe.getColor() != newColor) {
                         pipe.setColor(newColor);
                         NetworkManager.get(level).setDirty();

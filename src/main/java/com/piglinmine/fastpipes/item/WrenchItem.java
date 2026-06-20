@@ -5,6 +5,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemInstance;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.TooltipDisplay;
@@ -25,8 +26,9 @@ public class WrenchItem extends Item {
         super(properties.stacksTo(1));
     }
 
+    // 26.1.2: signature widened from ItemStack to ItemInstance.
     @Override
-    public boolean canPerformAction(ItemStack stack, ItemAbility itemAbility) {
+    public boolean canPerformAction(ItemInstance stack, ItemAbility itemAbility) {
         return itemAbility == WRENCH_ROTATE || itemAbility == WRENCH_DISASSEMBLE;
     }
 

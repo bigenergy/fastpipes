@@ -6,7 +6,7 @@ import com.piglinmine.fastpipes.network.pipe.attachment.extractor.BlacklistWhite
 import com.piglinmine.fastpipes.screen.widget.IconButton;
 import com.piglinmine.fastpipes.screen.widget.IconButtonPreset;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
@@ -28,9 +28,7 @@ public class SensorAttachmentScreen extends BaseScreen<SensorAttachmentContainer
     private IconButton exactModeButton;
 
     public SensorAttachmentScreen(SensorAttachmentContainerMenu container, Inventory inv, Component title) {
-        super(container, inv, title);
-        this.imageWidth = 176;
-        this.imageHeight = 193;
+        super(container, inv, title, 176, 193);
     }
 
     @Override
@@ -86,15 +84,10 @@ public class SensorAttachmentScreen extends BaseScreen<SensorAttachmentContainer
         menu.setExactMode(exactMode);
     }
 
-    @Override
-    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        this.renderBackground(graphics, mouseX, mouseY, partialTick);
-        super.render(graphics, mouseX, mouseY, partialTick);
-        this.renderTooltip(graphics, mouseX, mouseY);
-    }
+    // 26.1.2: render()/renderTooltip() removed — driven by the framework.
 
     @Override
-    protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
+    protected void extractLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
 
         tooltip.clear();
 
@@ -112,17 +105,17 @@ public class SensorAttachmentScreen extends BaseScreen<SensorAttachmentContainer
             graphics.setComponentTooltipForNextFrame(font, tooltip, mouseX, mouseY);
         }
 
-        super.renderLabels(graphics, mouseX, mouseY);
+        super.extractLabels(graphics, mouseX, mouseY);
     }
 
     @Override
-    protected void renderBg(@NotNull GuiGraphics graphics, float partialTicks, int mouseX, int mouseY) {
+    public void extractBackground(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
         int i = (this.width - this.imageWidth) / 2;
         int j = (this.height - this.imageHeight) / 2;
         graphics.blit(net.minecraft.client.renderer.RenderPipelines.GUI_TEXTURED,
             RESOURCE, i, j, 0f, 0f, this.imageWidth, this.imageHeight, 256, 256);
         // All 15 filter slots are always available for sensor attachment
 
-        super.renderBg(graphics, partialTicks, mouseX, mouseY);
+        super.extractBackground(graphics, mouseX, mouseY, partialTicks);
     }
 }

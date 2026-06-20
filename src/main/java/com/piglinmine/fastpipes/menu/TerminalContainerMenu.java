@@ -378,7 +378,7 @@ public class TerminalContainerMenu extends BaseContainerMenu {
         if (recipeOpt.isEmpty()) return;
 
         CraftingRecipe recipe = recipeOpt.get().value();
-        ItemStack result = recipe.assemble(input, level.registryAccess());
+        ItemStack result = recipe.assemble(input);
         if (result.isEmpty()) return;
 
         int maxCrafts = craftAll ? 64 : 1;
@@ -389,7 +389,7 @@ public class TerminalContainerMenu extends BaseContainerMenu {
             input = craftMatrix.asCraftInput();
             if (!recipe.matches(input, level)) break;
 
-            result = recipe.assemble(input, level.registryAccess());
+            result = recipe.assemble(input);
 
             // Check player can hold the result
             ItemStack carried = getCarried();
@@ -609,7 +609,7 @@ public class TerminalContainerMenu extends BaseContainerMenu {
             .getRecipeFor(RecipeType.CRAFTING, input, level);
 
         if (recipe.isPresent()) {
-            craftResult.setItem(0, recipe.get().value().assemble(input, level.registryAccess()));
+            craftResult.setItem(0, recipe.get().value().assemble(input));
         } else {
             craftResult.setItem(0, ItemStack.EMPTY);
         }

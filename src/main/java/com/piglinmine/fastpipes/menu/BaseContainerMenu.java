@@ -7,7 +7,7 @@ import com.piglinmine.fastpipes.network.message.FluidFilterSlotUpdateMessage;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
@@ -49,7 +49,7 @@ public class BaseContainerMenu extends AbstractContainerMenu {
     }
 
     @Override
-    public void clicked(int id, int dragType, ClickType clickType, Player player) {
+    public void clicked(int id, int dragType, ContainerInput clickType, Player player) {
         Slot slot = id >= 0 ? getSlot(id) : null;
         ItemStack holding = player.containerMenu.getCarried();
 

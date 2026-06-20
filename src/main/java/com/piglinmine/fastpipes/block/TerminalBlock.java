@@ -65,8 +65,10 @@ public class TerminalBlock extends Block implements EntityBlock {
                 if (level.getBlockEntity(pos) instanceof TerminalBlockEntity be) {
                     if (!be.tryAcquire(player.getUUID(), player.getName().getString())) {
                         String owner = be.getActiveUserName() != null ? be.getActiveUserName() : "?";
-                        serverPlayer.displayClientMessage(
-                            Component.translatable("gui.fastpipes.terminal.in_use", owner), true);
+                        // 26.1.2: displayClientMessage(Component, boolean) removed.
+                        // Action-bar overlay is now sendOverlayMessage(Component); chat is sendSystemMessage.
+                        serverPlayer.sendOverlayMessage(
+                            Component.translatable("gui.fastpipes.terminal.in_use", owner));
                         return InteractionResult.SUCCESS;
                     }
                 }

@@ -11,7 +11,7 @@ import com.piglinmine.fastpipes.menu.slot.FluidFilterSlot;
 import com.piglinmine.fastpipes.screen.widget.IconButton;
 import com.piglinmine.fastpipes.screen.widget.IconButtonPreset;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -19,7 +19,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.fluids.FluidStack;
@@ -56,10 +56,7 @@ public class ExtractorAttachmentScreen extends BaseScreen<ExtractorAttachmentCon
     private String[] tagsLines = new String[0];
 
     public ExtractorAttachmentScreen(ExtractorAttachmentContainerMenu container, Inventory inv, Component title) {
-        super(container, inv, title);
-
-        this.imageWidth = 176;
-        this.imageHeight = 193;
+        super(container, inv, title, 176, 193);
     }
 
     @Override
@@ -258,7 +255,7 @@ public class ExtractorAttachmentScreen extends BaseScreen<ExtractorAttachmentCon
     }
 
     @Override
-    protected void slotClicked(Slot slot, int slotId, int mouseButton, ClickType type) {
+    protected void slotClicked(Slot slot, int slotId, int mouseButton, ContainerInput type) {
         if (slot instanceof FilterSlot || slot instanceof FluidFilterSlot) {
             if (mouseButton == 1) {
                 // Right-click: open editor for existing filter entry
@@ -306,7 +303,7 @@ public class ExtractorAttachmentScreen extends BaseScreen<ExtractorAttachmentCon
             if (!stack.isEmpty()) {
                 currentValue = BuiltInRegistries.ITEM.getKey(stack.getItem()).toString();
                 StringBuilder sb = new StringBuilder();
-                stack.getTags().forEach(tag -> {
+                stack.typeHolder().tags().forEach(tag -> {
                     if (sb.length() > 0) sb.append("\n");
                     sb.append("#").append(tag.location());
                 });
@@ -394,37 +391,37 @@ public class ExtractorAttachmentScreen extends BaseScreen<ExtractorAttachmentCon
         tagsScrollOffset = 0;
     }
 
-    private void renderFilterEditor(GuiGraphics graphics, int mouseX, int mouseY) {
+    private void renderFilterEditor(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
         // TODO 1.21.11: graphics.pose() now returns Matrix3x2fStack with pushMatrix/popMatrix/translate(Matrix3x2f);
         // Registry.get returns Optional<Holder.Reference<T>>; renderTooltip/blit signatures changed.
         // Filter editor modal is aggressively stubbed for compile.
     }
 
+    // MC 26.1.2: render(...) removed. Filter-editor overlay drawing now happens via extractContents
+    // (we override extractContents to call super, then layer the editor modal).
     @Override
-    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        this.renderBackground(graphics, mouseX, mouseY, partialTick);
-        // When editor is open, pass fake mouse coords to prevent hover effects on underlying UI
+    public void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
         if (editingSlotIndex >= 0) {
-            super.render(graphics, -1, -1, partialTick);
+            // When editor is open, hide hover effects on underlying UI by passing fake coords.
+            super.extractContents(graphics, -1, -1, a);
             renderFilterEditor(graphics, mouseX, mouseY);
         } else {
-            super.render(graphics, mouseX, mouseY, partialTick);
-            this.renderTooltip(graphics, mouseX, mouseY);
+            super.extractContents(graphics, mouseX, mouseY, a);
         }
     }
 
     @Override
-    protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
+    protected void extractLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
 
         if (!menu.isFluidMode()) {
-            // 1.21.11: GuiGraphics.text skips colors with alpha 0. The legacy 4210752 (0x00404040)
+            // 1.21.11: GuiGraphicsExtractor.text skips colors with alpha 0. The legacy 4210752 (0x00404040)
             // had implicit alpha 0 and rendered nothing; vanilla now uses 0xFF404040 (signed -12566464).
-            graphics.drawString(font, "" + menu.getStackSize(), 139, 83, 0xFF404040, false);
+            graphics.text(font, "" + menu.getStackSize(), 139, 83, 0xFF404040, false);
         }
 
         // Don't show tooltips when editor is open
         if (editingSlotIndex >= 0) {
-            super.renderLabels(graphics, mouseX, mouseY);
+            super.extractLabels(graphics, mouseX, mouseY);
             return;
         }
 
@@ -445,19 +442,14 @@ public class ExtractorAttachmentScreen extends BaseScreen<ExtractorAttachmentCon
         }
 
         if (!tooltip.isEmpty()) {
-            // 1.21.11: setTooltipForNextFrame schedules a deferred render that runs AFTER the
-            // (leftPos, topPos) pose translation has been popped (see GuiGraphics.renderDeferredElements
-            // / setTooltipForNextFrameInternal — the closure captures xo/yo at submit time, runs at
-            // identity pose on the next-stratum). So we must pass SCREEN-absolute mouse coords here;
-            // subtracting leftPos/topPos produced top-left rendering.
             graphics.setComponentTooltipForNextFrame(font, tooltip, mouseX, mouseY);
         }
 
-        super.renderLabels(graphics, mouseX, mouseY);
+        super.extractLabels(graphics, mouseX, mouseY);
     }
 
     @Override
-    protected void renderBg(@NotNull GuiGraphics graphics, float partialTicks, int mouseX, int mouseY) {
+    public void extractBackground(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
         int i = (this.width - this.imageWidth) / 2;
         int j = (this.height - this.imageHeight) / 2;
         graphics.blit(net.minecraft.client.renderer.RenderPipelines.GUI_TEXTURED,
@@ -500,6 +492,6 @@ public class ExtractorAttachmentScreen extends BaseScreen<ExtractorAttachmentCon
             }
         }
 
-        super.renderBg(graphics, partialTicks, mouseX, mouseY);
+        super.extractBackground(graphics, mouseX, mouseY, partialTicks);
     }
-} 
+}

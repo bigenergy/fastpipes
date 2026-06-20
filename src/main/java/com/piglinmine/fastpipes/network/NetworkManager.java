@@ -25,7 +25,9 @@ import javax.annotation.Nullable;
 import java.util.*;
 
 public class NetworkManager extends SavedData {
-    private static final String NAME = FastPipes.MOD_ID + "_networks";
+    // 26.1.2: SavedDataType.id is now an Identifier, not a String.
+    private static final net.minecraft.resources.Identifier NAME =
+            net.minecraft.resources.Identifier.fromNamespaceAndPath(FastPipes.MOD_ID, "networks");
     private static final Logger LOGGER = LogManager.getLogger(NetworkManager.class);
     private final Level level;
     private final Map<String, Network> networks = new HashMap<>();
@@ -44,10 +46,12 @@ public class NetworkManager extends SavedData {
      * reference into network/pipe deserialization paths that still expect a Level.
      */
     public static SavedDataType<NetworkManager> savedDataType(ServerLevel level) {
-        return new SavedDataType<>(
+        return new SavedDataType<NetworkManager>(
             NAME,
-            srv -> new NetworkManager(srv),
-            srv -> codec(srv),
+            // 26.1.2: Factory<T> accepts a SavedData.Context (passed as the lambda arg) — we
+            // ignore the arg and capture the requested ServerLevel directly.
+            ctx -> new NetworkManager(level),
+            ctx -> codec(level),
             DataFixTypes.LEVEL
         );
     }

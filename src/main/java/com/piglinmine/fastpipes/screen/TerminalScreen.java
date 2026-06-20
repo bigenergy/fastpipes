@@ -6,7 +6,7 @@ import com.piglinmine.fastpipes.network.message.TerminalExtractMessage;
 import com.piglinmine.fastpipes.network.message.TerminalInsertMessage;
 import com.piglinmine.fastpipes.network.message.TerminalSearchMessage;
 import com.piglinmine.fastpipes.network.message.TerminalSortMessage;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -24,8 +24,8 @@ public class TerminalScreen extends BaseScreen<TerminalContainerMenu> {
     private String statusMessage = "";
     private int statusTicks = 0;
 
-    // 1.21.11: GuiGraphics.text() now silently skips rendering when ARGB.alpha(color) == 0
-    // (see GuiGraphics#text). The legacy 0xRRGGBB constants (e.g. 4210752 == 0x00404040 dark gray
+    // 1.21.11: GuiGraphicsExtractor.text() now silently skips rendering when ARGB.alpha(color) == 0
+    // (see GuiGraphicsExtractor#text). The legacy 0xRRGGBB constants (e.g. 4210752 == 0x00404040 dark gray
     // and 0x00FFFFFF white) all had implicit alpha 0 and are now invisible. Vanilla 1.21.11 uses
     // -12566464 (== 0xFF404040 signed). Mirror that with explicit full-alpha constants.
     private static final int LABEL_COLOR = 0xFF404040;        // was 4210752 (alpha 0 → invisible)
@@ -33,9 +33,7 @@ public class TerminalScreen extends BaseScreen<TerminalContainerMenu> {
     private static final int STATUS_RED_OPAQUE = 0xFFFF5555;  // was 0xFF5555 (alpha 0 → invisible)
 
     public TerminalScreen(TerminalContainerMenu container, Inventory inv, Component title) {
-        super(container, inv, title);
-        this.imageWidth = 195;
-        this.imageHeight = 286;
+        super(container, inv, title, 195, 286);
     }
 
     @Override
@@ -50,7 +48,7 @@ public class TerminalScreen extends BaseScreen<TerminalContainerMenu> {
         searchBox = new EditBox(this.font, this.leftPos + 8, this.topPos + 19, 153, 12, Component.empty());
         searchBox.setMaxLength(50);
         searchBox.setBordered(true);
-        // 1.21.11: GuiGraphics.text skips alpha-0 colors, so EditBox text colors must include
+        // 1.21.11: GuiGraphicsExtractor.text skips alpha-0 colors, so EditBox text colors must include
         // full alpha or they render invisibly (search box appeared as just a black bar).
         searchBox.setTextColor(WHITE_OPAQUE);
         searchBox.setTextColorUneditable(0xFFA0A0A0);
@@ -72,8 +70,8 @@ public class TerminalScreen extends BaseScreen<TerminalContainerMenu> {
     }
 
     @Override
-    protected void renderBg(GuiGraphics graphics, float partialTicks, int mouseX, int mouseY) {
-        super.renderBg(graphics, partialTicks, mouseX, mouseY);
+    public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
+        super.extractBackground(graphics, mouseX, mouseY, partialTicks);
 
         int x = this.leftPos;
         int y = this.topPos;
@@ -108,11 +106,11 @@ public class TerminalScreen extends BaseScreen<TerminalContainerMenu> {
             int slotY = y + GRID_Y + row * SLOT_SIZE + 1;
 
             ItemStack stack = visible.get(i);
-            graphics.renderItem(stack, slotX, slotY);
+            graphics.item(stack, slotX, slotY);
 
             // Render count
             if (stack.getCount() > 1) {
-                // 1.21.11: GuiGraphics.pose() returns org.joml.Matrix3x2fStack — use pushMatrix/popMatrix
+                // 1.21.11: GuiGraphicsExtractor.pose() returns org.joml.Matrix3x2fStack — use pushMatrix/popMatrix
                 // and the 2-arg translate/scale variants (no Z component). Match the master 1.21.1 behavior
                 // of rendering the count at 0.75x scale, bottom-right-aligned within the 16x16 slot.
                 String countStr = formatCount(stack.getCount());
@@ -122,7 +120,7 @@ public class TerminalScreen extends BaseScreen<TerminalContainerMenu> {
                 pose.pushMatrix();
                 pose.translate(slotX + 16 - scaledWidth, slotY + 8);
                 pose.scale(scale, scale);
-                graphics.drawString(font, countStr, 0, 0, WHITE_OPAQUE, true);
+                graphics.text(font, countStr, 0, 0, WHITE_OPAQUE, true);
                 pose.popMatrix();
             }
         }
@@ -175,10 +173,10 @@ public class TerminalScreen extends BaseScreen<TerminalContainerMenu> {
         drawSortButton(graphics, sortBtnX, sortBtnY, currentSort, mouseX, mouseY);
 
         // Crafting arrow between grid and result
-        graphics.drawString(font, "=>", x + 68, y + 158, 0xFF404040, false);
+        graphics.text(font, "=>", x + 68, y + 158, 0xFF404040, false);
     }
 
-    private void drawSortButton(GuiGraphics graphics, int bx, int by, TerminalContainerMenu.SortMode mode, int mouseX, int mouseY) {
+    private void drawSortButton(GuiGraphicsExtractor graphics, int bx, int by, TerminalContainerMenu.SortMode mode, int mouseX, int mouseY) {
         int bw = 24;
         int bh = 13;
         boolean hovered = mouseX >= bx && mouseX < bx + bw && mouseY >= by && mouseY < by + bh;
@@ -203,14 +201,14 @@ public class TerminalScreen extends BaseScreen<TerminalContainerMenu> {
         };
 
         int tw = font.width(icon);
-        graphics.drawString(font, icon, bx + (bw - tw) / 2, by + 3, 0xFF404040, false);
+        graphics.text(font, icon, bx + (bw - tw) / 2, by + 3, 0xFF404040, false);
     }
 
     @Override
-    protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
-        graphics.drawString(font, title, titleLabelX, titleLabelY, LABEL_COLOR, false);
-        graphics.drawString(font, Component.translatable("container.crafting"), 8, 126, LABEL_COLOR, false);
-        graphics.drawString(font, Component.translatable("container.inventory"), inventoryLabelX, inventoryLabelY, LABEL_COLOR, false);
+    protected void extractLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
+        graphics.text(font, title, titleLabelX, titleLabelY, LABEL_COLOR, false);
+        graphics.text(font, Component.translatable("container.crafting"), 8, 126, LABEL_COLOR, false);
+        graphics.text(font, Component.translatable("container.inventory"), inventoryLabelX, inventoryLabelY, LABEL_COLOR, false);
 
         // Status message — centered over network grid with dark background
         if (statusTicks > 0) {
@@ -220,7 +218,7 @@ public class TerminalScreen extends BaseScreen<TerminalContainerMenu> {
             int sy = GRID_Y + (TerminalContainerMenu.GRID_ROWS * SLOT_SIZE) / 2 - 5;
             int pad = 4;
             graphics.fill(sx - pad, sy - pad, sx + sw + pad, sy + font.lineHeight + pad, 0xE0000000);
-            graphics.drawString(font, statusMessage, sx, sy, STATUS_RED_OPAQUE, false);
+            graphics.text(font, statusMessage, sx, sy, STATUS_RED_OPAQUE, false);
         }
 
         // Sort button tooltip
@@ -252,24 +250,10 @@ public class TerminalScreen extends BaseScreen<TerminalContainerMenu> {
         }
     }
 
-    @Override
-    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        // 1.21.11: Screen.renderWithTooltipAndSubtitles (outer driver) ALREADY calls
-        // renderBackground() before render() and advances the stratum, so we MUST NOT call
-        // renderBackground() again here — doing so re-fills the panel on the SAME stratum as
-        // the labels that get drawn during super.render → renderContents → renderLabels, which
-        // can hide them. AbstractContainerScreen.render() in 1.21.11 splits into
-        //   renderContents (translates pose, calls renderBg via renderBackground chain is handled
-        //                   externally; calls renderLabels in local coords)
-        //   renderCarriedItem
-        //   renderSnapbackItem
-        // It no longer calls renderTooltip itself, so we set the hovered-slot tooltip via the
-        // explicit renderTooltip() call below. mouseX/mouseY here are SCREEN-absolute (NOT
-        // translated), which is what setTooltipForNextFrame expects since the tooltip is drawn
-        // by renderDeferredElements after the pose stack has been popped.
-        super.render(graphics, mouseX, mouseY, partialTick);
-        this.renderTooltip(graphics, mouseX, mouseY);
-    }
+    // MC 26.1.2: Screen.render() removed. The framework drives extractRenderState/
+    // extractBackground/extractContents/extractCarriedItem/extractSnapbackItem.
+    // Hovered-slot tooltips are emitted from AbstractContainerScreen.extractTooltip,
+    // so we no longer need an explicit renderTooltip() call.
 
     // 1.21.11: mouseClicked now takes a MouseButtonEvent + a doubleClick boolean. Search box
     // input is dispatched automatically via the framework because searchBox is a registered
@@ -376,7 +360,7 @@ public class TerminalScreen extends BaseScreen<TerminalContainerMenu> {
         return String.valueOf(count);
     }
 
-    private void drawSlotBackground(GuiGraphics graphics, int sx, int sy) {
+    private void drawSlotBackground(GuiGraphicsExtractor graphics, int sx, int sy) {
         graphics.fill(sx, sy, sx + 18, sy + 1, 0xFF373737);
         graphics.fill(sx, sy, sx + 1, sy + 18, 0xFF373737);
         graphics.fill(sx + 17, sy + 1, sx + 18, sy + 18, 0xFFFFFFFF);
