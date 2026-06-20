@@ -1,12 +1,19 @@
 {
   "type": "minecraft:crafting_shaped",
-  "pattern": ["CCC", "CBC", "CCC"],
+  "pattern": [
+    "CCC",
+    "CBC",
+    "CCC"
+  ],
   "key": {
-    "C": {"tag": "c:ingots/copper"},
+    "C": "#c:ingots/copper",
     "B": [
-      {"item": "minecraft:barrel"},
-      {"item": "fastpipes:oak_barrel"}
+      "minecraft:barrel",
+      "fastpipes:oak_barrel"
     ]
   },
-  "result": {"id": "fastpipes:copper_barrel_upgrade", "count": 1}
+  "result": {
+    "id": "fastpipes:copper_barrel_upgrade",
+    "count": 1
+  }
 }

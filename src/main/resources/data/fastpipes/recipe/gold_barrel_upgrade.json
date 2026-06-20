@@ -1,9 +1,16 @@
 {
   "type": "minecraft:crafting_shaped",
-  "pattern": ["GGG", "GIG", "GGG"],
+  "pattern": [
+    "GGG",
+    "GIG",
+    "GGG"
+  ],
   "key": {
-    "G": {"tag": "c:ingots/gold"},
-    "I": {"tag": "c:ingots/iron"}
+    "G": "#c:ingots/gold",
+    "I": "#c:ingots/iron"
   },
-  "result": {"id": "fastpipes:gold_barrel_upgrade", "count": 1}
+  "result": {
+    "id": "fastpipes:gold_barrel_upgrade",
+    "count": 1
+  }
 }

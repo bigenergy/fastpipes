@@ -6,18 +6,10 @@
     "III"
   ],
   "key": {
-    "I": {
-      "tag": "c:ingots/iron"
-    },
-    "G": {
-      "tag": "c:glass_blocks"
-    },
-    "D": {
-      "tag": "c:gems/diamond"
-    },
-    "P": {
-      "item": "fastpipes:basic_item_pipe"
-    }
+    "I": "#c:ingots/iron",
+    "G": "#c:glass_blocks",
+    "D": "#c:gems/diamond",
+    "P": "fastpipes:basic_item_pipe"
   },
   "result": {
     "id": "fastpipes:terminal",

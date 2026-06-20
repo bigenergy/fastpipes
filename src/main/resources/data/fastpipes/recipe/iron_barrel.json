@@ -1,9 +1,16 @@
 {
   "type": "minecraft:crafting_shaped",
-  "pattern": ["III", "IBI", "III"],
+  "pattern": [
+    "III",
+    "IBI",
+    "III"
+  ],
   "key": {
-    "I": {"tag": "c:ingots/iron"},
-    "B": {"item": "fastpipes:copper_barrel"}
+    "I": "#c:ingots/iron",
+    "B": "fastpipes:copper_barrel"
   },
-  "result": {"id": "fastpipes:iron_barrel", "count": 1}
+  "result": {
+    "id": "fastpipes:iron_barrel",
+    "count": 1
+  }
 }

@@ -6,18 +6,12 @@
     "III"
   ],
   "key": {
-    "I": {
-      "tag": "c:ingots/iron"
-    },
-    "G": {
-      "tag": "c:glass_blocks"
-    },
-    "R": {
-      "tag": "c:storage_blocks/redstone"
-    }
+    "I": "#c:ingots/iron",
+    "G": "#c:glass_blocks",
+    "R": "#c:storage_blocks/redstone"
   },
   "result": {
     "id": "fastpipes:basic_energy_pipe",
     "count": 6
   }
-} 
+}

@@ -6,15 +6,9 @@
     "   "
   ],
   "key": {
-    "I": {
-      "tag": "c:ingots/iron"
-    },
-    "O": {
-      "item": "minecraft:obsidian"
-    },
-    "P": {
-      "item": "fastpipes:basic_item_pipe"
-    }
+    "I": "#c:ingots/iron",
+    "O": "minecraft:obsidian",
+    "P": "fastpipes:basic_item_pipe"
   },
   "result": {
     "id": "fastpipes:void_attachment"

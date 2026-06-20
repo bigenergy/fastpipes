@@ -6,15 +6,9 @@
     "   "
   ],
   "key": {
-    "I": {
-      "tag": "c:ingots/iron"
-    },
-    "T": {
-      "item": "minecraft:redstone_torch"
-    },
-    "R": {
-      "item": "fastpipes:basic_item_pipe"
-    }
+    "I": "#c:ingots/iron",
+    "T": "minecraft:redstone_torch",
+    "R": "fastpipes:basic_item_pipe"
   },
   "result": {
     "id": "fastpipes:sensor_attachment"

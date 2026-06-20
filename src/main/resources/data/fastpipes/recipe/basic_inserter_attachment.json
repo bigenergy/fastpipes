@@ -6,12 +6,8 @@
     "IHI"
   ],
   "key": {
-    "I": {
-      "tag": "c:ingots/iron"
-    },
-    "H": {
-      "item": "minecraft:hopper"
-    }
+    "I": "#c:ingots/iron",
+    "H": "minecraft:hopper"
   },
   "result": {
     "id": "fastpipes:basic_inserter_attachment"

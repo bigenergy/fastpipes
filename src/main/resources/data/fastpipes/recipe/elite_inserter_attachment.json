@@ -6,12 +6,8 @@
     "EPE"
   ],
   "key": {
-    "E": {
-      "tag": "c:gems/emerald"
-    },
-    "P": {
-      "item": "fastpipes:advanced_inserter_attachment"
-    }
+    "E": "#c:gems/emerald",
+    "P": "fastpipes:advanced_inserter_attachment"
   },
   "result": {
     "id": "fastpipes:elite_inserter_attachment"

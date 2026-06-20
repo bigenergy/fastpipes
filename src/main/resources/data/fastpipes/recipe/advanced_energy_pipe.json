@@ -6,12 +6,8 @@
     " D "
   ],
   "key": {
-    "D": {
-      "tag": "c:gems/diamond"
-    },
-    "P": {
-      "item": "fastpipes:improved_energy_pipe"
-    }
+    "D": "#c:gems/diamond",
+    "P": "fastpipes:improved_energy_pipe"
   },
   "result": {
     "id": "fastpipes:advanced_energy_pipe"

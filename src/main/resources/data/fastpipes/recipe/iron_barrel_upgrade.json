@@ -1,9 +1,16 @@
 {
   "type": "minecraft:crafting_shaped",
-  "pattern": ["III", "ICI", "III"],
+  "pattern": [
+    "III",
+    "ICI",
+    "III"
+  ],
   "key": {
-    "I": {"tag": "c:ingots/iron"},
-    "C": {"tag": "c:ingots/copper"}
+    "I": "#c:ingots/iron",
+    "C": "#c:ingots/copper"
   },
-  "result": {"id": "fastpipes:iron_barrel_upgrade", "count": 1}
+  "result": {
+    "id": "fastpipes:iron_barrel_upgrade",
+    "count": 1
+  }
 }

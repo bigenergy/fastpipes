@@ -6,12 +6,8 @@
     "GPG"
   ],
   "key": {
-    "G": {
-      "tag": "c:ingots/gold"
-    },
-    "P": {
-      "item": "fastpipes:basic_inserter_attachment"
-    }
+    "G": "#c:ingots/gold",
+    "P": "fastpipes:basic_inserter_attachment"
   },
   "result": {
     "id": "fastpipes:improved_inserter_attachment"

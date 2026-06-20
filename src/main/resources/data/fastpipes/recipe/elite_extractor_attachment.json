@@ -6,14 +6,10 @@
     "EPE"
   ],
   "key": {
-    "E": {
-      "tag": "c:gems/emerald"
-    },
-    "P": {
-      "item": "fastpipes:advanced_extractor_attachment"
-    }
+    "E": "#c:gems/emerald",
+    "P": "fastpipes:advanced_extractor_attachment"
   },
   "result": {
     "id": "fastpipes:elite_extractor_attachment"
   }
-} 
+}

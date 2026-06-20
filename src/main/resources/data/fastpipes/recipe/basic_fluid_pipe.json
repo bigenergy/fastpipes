@@ -6,18 +6,12 @@
     "III"
   ],
   "key": {
-    "I": {
-      "tag": "c:ingots/iron"
-    },
-    "G": {
-      "tag": "c:glass_blocks"
-    },
-    "S": {
-      "tag": "c:slimeballs"
-    }
+    "I": "#c:ingots/iron",
+    "G": "#c:glass_blocks",
+    "S": "#c:slimeballs"
   },
   "result": {
     "id": "fastpipes:basic_fluid_pipe",
     "count": 6
   }
-} 
+}

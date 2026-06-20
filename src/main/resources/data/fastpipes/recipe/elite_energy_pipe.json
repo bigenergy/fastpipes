@@ -6,12 +6,8 @@
     " E "
   ],
   "key": {
-    "E": {
-      "tag": "c:gems/emerald"
-    },
-    "P": {
-      "item": "fastpipes:advanced_energy_pipe"
-    }
+    "E": "#c:gems/emerald",
+    "P": "fastpipes:advanced_energy_pipe"
   },
   "result": {
     "id": "fastpipes:elite_energy_pipe"

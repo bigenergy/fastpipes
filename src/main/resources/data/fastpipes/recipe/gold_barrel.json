@@ -1,9 +1,16 @@
 {
   "type": "minecraft:crafting_shaped",
-  "pattern": ["GGG", "GBG", "GGG"],
+  "pattern": [
+    "GGG",
+    "GBG",
+    "GGG"
+  ],
   "key": {
-    "G": {"tag": "c:ingots/gold"},
-    "B": {"item": "fastpipes:iron_barrel"}
+    "G": "#c:ingots/gold",
+    "B": "fastpipes:iron_barrel"
   },
-  "result": {"id": "fastpipes:gold_barrel", "count": 1}
+  "result": {
+    "id": "fastpipes:gold_barrel",
+    "count": 1
+  }
 }

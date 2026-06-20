@@ -6,12 +6,8 @@
     " G "
   ],
   "key": {
-    "G": {
-      "tag": "c:ingots/gold"
-    },
-    "P": {
-      "item": "fastpipes:basic_energy_pipe"
-    }
+    "G": "#c:ingots/gold",
+    "P": "fastpipes:basic_energy_pipe"
   },
   "result": {
     "id": "fastpipes:improved_energy_pipe"

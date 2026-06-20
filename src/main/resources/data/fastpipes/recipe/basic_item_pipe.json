@@ -6,15 +6,11 @@
     "III"
   ],
   "key": {
-    "I": {
-      "tag": "c:ingots/iron"
-    },
-    "G": {
-      "tag": "c:glass_blocks"
-    }
+    "I": "#c:ingots/iron",
+    "G": "#c:glass_blocks"
   },
   "result": {
     "id": "fastpipes:basic_item_pipe",
     "count": 6
   }
-} 
+}

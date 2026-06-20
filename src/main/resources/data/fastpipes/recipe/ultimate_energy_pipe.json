@@ -6,12 +6,8 @@
     " C "
   ],
   "key": {
-    "C": {
-      "item": "minecraft:popped_chorus_fruit"
-    },
-    "P": {
-      "item": "fastpipes:elite_energy_pipe"
-    }
+    "C": "minecraft:popped_chorus_fruit",
+    "P": "fastpipes:elite_energy_pipe"
   },
   "result": {
     "id": "fastpipes:ultimate_energy_pipe"
