@@ -13,14 +13,14 @@ import net.minecraft.core.Direction;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record ChangeRedstoneModeMessage(BlockPos pos, Direction direction, int mode) implements CustomPacketPayload {
     
     public static final CustomPacketPayload.Type<ChangeRedstoneModeMessage> TYPE = 
-        new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "change_redstone_mode"));
+        new CustomPacketPayload.Type<>(Identifier.fromNamespaceAndPath(FastPipes.MOD_ID, "change_redstone_mode"));
 
     public static final StreamCodec<ByteBuf, ChangeRedstoneModeMessage> STREAM_CODEC = StreamCodec.composite(
         BlockPos.STREAM_CODEC,

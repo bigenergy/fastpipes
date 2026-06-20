@@ -10,7 +10,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.capabilities.Capabilities;
@@ -89,7 +89,7 @@ public enum TerminalInfoProvider implements IBlockComponentProvider, IServerData
                     ItemStack stack = handler.getStackInSlot(i);
                     if (stack.isEmpty()) continue;
                     totalItems += stack.getCount();
-                    ResourceLocation itemId = BuiltInRegistries.ITEM.getKey(stack.getItem());
+                    Identifier itemId = BuiltInRegistries.ITEM.getKey(stack.getItem());
                     uniqueKeys.add(itemId + "|" + stack.getComponents().hashCode());
                 }
             }
@@ -105,7 +105,7 @@ public enum TerminalInfoProvider implements IBlockComponentProvider, IServerData
     }
 
     @Override
-    public ResourceLocation getUid() {
+    public Identifier getUid() {
         return FastPipesJadePlugin.TERMINAL_INFO;
     }
 }

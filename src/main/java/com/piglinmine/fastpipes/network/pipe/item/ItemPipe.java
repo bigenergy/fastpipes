@@ -12,14 +12,14 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.Level;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ItemPipe extends Pipe {
-    public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "item");
+    public static final Identifier ID = Identifier.fromNamespaceAndPath(FastPipes.MOD_ID, "item");
 
     private final List<ItemTransport> transports = new ArrayList<>();
     private final List<ItemTransport> transportsToAdd = new ArrayList<>();
@@ -66,12 +66,12 @@ public class ItemPipe extends Pipe {
     }
 
     @Override
-    public ResourceLocation getId() {
+    public Identifier getId() {
         return ID;
     }
 
     @Override
-    public ResourceLocation getNetworkType() {
+    public Identifier getNetworkType() {
         return ItemNetwork.TYPE;
     }
 

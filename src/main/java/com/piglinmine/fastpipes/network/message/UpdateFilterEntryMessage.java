@@ -13,7 +13,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -25,7 +25,7 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 public record UpdateFilterEntryMessage(BlockPos pos, Direction direction, int slotIndex, String filterString) implements CustomPacketPayload {
 
     public static final CustomPacketPayload.Type<UpdateFilterEntryMessage> TYPE =
-        new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "update_filter_entry"));
+        new CustomPacketPayload.Type<>(Identifier.fromNamespaceAndPath(FastPipes.MOD_ID, "update_filter_entry"));
 
     public static final StreamCodec<ByteBuf, UpdateFilterEntryMessage> STREAM_CODEC = StreamCodec.composite(
         BlockPos.STREAM_CODEC, UpdateFilterEntryMessage::pos,
@@ -81,7 +81,7 @@ public record UpdateFilterEntryMessage(BlockPos pos, Direction direction, int sl
             }
         } else {
             attachment.setTagOverride(slot, "");
-            ResourceLocation id = ResourceLocation.tryParse(filter);
+            Identifier id = Identifier.tryParse(filter);
             if (id == null) return;
             if (attachment.isFluidMode()) {
                 Fluid fluid = BuiltInRegistries.FLUID.get(id);
@@ -116,7 +116,7 @@ public record UpdateFilterEntryMessage(BlockPos pos, Direction direction, int sl
             }
         } else {
             attachment.setTagOverride(slot, "");
-            ResourceLocation id = ResourceLocation.tryParse(filter);
+            Identifier id = Identifier.tryParse(filter);
             if (id == null) return;
             if (attachment.isFluidMode()) {
                 Fluid fluid = BuiltInRegistries.FLUID.get(id);

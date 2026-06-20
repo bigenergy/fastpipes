@@ -6,7 +6,7 @@ import com.piglinmine.fastpipes.network.pipe.attachment.AttachmentFactory;
 import com.piglinmine.fastpipes.util.Raytracer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -31,7 +31,7 @@ import java.util.Map;
 import java.util.Objects;
 
 public class PipeShapeCache {
-    private static final ResourceLocation[] NO_ATTACHMENT_STATE = new ResourceLocation[Direction.values().length];
+    private static final Identifier[] NO_ATTACHMENT_STATE = new Identifier[Direction.values().length];
 
     private final PipeShapeFactory shapeFactory;
     private final List<AABB> attachmentShapes = new ArrayList<>();
@@ -78,7 +78,7 @@ public class PipeShapeCache {
     }
 
     private VoxelShape createShapeIfNeeded(BlockState state, BlockGetter world, BlockPos pos) {
-        ResourceLocation[] attachmentState;
+        Identifier[] attachmentState;
 
         BlockEntity blockEntity = world.getBlockEntity(pos);
         if (blockEntity instanceof PipeBlockEntity) {
@@ -94,9 +94,9 @@ public class PipeShapeCache {
 
     public static class PipeShapeCacheEntry {
         private final BlockState state;
-        private final ResourceLocation[] attachmentState;
+        private final Identifier[] attachmentState;
 
-        public PipeShapeCacheEntry(BlockState state, ResourceLocation[] attachmentState) {
+        public PipeShapeCacheEntry(BlockState state, Identifier[] attachmentState) {
             this.state = state;
             this.attachmentState = attachmentState.clone();
         }
@@ -105,7 +105,7 @@ public class PipeShapeCache {
             return state;
         }
 
-        public ResourceLocation[] getAttachmentState() {
+        public Identifier[] getAttachmentState() {
             return attachmentState;
         }
 

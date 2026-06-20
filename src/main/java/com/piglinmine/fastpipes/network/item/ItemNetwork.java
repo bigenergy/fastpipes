@@ -14,7 +14,7 @@ import com.piglinmine.fastpipes.routing.Graph;
 import com.piglinmine.fastpipes.routing.Node;
 import com.piglinmine.fastpipes.routing.NodeIndex;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.Level;
 
 import java.util.List;
@@ -22,7 +22,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class ItemNetwork extends Network {
-    public static final ResourceLocation TYPE = ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "item");
+    public static final Identifier TYPE = Identifier.fromNamespaceAndPath(FastPipes.MOD_ID, "item");
 
     private DestinationPathCache destinationPathCache;
 
@@ -45,7 +45,7 @@ public class ItemNetwork extends Network {
     }
 
     @Override
-    public ResourceLocation getType() {
+    public Identifier getType() {
         return TYPE;
     }
 

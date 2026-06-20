@@ -7,13 +7,13 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record TerminalStatusMessage(String messageKey) implements CustomPacketPayload {
 
     public static final Type<TerminalStatusMessage> TYPE =
-        new Type<>(ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "terminal_status"));
+        new Type<>(Identifier.fromNamespaceAndPath(FastPipes.MOD_ID, "terminal_status"));
 
     public static final StreamCodec<ByteBuf, TerminalStatusMessage> STREAM_CODEC = StreamCodec.composite(
         ByteBufCodecs.STRING_UTF8,

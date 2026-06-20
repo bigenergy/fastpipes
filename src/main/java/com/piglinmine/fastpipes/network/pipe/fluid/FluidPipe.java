@@ -7,11 +7,11 @@ import com.piglinmine.fastpipes.network.message.FluidPipeMessage;
 import com.piglinmine.fastpipes.network.pipe.Pipe;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.Level;
 
 public class FluidPipe extends Pipe {
-    public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "fluid");
+    public static final Identifier ID = Identifier.fromNamespaceAndPath(FastPipes.MOD_ID, "fluid");
 
     private final FluidPipeType type;
     private float lastFullness = 0;
@@ -71,12 +71,12 @@ public class FluidPipe extends Pipe {
     }
 
     @Override
-    public ResourceLocation getId() {
+    public Identifier getId() {
         return ID;
     }
 
     @Override
-    public ResourceLocation getNetworkType() {
+    public Identifier getNetworkType() {
         return type.getNetworkType();
     }
 } 

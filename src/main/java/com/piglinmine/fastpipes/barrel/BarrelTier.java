@@ -1,6 +1,6 @@
 package com.piglinmine.fastpipes.barrel;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import com.piglinmine.fastpipes.FastPipes;
 
 public enum BarrelTier {
@@ -37,8 +37,8 @@ public enum BarrelTier {
         return name + "_barrel";
     }
 
-    public ResourceLocation getGuiTexture() {
-        return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "textures/gui/" + name + "_barrel_gui.png");
+    public Identifier getGuiTexture() {
+        return Identifier.fromNamespaceAndPath(FastPipes.MOD_ID, "textures/gui/" + name + "_barrel_gui.png");
     }
 
     public boolean canUpgradeTo(BarrelTier target) {

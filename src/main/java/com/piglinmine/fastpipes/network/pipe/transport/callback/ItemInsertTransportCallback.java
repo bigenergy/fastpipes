@@ -9,7 +9,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -22,7 +22,7 @@ import org.apache.logging.log4j.Logger;
 import javax.annotation.Nullable;
 
 public class ItemInsertTransportCallback implements TransportCallback {
-    public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "item_insert");
+    public static final Identifier ID = Identifier.fromNamespaceAndPath(FastPipes.MOD_ID, "item_insert");
     private static final Logger LOGGER = LogManager.getLogger(ItemInsertTransportCallback.class);
     
     private final BlockPos itemHandlerPosition;
@@ -90,7 +90,7 @@ public class ItemInsertTransportCallback implements TransportCallback {
     }
 
     @Override
-    public ResourceLocation getId() {
+    public Identifier getId() {
         return ID;
     }
 

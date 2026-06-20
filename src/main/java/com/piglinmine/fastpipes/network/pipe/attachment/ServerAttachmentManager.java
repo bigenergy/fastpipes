@@ -5,7 +5,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import org.apache.logging.log4j.LogManager;
@@ -21,7 +21,7 @@ public class ServerAttachmentManager implements AttachmentManager {
     private static final Logger LOGGER = LogManager.getLogger(ServerAttachmentManager.class);
 
     private final Map<Direction, Attachment> attachments = new HashMap<>();
-    private final ResourceLocation[] attachmentState = new ResourceLocation[Direction.values().length];
+    private final Identifier[] attachmentState = new Identifier[Direction.values().length];
 
     private final Pipe pipe;
 
@@ -101,7 +101,7 @@ public class ServerAttachmentManager implements AttachmentManager {
         for (Tag item : attch) {
             CompoundTag attchTag = (CompoundTag) item;
 
-            AttachmentFactory factory = AttachmentRegistry.INSTANCE.getFactory(ResourceLocation.parse(attchTag.getString("typ")));
+            AttachmentFactory factory = AttachmentRegistry.INSTANCE.getFactory(Identifier.parse(attchTag.getString("typ")));
             if (factory != null) {
                 Attachment attachment = factory.createFromNbt(pipe, attchTag);
                 setAttachment(attachment.getDirection(), attachment);
@@ -112,7 +112,7 @@ public class ServerAttachmentManager implements AttachmentManager {
     }
 
     @Override
-    public ResourceLocation[] getState() {
+    public Identifier[] getState() {
         return attachmentState;
     }
 

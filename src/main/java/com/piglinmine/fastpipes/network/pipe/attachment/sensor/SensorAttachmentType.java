@@ -2,22 +2,22 @@ package com.piglinmine.fastpipes.network.pipe.attachment.sensor;
 
 import com.piglinmine.fastpipes.FastPipes;
 import com.piglinmine.fastpipes.FPipesItems;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 
 public enum SensorAttachmentType {
     INSTANCE;
 
-    public ResourceLocation getId() {
-        return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "sensor");
+    public Identifier getId() {
+        return Identifier.fromNamespaceAndPath(FastPipes.MOD_ID, "sensor");
     }
 
-    public ResourceLocation getItemId() {
-        return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "sensor_attachment");
+    public Identifier getItemId() {
+        return Identifier.fromNamespaceAndPath(FastPipes.MOD_ID, "sensor_attachment");
     }
 
-    public ResourceLocation getModelLocation() {
-        return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "block/pipe/attachment/sensor");
+    public Identifier getModelLocation() {
+        return Identifier.fromNamespaceAndPath(FastPipes.MOD_ID, "block/pipe/attachment/sensor");
     }
 
     public Item getItem() {

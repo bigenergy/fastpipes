@@ -3,7 +3,7 @@ package com.piglinmine.fastpipes.network.pipe.attachment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 
@@ -11,7 +11,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class ClientAttachmentManager implements AttachmentManager {
-    private final ResourceLocation[] attachmentState = new ResourceLocation[Direction.values().length];
+    private final Identifier[] attachmentState = new Identifier[Direction.values().length];
     private final ItemStack[] pickBlocks = new ItemStack[Direction.values().length];
 
     public ClientAttachmentManager() {
@@ -21,7 +21,7 @@ public class ClientAttachmentManager implements AttachmentManager {
     }
 
     @Override
-    public ResourceLocation[] getState() {
+    public Identifier[] getState() {
         return attachmentState;
     }
 
@@ -68,7 +68,7 @@ public class ClientAttachmentManager implements AttachmentManager {
             String pickBlockKey = "pb_" + dir.ordinal();
 
             if (tag.contains(attachmentKey)) {
-                attachmentState[dir.ordinal()] = ResourceLocation.parse(tag.getString(attachmentKey));
+                attachmentState[dir.ordinal()] = Identifier.parse(tag.getString(attachmentKey));
                 
                 if (tag.contains(pickBlockKey)) {
                     pickBlocks[dir.ordinal()] = ItemStack.parseOptional(

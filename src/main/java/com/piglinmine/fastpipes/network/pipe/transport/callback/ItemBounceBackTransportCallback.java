@@ -8,7 +8,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.Containers;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -21,7 +21,7 @@ import org.apache.logging.log4j.Logger;
 import javax.annotation.Nullable;
 
 public class ItemBounceBackTransportCallback implements TransportCallback {
-    public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "item_bounce_back");
+    public static final Identifier ID = Identifier.fromNamespaceAndPath(FastPipes.MOD_ID, "item_bounce_back");
     private static final Logger LOGGER = LogManager.getLogger(ItemBounceBackTransportCallback.class);
 
     private final BlockPos bounceBackItemHandlerPosition;
@@ -78,7 +78,7 @@ public class ItemBounceBackTransportCallback implements TransportCallback {
     }
 
     @Override
-    public ResourceLocation getId() {
+    public Identifier getId() {
         return ID;
     }
 

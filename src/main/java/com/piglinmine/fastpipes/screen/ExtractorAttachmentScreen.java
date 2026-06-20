@@ -17,7 +17,7 @@ import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
@@ -30,8 +30,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ExtractorAttachmentScreen extends BaseScreen<ExtractorAttachmentContainerMenu> {
-    private static final ResourceLocation RESOURCE = ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "textures/gui/extractor_attachment.png");
-    private static final ResourceLocation TAG_OVERLAY = ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "textures/gui/tag_overlay.png");
+    private static final Identifier RESOURCE = Identifier.fromNamespaceAndPath(FastPipes.MOD_ID, "textures/gui/extractor_attachment.png");
+    private static final Identifier TAG_OVERLAY = Identifier.fromNamespaceAndPath(FastPipes.MOD_ID, "textures/gui/tag_overlay.png");
 
     private final List<Component> tooltip = new ArrayList<>();
 
@@ -467,7 +467,7 @@ public class ExtractorAttachmentScreen extends BaseScreen<ExtractorAttachmentCon
         // Preview icon
         String val = filterStringBox != null ? filterStringBox.getValue().trim() : "";
         if (!val.isEmpty() && !val.startsWith("#")) {
-            var rl = net.minecraft.resources.ResourceLocation.tryParse(val);
+            var rl = net.minecraft.resources.Identifier.tryParse(val);
             if (rl != null) {
                 if (menu.isFluidMode()) {
                     var fluid = BuiltInRegistries.FLUID.get(rl);

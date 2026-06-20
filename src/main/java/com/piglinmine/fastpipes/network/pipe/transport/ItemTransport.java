@@ -12,7 +12,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.LongTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import org.apache.logging.log4j.LogManager;
@@ -110,17 +110,17 @@ public class ItemTransport {
 
         Direction initialDirection = Direction.values()[tag.getInt("initd")];
 
-        ResourceLocation finishedCallbackId = ResourceLocation.parse(tag.getString("fcid"));
+        Identifier finishedCallbackId = Identifier.parse(tag.getString("fcid"));
         TransportCallback finishedCallback = TransportCallbackFactoryRegistry.createCallback(
             finishedCallbackId, tag.getCompound("fc"), registries
         );
 
-        ResourceLocation cancelCallbackId = ResourceLocation.parse(tag.getString("ccid"));
+        Identifier cancelCallbackId = Identifier.parse(tag.getString("ccid"));
         TransportCallback cancelCallback = TransportCallbackFactoryRegistry.createCallback(
             cancelCallbackId, tag.getCompound("cc"), registries
         );
 
-        ResourceLocation pipeGoneCallbackId = ResourceLocation.parse(tag.getString("pgcid"));
+        Identifier pipeGoneCallbackId = Identifier.parse(tag.getString("pgcid"));
         TransportCallback pipeGoneCallback = TransportCallbackFactoryRegistry.createCallback(
             pipeGoneCallbackId, tag.getCompound("pgc"), registries
         );

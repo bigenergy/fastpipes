@@ -9,7 +9,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
@@ -19,7 +19,7 @@ import java.util.List;
 public record ItemTransportMessage(BlockPos pos, List<ItemTransportProps> props) implements CustomPacketPayload {
     
     public static final CustomPacketPayload.Type<ItemTransportMessage> TYPE = 
-        new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "item_transport"));
+        new CustomPacketPayload.Type<>(Identifier.fromNamespaceAndPath(FastPipes.MOD_ID, "item_transport"));
 
     public static final StreamCodec<RegistryFriendlyByteBuf, ItemTransportMessage> STREAM_CODEC = StreamCodec.composite(
         BlockPos.STREAM_CODEC,

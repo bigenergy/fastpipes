@@ -11,7 +11,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.saveddata.SavedData;
@@ -75,7 +75,7 @@ public class NetworkManager extends SavedData {
         setDirty();
     }
 
-    private void formNetworkAt(Level level, BlockPos pos, ResourceLocation type) {
+    private void formNetworkAt(Level level, BlockPos pos, Identifier type) {
         Network network = NetworkRegistry.INSTANCE.getFactory(type).create(pos);
 
         addNetwork(network);
@@ -152,7 +152,7 @@ public class NetworkManager extends SavedData {
         mergedNetworks.forEach(n -> n.onMergedWith(mainNetwork));
     }
 
-    private List<Pipe> findAdjacentPipes(BlockPos pos, ResourceLocation networkType) {
+    private List<Pipe> findAdjacentPipes(BlockPos pos, Identifier networkType) {
         List<Pipe> adjacentPipes = new ArrayList<>();
 
         for (Direction dir : Direction.values()) {
@@ -231,7 +231,7 @@ public class NetworkManager extends SavedData {
     }
 
     @Nullable
-    private Pipe findFirstAdjacentPipe(BlockPos pos, ResourceLocation networkType) {
+    private Pipe findFirstAdjacentPipe(BlockPos pos, Identifier networkType) {
         for (Direction dir : Direction.values()) {
             Pipe pipe = getPipe(pos.relative(dir));
 
@@ -258,7 +258,7 @@ public class NetworkManager extends SavedData {
             CompoundTag pipeTagCompound = (CompoundTag) pipeTag;
 
             // @BC
-            ResourceLocation factoryId = pipeTagCompound.contains("id") ? ResourceLocation.parse(pipeTagCompound.getString("id")) : ItemPipe.ID;
+            Identifier factoryId = pipeTagCompound.contains("id") ? Identifier.parse(pipeTagCompound.getString("id")) : ItemPipe.ID;
 
             PipeFactory factory = PipeRegistry.INSTANCE.getFactory(factoryId);
             if (factory == null) {
@@ -279,7 +279,7 @@ public class NetworkManager extends SavedData {
                 continue;
             }
 
-            ResourceLocation type = ResourceLocation.parse(netTagCompound.getString("type"));
+            Identifier type = Identifier.parse(netTagCompound.getString("type"));
 
             NetworkFactory factory = NetworkRegistry.INSTANCE.getFactory(type);
             if (factory == null) {

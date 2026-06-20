@@ -2,7 +2,7 @@ package com.piglinmine.fastpipes.network.pipe.energy;
 
 import com.piglinmine.fastpipes.FastPipes;
 import com.piglinmine.fastpipes.config.ServerConfig;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public enum EnergyPipeType {
     BASIC(0),
@@ -48,18 +48,18 @@ public enum EnergyPipeType {
         return getConfig().getTransferRate();
     }
 
-    public ResourceLocation getId() {
+    public Identifier getId() {
         switch (this) {
             case BASIC:
-                return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "basic_energy_pipe");
+                return Identifier.fromNamespaceAndPath(FastPipes.MOD_ID, "basic_energy_pipe");
             case IMPROVED:
-                return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "improved_energy_pipe");
+                return Identifier.fromNamespaceAndPath(FastPipes.MOD_ID, "improved_energy_pipe");
             case ADVANCED:
-                return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "advanced_energy_pipe");
+                return Identifier.fromNamespaceAndPath(FastPipes.MOD_ID, "advanced_energy_pipe");
             case ELITE:
-                return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "elite_energy_pipe");
+                return Identifier.fromNamespaceAndPath(FastPipes.MOD_ID, "elite_energy_pipe");
             case ULTIMATE:
-                return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "ultimate_energy_pipe");
+                return Identifier.fromNamespaceAndPath(FastPipes.MOD_ID, "ultimate_energy_pipe");
             default:
                 throw new RuntimeException("Unknown EnergyPipeType: " + this);
         }
@@ -68,9 +68,9 @@ public enum EnergyPipeType {
     /**
      * Single shared network type so pipes of different tiers can connect into one network.
      */
-    public static final ResourceLocation NETWORK_TYPE = ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "energy");
+    public static final Identifier NETWORK_TYPE = Identifier.fromNamespaceAndPath(FastPipes.MOD_ID, "energy");
 
-    public ResourceLocation getNetworkType() {
+    public Identifier getNetworkType() {
         return NETWORK_TYPE;
     }
 } 

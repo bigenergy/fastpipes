@@ -10,7 +10,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.Containers;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.Level;
@@ -25,7 +25,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public abstract class PipeBlockEntity extends BaseBlockEntity {
-    public static final ModelProperty<ResourceLocation[]> ATTACHMENTS_PROPERTY = new ModelProperty<>();
+    public static final ModelProperty<Identifier[]> ATTACHMENTS_PROPERTY = new ModelProperty<>();
     public static final ModelProperty<Integer> COLOR_PROPERTY = new ModelProperty<>();
     private final AttachmentManager clientAttachmentManager = new ClientAttachmentManager();
     private final Set<Direction> clientDisconnectedSides = EnumSet.noneOf(Direction.class);

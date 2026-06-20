@@ -6,13 +6,13 @@ import com.piglinmine.fastpipes.network.energy.EnergyNetwork;
 import com.piglinmine.fastpipes.network.pipe.Pipe;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
 
 public class EnergyPipe extends Pipe {
-    public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "energy");
+    public static final Identifier ID = Identifier.fromNamespaceAndPath(FastPipes.MOD_ID, "energy");
 
     private final EnergyPipeType type;
     @Nullable
@@ -58,12 +58,12 @@ public class EnergyPipe extends Pipe {
     }
 
     @Override
-    public ResourceLocation getId() {
+    public Identifier getId() {
         return ID;
     }
 
     @Override
-    public ResourceLocation getNetworkType() {
+    public Identifier getNetworkType() {
         return type.getNetworkType();
     }
 } 

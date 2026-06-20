@@ -5,7 +5,7 @@ import com.piglinmine.fastpipes.menu.TerminalContainerMenu;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
@@ -15,7 +15,7 @@ import java.util.List;
 public record TerminalRecipeTransferMessage(List<ItemStack> ingredients) implements CustomPacketPayload {
 
     public static final Type<TerminalRecipeTransferMessage> TYPE =
-        new Type<>(ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "terminal_recipe_transfer"));
+        new Type<>(Identifier.fromNamespaceAndPath(FastPipes.MOD_ID, "terminal_recipe_transfer"));
 
     public static final StreamCodec<RegistryFriendlyByteBuf, TerminalRecipeTransferMessage> STREAM_CODEC = new StreamCodec<>() {
         @Override

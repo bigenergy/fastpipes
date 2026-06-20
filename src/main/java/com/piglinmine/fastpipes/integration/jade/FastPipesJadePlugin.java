@@ -11,7 +11,7 @@ import com.piglinmine.fastpipes.blockentity.FluidPipeBlockEntity;
 import com.piglinmine.fastpipes.blockentity.ItemPipeBlockEntity;
 import com.piglinmine.fastpipes.blockentity.PipeBlockEntity;
 import com.piglinmine.fastpipes.blockentity.TerminalBlockEntity;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import snownee.jade.api.IWailaClientRegistration;
 import snownee.jade.api.IWailaCommonRegistration;
 import snownee.jade.api.IWailaPlugin;
@@ -20,11 +20,11 @@ import snownee.jade.api.WailaPlugin;
 @WailaPlugin
 public class FastPipesJadePlugin implements IWailaPlugin {
 
-    public static final ResourceLocation ENERGY_PIPE_INFO = ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "energy_pipe_info");
-    public static final ResourceLocation ITEM_PIPE_INFO = ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "item_pipe_info");
-    public static final ResourceLocation FLUID_PIPE_INFO = ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "fluid_pipe_info");
-    public static final ResourceLocation PIPE_ATTACHMENTS = ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "pipe_attachments");
-    public static final ResourceLocation TERMINAL_INFO = ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "terminal_info");
+    public static final Identifier ENERGY_PIPE_INFO = Identifier.fromNamespaceAndPath(FastPipes.MOD_ID, "energy_pipe_info");
+    public static final Identifier ITEM_PIPE_INFO = Identifier.fromNamespaceAndPath(FastPipes.MOD_ID, "item_pipe_info");
+    public static final Identifier FLUID_PIPE_INFO = Identifier.fromNamespaceAndPath(FastPipes.MOD_ID, "fluid_pipe_info");
+    public static final Identifier PIPE_ATTACHMENTS = Identifier.fromNamespaceAndPath(FastPipes.MOD_ID, "pipe_attachments");
+    public static final Identifier TERMINAL_INFO = Identifier.fromNamespaceAndPath(FastPipes.MOD_ID, "terminal_info");
 
     @Override
     public void register(IWailaCommonRegistration registration) {

@@ -1,7 +1,7 @@
 package com.piglinmine.fastpipes.render;
 
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -13,17 +13,17 @@ public class PipeState {
     @Nullable
     private final BlockState state;
     @Nullable
-    private final ResourceLocation[] attachmentState;
+    private final Identifier[] attachmentState;
     private final Direction side;
     private final RandomSource rand;
     @Nullable
     private final Integer colorId;
 
-    public PipeState(@Nullable BlockState state, @Nullable ResourceLocation[] attachmentState, Direction side, RandomSource rand) {
+    public PipeState(@Nullable BlockState state, @Nullable Identifier[] attachmentState, Direction side, RandomSource rand) {
         this(state, attachmentState, side, rand, null);
     }
 
-    public PipeState(@Nullable BlockState state, @Nullable ResourceLocation[] attachmentState, Direction side, RandomSource rand, @Nullable Integer colorId) {
+    public PipeState(@Nullable BlockState state, @Nullable Identifier[] attachmentState, Direction side, RandomSource rand, @Nullable Integer colorId) {
         this.state = state;
         this.attachmentState = attachmentState;
         this.side = side;
@@ -37,12 +37,12 @@ public class PipeState {
     }
 
     @Nullable
-    public ResourceLocation[] getAttachmentState() {
+    public Identifier[] getAttachmentState() {
         return attachmentState;
     }
 
     @Nullable
-    public ResourceLocation getAttachmentState(Direction direction) {
+    public Identifier getAttachmentState(Direction direction) {
         if (attachmentState == null) {
             return null;
         }

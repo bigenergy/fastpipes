@@ -11,7 +11,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.Block;
 
 import java.util.List;
@@ -50,13 +50,13 @@ public class VoidAttachmentFactory implements AttachmentFactory {
     }
 
     @Override
-    public ResourceLocation getItemId() { return type.getItemId(); }
+    public Identifier getItemId() { return type.getItemId(); }
 
     @Override
-    public ResourceLocation getId() { return type.getId(); }
+    public Identifier getId() { return type.getId(); }
 
     @Override
-    public ResourceLocation getModelLocation() { return type.getModelLocation(); }
+    public Identifier getModelLocation() { return type.getModelLocation(); }
 
     @Override
     public void addInformation(List<Component> tooltip) {

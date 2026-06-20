@@ -6,7 +6,7 @@ import com.piglinmine.fastpipes.network.pipe.attachment.ServerAttachmentManager;
 import net.minecraft.core.Direction;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
@@ -153,9 +153,9 @@ public abstract class Pipe {
         }
     }
 
-    public abstract ResourceLocation getId();
+    public abstract Identifier getId();
 
-    public abstract ResourceLocation getNetworkType();
+    public abstract Identifier getNetworkType();
 
     @Override
     public boolean equals(Object o) {

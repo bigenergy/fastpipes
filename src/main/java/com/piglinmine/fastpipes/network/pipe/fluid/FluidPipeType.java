@@ -2,7 +2,7 @@ package com.piglinmine.fastpipes.network.pipe.fluid;
 
 import com.piglinmine.fastpipes.FastPipes;
 import com.piglinmine.fastpipes.config.ServerConfig;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public enum FluidPipeType {
     BASIC(0),
@@ -48,24 +48,24 @@ public enum FluidPipeType {
         return getConfig().getTransferRate();
     }
 
-    public ResourceLocation getId() {
+    public Identifier getId() {
         switch (this) {
             case BASIC:
-                return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "basic_fluid_pipe");
+                return Identifier.fromNamespaceAndPath(FastPipes.MOD_ID, "basic_fluid_pipe");
             case IMPROVED:
-                return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "improved_fluid_pipe");
+                return Identifier.fromNamespaceAndPath(FastPipes.MOD_ID, "improved_fluid_pipe");
             case ADVANCED:
-                return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "advanced_fluid_pipe");
+                return Identifier.fromNamespaceAndPath(FastPipes.MOD_ID, "advanced_fluid_pipe");
             case ELITE:
-                return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "elite_fluid_pipe");
+                return Identifier.fromNamespaceAndPath(FastPipes.MOD_ID, "elite_fluid_pipe");
             case ULTIMATE:
-                return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "ultimate_fluid_pipe");
+                return Identifier.fromNamespaceAndPath(FastPipes.MOD_ID, "ultimate_fluid_pipe");
             default:
                 throw new RuntimeException("Unknown FluidPipeType: " + this);
         }
     }
 
-    public ResourceLocation getNetworkType() {
-        return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "fluid_" + name().toLowerCase());
+    public Identifier getNetworkType() {
+        return Identifier.fromNamespaceAndPath(FastPipes.MOD_ID, "fluid_" + name().toLowerCase());
     }
 } 

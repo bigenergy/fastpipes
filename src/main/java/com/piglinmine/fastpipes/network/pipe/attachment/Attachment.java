@@ -3,7 +3,7 @@ package com.piglinmine.fastpipes.network.pipe.attachment;
 import com.piglinmine.fastpipes.network.pipe.Pipe;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.fluids.FluidStack;
@@ -33,7 +33,7 @@ public abstract class Attachment {
 
     public abstract void update();
 
-    public abstract ResourceLocation getId();
+    public abstract Identifier getId();
 
     public abstract ItemStack getDrop();
 

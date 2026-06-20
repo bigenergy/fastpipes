@@ -18,7 +18,7 @@ import com.piglinmine.fastpipes.routing.Path;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -245,7 +245,7 @@ public class ExtractorAttachment extends Attachment {
 
                 boolean equals;
                 if (!override.isEmpty() && override.startsWith("#")) {
-                    ResourceLocation tagId = ResourceLocation.tryParse(override.substring(1));
+                    Identifier tagId = Identifier.tryParse(override.substring(1));
                     if (tagId != null) {
                         TagKey<Item> tag = TagKey.create(Registries.ITEM, tagId);
                         equals = stack.is(tag);
@@ -271,7 +271,7 @@ public class ExtractorAttachment extends Attachment {
 
                 boolean equals;
                 if (!override.isEmpty() && override.startsWith("#")) {
-                    ResourceLocation tagId = ResourceLocation.tryParse(override.substring(1));
+                    Identifier tagId = Identifier.tryParse(override.substring(1));
                     if (tagId != null) {
                         TagKey<Item> tag = TagKey.create(Registries.ITEM, tagId);
                         equals = stack.is(tag);
@@ -302,7 +302,7 @@ public class ExtractorAttachment extends Attachment {
 
                 boolean equals;
                 if (!override.isEmpty() && override.startsWith("#")) {
-                    ResourceLocation tagId = ResourceLocation.tryParse(override.substring(1));
+                    Identifier tagId = Identifier.tryParse(override.substring(1));
                     if (tagId != null) {
                         TagKey<Fluid> tag = TagKey.create(Registries.FLUID, tagId);
                         equals = stack.getFluid().builtInRegistryHolder().is(tag);
@@ -328,7 +328,7 @@ public class ExtractorAttachment extends Attachment {
 
                 boolean equals;
                 if (!override.isEmpty() && override.startsWith("#")) {
-                    ResourceLocation tagId = ResourceLocation.tryParse(override.substring(1));
+                    Identifier tagId = Identifier.tryParse(override.substring(1));
                     if (tagId != null) {
                         TagKey<Fluid> tag = TagKey.create(Registries.FLUID, tagId);
                         equals = stack.getFluid().builtInRegistryHolder().is(tag);
@@ -359,7 +359,7 @@ public class ExtractorAttachment extends Attachment {
     }
 
     @Override
-    public ResourceLocation getId() {
+    public Identifier getId() {
         return type.getId();
     }
 

@@ -6,7 +6,7 @@ import com.piglinmine.fastpipes.network.pipe.Pipe;
 import com.piglinmine.fastpipes.network.pipe.item.ItemPipe;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IBlockComponentProvider;
@@ -49,7 +49,7 @@ public enum ItemPipeComponentProvider implements IBlockComponentProvider, IServe
     }
 
     @Override
-    public ResourceLocation getUid() {
+    public Identifier getUid() {
         return FastPipesJadePlugin.ITEM_PIPE_INFO;
     }
 }

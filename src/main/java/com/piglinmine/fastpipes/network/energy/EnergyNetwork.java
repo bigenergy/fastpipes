@@ -7,7 +7,7 @@ import com.piglinmine.fastpipes.network.pipe.DestinationType;
 import com.piglinmine.fastpipes.network.pipe.energy.EnergyPipe;
 import com.piglinmine.fastpipes.network.pipe.energy.EnergyPipeType;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.capabilities.Capabilities;
@@ -125,7 +125,7 @@ public class EnergyNetwork extends Network {
     }
 
     @Override
-    public ResourceLocation getType() {
+    public Identifier getType() {
         return pipeType.getNetworkType();
     }
 

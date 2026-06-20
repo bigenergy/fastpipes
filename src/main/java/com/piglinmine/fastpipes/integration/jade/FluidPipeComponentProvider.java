@@ -7,7 +7,7 @@ import com.piglinmine.fastpipes.network.pipe.Pipe;
 import com.piglinmine.fastpipes.network.pipe.fluid.FluidPipe;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.fluids.FluidStack;
 
 import snownee.jade.api.BlockAccessor;
@@ -60,7 +60,7 @@ public enum FluidPipeComponentProvider implements IBlockComponentProvider, IServ
     }
 
     @Override
-    public ResourceLocation getUid() {
+    public Identifier getUid() {
         return FastPipesJadePlugin.FLUID_PIPE_INFO;
     }
 }

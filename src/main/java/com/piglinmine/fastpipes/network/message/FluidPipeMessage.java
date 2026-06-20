@@ -8,7 +8,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
@@ -16,7 +16,7 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 public record FluidPipeMessage(BlockPos pos, FluidStack fluid, float fullness) implements CustomPacketPayload {
     
     public static final CustomPacketPayload.Type<FluidPipeMessage> TYPE = 
-        new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "fluid_pipe"));
+        new CustomPacketPayload.Type<>(Identifier.fromNamespaceAndPath(FastPipes.MOD_ID, "fluid_pipe"));
 
     public static final StreamCodec<RegistryFriendlyByteBuf, FluidPipeMessage> STREAM_CODEC = StreamCodec.composite(
         BlockPos.STREAM_CODEC,

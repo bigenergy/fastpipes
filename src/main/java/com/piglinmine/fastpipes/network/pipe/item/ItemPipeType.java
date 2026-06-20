@@ -2,7 +2,7 @@ package com.piglinmine.fastpipes.network.pipe.item;
 
 import com.piglinmine.fastpipes.FastPipes;
 import com.piglinmine.fastpipes.config.ServerConfig;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public enum ItemPipeType {
     BASIC(0),
@@ -40,20 +40,20 @@ public enum ItemPipeType {
         return getConfig().getMaxTicks();
     }
 
-    public ResourceLocation getId() {
+    public Identifier getId() {
         switch (this) {
             case BASIC:
-                return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "basic_item_pipe");
+                return Identifier.fromNamespaceAndPath(FastPipes.MOD_ID, "basic_item_pipe");
             case IMPROVED:
-                return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "improved_item_pipe");
+                return Identifier.fromNamespaceAndPath(FastPipes.MOD_ID, "improved_item_pipe");
             case ADVANCED:
-                return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "advanced_item_pipe");
+                return Identifier.fromNamespaceAndPath(FastPipes.MOD_ID, "advanced_item_pipe");
             default:
                 throw new RuntimeException("Unknown ItemPipeType: " + this);
         }
     }
 
-    public ResourceLocation getNetworkType() {
-        return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "item_" + name().toLowerCase());
+    public Identifier getNetworkType() {
+        return Identifier.fromNamespaceAndPath(FastPipes.MOD_ID, "item_" + name().toLowerCase());
     }
 } 

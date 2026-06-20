@@ -7,7 +7,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.neoforged.neoforge.fluids.FluidStack;
@@ -16,7 +16,7 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 public record FluidFilterSlotUpdateMessage(int containerSlot, FluidStack stack) implements CustomPacketPayload {
     
     public static final CustomPacketPayload.Type<FluidFilterSlotUpdateMessage> TYPE = 
-        new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "fluid_filter_slot_update"));
+        new CustomPacketPayload.Type<>(Identifier.fromNamespaceAndPath(FastPipes.MOD_ID, "fluid_filter_slot_update"));
 
     public static final StreamCodec<RegistryFriendlyByteBuf, FluidFilterSlotUpdateMessage> STREAM_CODEC = StreamCodec.composite(
         ByteBufCodecs.VAR_INT,

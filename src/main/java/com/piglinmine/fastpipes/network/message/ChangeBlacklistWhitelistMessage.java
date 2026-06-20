@@ -14,14 +14,14 @@ import net.minecraft.core.Direction;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record ChangeBlacklistWhitelistMessage(BlockPos pos, Direction direction, boolean blacklist) implements CustomPacketPayload {
     
     public static final CustomPacketPayload.Type<ChangeBlacklistWhitelistMessage> TYPE = 
-        new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "change_blacklist_whitelist"));
+        new CustomPacketPayload.Type<>(Identifier.fromNamespaceAndPath(FastPipes.MOD_ID, "change_blacklist_whitelist"));
 
     public static final StreamCodec<RegistryFriendlyByteBuf, ChangeBlacklistWhitelistMessage> STREAM_CODEC = StreamCodec.composite(
         BlockPos.STREAM_CODEC, ChangeBlacklistWhitelistMessage::pos,

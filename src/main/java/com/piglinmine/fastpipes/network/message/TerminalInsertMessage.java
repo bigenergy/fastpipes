@@ -6,13 +6,13 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record TerminalInsertMessage(boolean all) implements CustomPacketPayload {
 
     public static final Type<TerminalInsertMessage> TYPE =
-        new Type<>(ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "terminal_insert"));
+        new Type<>(Identifier.fromNamespaceAndPath(FastPipes.MOD_ID, "terminal_insert"));
 
     public static final StreamCodec<ByteBuf, TerminalInsertMessage> STREAM_CODEC = StreamCodec.composite(
         ByteBufCodecs.BOOL,

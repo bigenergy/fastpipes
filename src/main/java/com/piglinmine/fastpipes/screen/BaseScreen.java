@@ -8,7 +8,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
@@ -30,7 +30,7 @@ public abstract class BaseScreen<T extends BaseContainerMenu> extends AbstractCo
 
     private void renderFluidInSlot(GuiGraphics graphics, int x, int y, FluidStack fluid) {
         IClientFluidTypeExtensions ext = IClientFluidTypeExtensions.of(fluid.getFluid());
-        ResourceLocation texture = ext.getStillTexture(fluid);
+        Identifier texture = ext.getStillTexture(fluid);
         if (texture == null) return;
 
         TextureAtlasSprite sprite = Minecraft.getInstance()

@@ -2,7 +2,7 @@ package com.piglinmine.fastpipes.network.pipe.attachment;
 
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 
@@ -11,13 +11,13 @@ import javax.annotation.Nullable;
 
 public class DummyAttachmentManager implements AttachmentManager {
     public static final DummyAttachmentManager INSTANCE = new DummyAttachmentManager();
-    private static final ResourceLocation[] STATE = new ResourceLocation[Direction.values().length];
+    private static final Identifier[] STATE = new Identifier[Direction.values().length];
 
     private DummyAttachmentManager() {
     }
 
     @Override
-    public ResourceLocation[] getState() {
+    public Identifier[] getState() {
         return STATE;
     }
 

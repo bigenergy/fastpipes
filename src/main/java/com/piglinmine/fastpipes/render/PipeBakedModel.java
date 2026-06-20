@@ -11,7 +11,7 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.Direction;
 import net.minecraft.core.BlockMath;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.block.state.BlockState;
@@ -38,10 +38,10 @@ public class PipeBakedModel implements BakedModel {
     private final BakedModel extension;
     private final BakedModel straight;
     private final BakedModel inventoryAttachment;
-    private final Map<ResourceLocation, BakedModel> attachmentModels;
+    private final Map<Identifier, BakedModel> attachmentModels;
     private final Map<PipeState, List<BakedQuad>> cache = new ConcurrentHashMap<>();
 
-    public PipeBakedModel(BakedModel core, BakedModel extension, BakedModel straight, BakedModel inventoryAttachment, Map<ResourceLocation, BakedModel> attachmentModels) {
+    public PipeBakedModel(BakedModel core, BakedModel extension, BakedModel straight, BakedModel inventoryAttachment, Map<Identifier, BakedModel> attachmentModels) {
         this.core = core;
         this.extension = extension;
         this.straight = straight;
@@ -57,7 +57,7 @@ public class PipeBakedModel implements BakedModel {
     @Nonnull
     @Override
     public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @Nonnull RandomSource rand, @Nonnull ModelData extraData, @Nullable RenderType renderType) {
-        ResourceLocation[] attachmentState = extraData.get(PipeBlockEntity.ATTACHMENTS_PROPERTY);
+        Identifier[] attachmentState = extraData.get(PipeBlockEntity.ATTACHMENTS_PROPERTY);
         Integer colorId = extraData.get(PipeBlockEntity.COLOR_PROPERTY);
         PipeState pipeState = new PipeState(state, attachmentState, side, rand, colorId);
 
@@ -122,7 +122,7 @@ public class PipeBakedModel implements BakedModel {
         if (state.getAttachmentState() != null) {
             LOGGER.debug("Processing attachments for pipe at state: {}", Arrays.toString(state.getAttachmentState()));
             for (Direction dir : Direction.values()) {
-                ResourceLocation attachmentId = state.getAttachmentState()[dir.ordinal()];
+                Identifier attachmentId = state.getAttachmentState()[dir.ordinal()];
 
                 if (attachmentId != null) {
                     LOGGER.debug("Found attachment {} in direction {}", attachmentId, dir);

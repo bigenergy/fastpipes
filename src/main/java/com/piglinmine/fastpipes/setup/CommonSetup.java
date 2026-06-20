@@ -23,7 +23,7 @@ import com.piglinmine.fastpipes.network.pipe.fluid.FluidPipeType;
 import com.piglinmine.fastpipes.network.pipe.item.ItemPipe;
 import com.piglinmine.fastpipes.network.pipe.item.ItemPipeFactory;
 import com.piglinmine.fastpipes.network.pipe.transport.callback.TransportCallbackFactoryRegistry;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import com.piglinmine.fastpipes.FastPipes;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
@@ -77,7 +77,7 @@ public class CommonSetup {
 
         // Legacy IDs for save backward compatibility (older worlds stored per-tier network types).
         for (EnergyPipeType pipeType : EnergyPipeType.values()) {
-            ResourceLocation legacyId = ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "energy_" + pipeType.name().toLowerCase());
+            Identifier legacyId = Identifier.fromNamespaceAndPath(FastPipes.MOD_ID, "energy_" + pipeType.name().toLowerCase());
             NetworkRegistry.INSTANCE.addFactory(legacyId, energyFactory);
             LOGGER.debug("Registered legacy EnergyNetworkFactory alias: {}", legacyId);
         }

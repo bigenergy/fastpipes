@@ -16,7 +16,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IBlockComponentProvider;
 import snownee.jade.api.IServerDataProvider;
@@ -104,7 +104,7 @@ public enum PipeAttachmentProvider implements IBlockComponentProvider, IServerDa
             tag.putString("id", att.getId().toString());
 
             var dropItem = att.getDrop().getItem();
-            ResourceLocation itemKey = BuiltInRegistries.ITEM.getKey(dropItem);
+            Identifier itemKey = BuiltInRegistries.ITEM.getKey(dropItem);
             if (itemKey != null) {
                 tag.putString("itemId", itemKey.toString());
             }
@@ -141,7 +141,7 @@ public enum PipeAttachmentProvider implements IBlockComponentProvider, IServerDa
     }
 
     @Override
-    public ResourceLocation getUid() {
+    public Identifier getUid() {
         return FastPipesJadePlugin.PIPE_ATTACHMENTS;
     }
 }

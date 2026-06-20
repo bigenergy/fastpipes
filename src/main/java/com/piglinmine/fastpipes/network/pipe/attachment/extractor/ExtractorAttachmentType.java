@@ -3,7 +3,7 @@ package com.piglinmine.fastpipes.network.pipe.attachment.extractor;
 import com.piglinmine.fastpipes.FastPipes;
 import com.piglinmine.fastpipes.FPipesItems;
 import com.piglinmine.fastpipes.config.ServerConfig;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 
 public enum ExtractorAttachmentType {
@@ -94,35 +94,35 @@ public enum ExtractorAttachmentType {
         }
     }
 
-    public ResourceLocation getId() {
+    public Identifier getId() {
         switch (this) {
             case BASIC:
-                return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "basic_extractor");
+                return Identifier.fromNamespaceAndPath(FastPipes.MOD_ID, "basic_extractor");
             case IMPROVED:
-                return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "improved_extractor");
+                return Identifier.fromNamespaceAndPath(FastPipes.MOD_ID, "improved_extractor");
             case ADVANCED:
-                return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "advanced_extractor");
+                return Identifier.fromNamespaceAndPath(FastPipes.MOD_ID, "advanced_extractor");
             case ELITE:
-                return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "elite_extractor");
+                return Identifier.fromNamespaceAndPath(FastPipes.MOD_ID, "elite_extractor");
             case ULTIMATE:
-                return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "ultimate_extractor");
+                return Identifier.fromNamespaceAndPath(FastPipes.MOD_ID, "ultimate_extractor");
             default:
                 throw new RuntimeException("?");
         }
     }
 
-    ResourceLocation getItemId() {
+    Identifier getItemId() {
         switch (this) {
             case BASIC:
-                return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "basic_extractor_attachment");
+                return Identifier.fromNamespaceAndPath(FastPipes.MOD_ID, "basic_extractor_attachment");
             case IMPROVED:
-                return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "improved_extractor_attachment");
+                return Identifier.fromNamespaceAndPath(FastPipes.MOD_ID, "improved_extractor_attachment");
             case ADVANCED:
-                return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "advanced_extractor_attachment");
+                return Identifier.fromNamespaceAndPath(FastPipes.MOD_ID, "advanced_extractor_attachment");
             case ELITE:
-                return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "elite_extractor_attachment");
+                return Identifier.fromNamespaceAndPath(FastPipes.MOD_ID, "elite_extractor_attachment");
             case ULTIMATE:
-                return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "ultimate_extractor_attachment");
+                return Identifier.fromNamespaceAndPath(FastPipes.MOD_ID, "ultimate_extractor_attachment");
             default:
                 throw new RuntimeException("?");
         }
@@ -145,18 +145,18 @@ public enum ExtractorAttachmentType {
         }
     }
 
-    ResourceLocation getModelLocation() {
+    Identifier getModelLocation() {
         switch (this) {
             case BASIC:
-                return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "block/pipe/attachment/extractor/basic");
+                return Identifier.fromNamespaceAndPath(FastPipes.MOD_ID, "block/pipe/attachment/extractor/basic");
             case IMPROVED:
-                return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "block/pipe/attachment/extractor/improved");
+                return Identifier.fromNamespaceAndPath(FastPipes.MOD_ID, "block/pipe/attachment/extractor/improved");
             case ADVANCED:
-                return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "block/pipe/attachment/extractor/advanced");
+                return Identifier.fromNamespaceAndPath(FastPipes.MOD_ID, "block/pipe/attachment/extractor/advanced");
             case ELITE:
-                return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "block/pipe/attachment/extractor/elite");
+                return Identifier.fromNamespaceAndPath(FastPipes.MOD_ID, "block/pipe/attachment/extractor/elite");
             case ULTIMATE:
-                return ResourceLocation.fromNamespaceAndPath(FastPipes.MOD_ID, "block/pipe/attachment/extractor/ultimate");
+                return Identifier.fromNamespaceAndPath(FastPipes.MOD_ID, "block/pipe/attachment/extractor/ultimate");
             default:
                 throw new RuntimeException("?");
         }

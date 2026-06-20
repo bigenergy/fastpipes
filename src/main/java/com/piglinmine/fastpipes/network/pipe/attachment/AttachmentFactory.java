@@ -4,7 +4,7 @@ import com.piglinmine.fastpipes.network.pipe.Pipe;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.Block;
 
 import java.util.List;
@@ -14,11 +14,11 @@ public interface AttachmentFactory {
 
     Attachment create(Pipe pipe, Direction dir);
 
-    ResourceLocation getItemId();
+    Identifier getItemId();
 
-    ResourceLocation getId();
+    Identifier getId();
 
-    ResourceLocation getModelLocation();
+    Identifier getModelLocation();
 
     void addInformation(List<Component> tooltip);
 

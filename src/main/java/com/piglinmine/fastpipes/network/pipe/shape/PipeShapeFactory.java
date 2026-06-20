@@ -2,7 +2,7 @@ package com.piglinmine.fastpipes.network.pipe.shape;
 
 import com.piglinmine.fastpipes.block.PipeBlock;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -11,7 +11,7 @@ public class PipeShapeFactory {
     public PipeShapeFactory() {
     }
 
-    public VoxelShape createShape(BlockState state, ResourceLocation[] attachmentState) {
+    public VoxelShape createShape(BlockState state, Identifier[] attachmentState) {
         VoxelShape shape = PipeShapeProps.CORE_SHAPE;
 
         if (state.getValue(PipeBlock.NORTH)) {

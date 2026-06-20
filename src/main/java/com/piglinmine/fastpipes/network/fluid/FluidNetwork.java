@@ -10,7 +10,7 @@ import com.piglinmine.fastpipes.network.pipe.fluid.FluidPipeType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.capabilities.Capabilities;
@@ -129,7 +129,7 @@ public class FluidNetwork extends Network {
     }
 
     @Override
-    public ResourceLocation getType() {
+    public Identifier getType() {
         return pipeType.getNetworkType();
     }
 
