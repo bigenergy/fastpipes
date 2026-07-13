@@ -109,6 +109,13 @@ public class ExtractorAttachment extends Attachment {
 
         BlockPos destinationPos = pipe.getPos().relative(getDirection());
 
+        // Don't force-load the target chunk: getBlockEntity on an unloaded chunk triggers a
+        // synchronous chunk load on the server thread, which can hang the tick when heavy
+        // structures need DataFixer decoding. Skip this update instead — we'll try again next tick.
+        if (!pipe.getLevel().isLoaded(destinationPos)) {
+            return;
+        }
+
         BlockEntity blockEntity = pipe.getLevel().getBlockEntity(destinationPos);
         if (blockEntity == null) {
             return;
@@ -165,6 +172,12 @@ public class ExtractorAttachment extends Attachment {
 
             // Pre-check destination capacity — don't extract if items can't fit there.
             // This prevents orphaned items that would otherwise bounce back / drop in world.
+            // Skip destinations in unloaded chunks: touching them would force a synchronous
+            // chunk load on the tick thread. Try again next tick.
+            if (!pipe.getLevel().isLoaded(destination.getReceiver())) {
+                slot++;
+                continue;
+            }
             IItemHandler destHandler = CapabilityUtil.getItemHandler(
                 pipe.getLevel(),
                 destination.getReceiver(),

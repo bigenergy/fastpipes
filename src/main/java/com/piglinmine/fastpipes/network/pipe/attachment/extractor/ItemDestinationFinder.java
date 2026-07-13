@@ -105,6 +105,13 @@ public class ItemDestinationFinder {
             return att.canInsert(extracted);
         }
 
+        // Skip destinations in unloaded chunks: getBlockEntity/getCapability would force a
+        // synchronous chunk load on the tick thread. Treat as unavailable — will be re-checked
+        // next tick when the chunk may have loaded naturally.
+        if (!destination.getConnectedPipe().getLevel().isLoaded(destination.getReceiver())) {
+            return false;
+        }
+
         BlockEntity blockEntity = destination.getConnectedPipe().getLevel().getBlockEntity(destination.getReceiver());
         if (blockEntity == null) {
             return false;

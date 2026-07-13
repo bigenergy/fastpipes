@@ -80,6 +80,13 @@ public class EnergyNetwork extends Network {
             }
 
             for (Destination destination : destinations) {
+                // Skip destinations in unloaded chunks: getBlockEntity/getCapability would
+                // force a synchronous chunk load on the tick thread, which can hang the server
+                // under heavy DataFixer decode paths. Try again next tick.
+                if (!destination.getConnectedPipe().getLevel().isLoaded(destination.getReceiver())) {
+                    continue;
+                }
+
                 BlockEntity blockEntity = destination.getConnectedPipe().getLevel().getBlockEntity(destination.getReceiver());
                 if (blockEntity == null) {
                     continue;
