@@ -104,6 +104,14 @@ public class NetworkGraphScanner {
                 destinations.add(new Destination(DestinationType.ITEM_HANDLER, request.getPos(), request.getDirection(), connectedPipe));
                 destinations.add(new Destination(DestinationType.FLUID_HANDLER, request.getPos(), request.getDirection(), connectedPipe));
             } else if (att == null || att.isItemDestinationProvider()) {
+                // Skip neighbors in unloaded chunks: getBlockEntity/getCapability would force a
+                // synchronous chunk load on the tick thread, which can hang the server under
+                // heavy DataFixer decode paths. The neighbor will be re-scanned when its chunk
+                // loads naturally (network re-scan triggers on pipe changes anyway).
+                if (!request.getLevel().isLoaded(request.getPos())) {
+                    return;
+                }
+
                 BlockEntity blockEntity = request.getLevel().getBlockEntity(request.getPos());
 
                 if (blockEntity != null) {

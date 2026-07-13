@@ -91,6 +91,12 @@ public class FluidNetwork extends Network {
                 continue;
             }
 
+            // Skip destinations in unloaded chunks: getBlockEntity/getCapability would
+            // force a synchronous chunk load on the tick thread. Try again next tick.
+            if (!destination.getConnectedPipe().getLevel().isLoaded(destination.getReceiver())) {
+                continue;
+            }
+
             BlockEntity blockEntity = destination.getConnectedPipe().getLevel().getBlockEntity(destination.getReceiver());
             if (blockEntity == null) {
                 continue;

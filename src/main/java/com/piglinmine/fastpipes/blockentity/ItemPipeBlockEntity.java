@@ -119,6 +119,9 @@ public class ItemPipeBlockEntity extends PipeBlockEntity {
 
     private boolean isPushDestinationApplicable(Destination d, BlockPos sourcePos, Direction side, ItemStack stack) {
         if (d.getReceiver().equals(sourcePos)) return false;
+        // Skip destinations in unloaded chunks: getBlockEntity/getCapability would force a
+        // synchronous chunk load on the tick thread. Treat as unavailable — item routes elsewhere.
+        if (!level.isLoaded(d.getReceiver())) return false;
         BlockEntity be = level.getBlockEntity(d.getReceiver());
         if (be == null) return false;
         IItemHandler handler = level.getCapability(Capabilities.ItemHandler.BLOCK, d.getReceiver(), d.getIncomingDirection().getOpposite());
