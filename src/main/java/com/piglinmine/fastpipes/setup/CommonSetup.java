@@ -134,9 +134,12 @@ public class CommonSetup {
 
     @SubscribeEvent
     public static void onLevelTick(TickEvent.LevelTickEvent event) {
-        // Update all networks on server side (only on END phase to match Post behavior)
+        // Snapshot before iterating: Network.update() can split/merge networks, which
+        // mutates the underlying HashMap and causes ConcurrentModificationException on
+        // the live values() view. A single list copy per tick is cheap.
         if (event.phase == TickEvent.Phase.END && !event.level.isClientSide()) {
-            NetworkManager.get(event.level).getNetworks().forEach(n -> n.update(event.level));
+            var snapshot = new java.util.ArrayList<>(NetworkManager.get(event.level).getNetworks());
+            snapshot.forEach(n -> n.update(event.level));
         }
     }
 } 
