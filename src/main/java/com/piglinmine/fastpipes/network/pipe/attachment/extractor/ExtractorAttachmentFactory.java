@@ -1,5 +1,6 @@
 package com.piglinmine.fastpipes.network.pipe.attachment.extractor;
 
+import com.piglinmine.fastpipes.block.EnergyPipeBlock;
 import com.piglinmine.fastpipes.block.FluidPipeBlock;
 import com.piglinmine.fastpipes.block.ItemPipeBlock;
 import com.piglinmine.fastpipes.network.pipe.Pipe;
@@ -128,6 +129,20 @@ public class ExtractorAttachmentFactory implements AttachmentFactory {
             fluidTickInterval
         ).withStyle(ChatFormatting.GRAY));
 
+        Component energyToExtract = Component.literal(StringUtil.formatNumber(type.getEnergyToExtract()) + " FE")
+            .withStyle(ChatFormatting.WHITE);
+
+        float energySecondsInterval = type.getEnergyTickInterval() / 20F;
+        Component energyTickInterval = Component.literal(StringUtil.formatNumber(energySecondsInterval) + " ")
+            .append(Component.translatable("misc.fastpipes.second" + (energySecondsInterval == 1 ? "" : "s")))
+            .withStyle(ChatFormatting.WHITE);
+
+        tooltip.add(Component.translatable(
+            "tooltip.fastpipes.extractor_attachment.energy_extraction_rate",
+            energyToExtract,
+            energyTickInterval
+        ).withStyle(ChatFormatting.GRAY));
+
         tooltip.add(Component.translatable(
             "tooltip.fastpipes.extractor_attachment.filter_slots",
             Component.literal("" + type.getFilterSlots()).withStyle(ChatFormatting.WHITE)
@@ -153,6 +168,7 @@ public class ExtractorAttachmentFactory implements AttachmentFactory {
     @Override
     public boolean canPlaceOnPipe(Block pipe) {
         return pipe instanceof ItemPipeBlock
-            || pipe instanceof FluidPipeBlock;
+            || pipe instanceof FluidPipeBlock
+            || pipe instanceof EnergyPipeBlock;
     }
 } 

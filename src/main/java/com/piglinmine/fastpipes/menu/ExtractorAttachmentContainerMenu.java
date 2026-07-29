@@ -28,6 +28,7 @@ public class ExtractorAttachmentContainerMenu extends BaseContainerMenu {
     private final Direction dir;
     private final ExtractorAttachmentType extractorAttachmentType;
     private final boolean fluidMode;
+    private final boolean energyMode;
 
     private RedstoneMode redstoneMode = RedstoneMode.IGNORED;
     private BlacklistWhitelist blacklistWhitelist = BlacklistWhitelist.BLACKLIST;
@@ -50,6 +51,7 @@ public class ExtractorAttachmentContainerMenu extends BaseContainerMenu {
         ItemStackHandler itemFilter,
         FluidInventory fluidFilter,
         boolean fluidMode,
+        boolean energyMode,
         String[] tagOverrides) {
         super(FPipesContainerMenus.EXTRACTOR_ATTACHMENT.get(), windowId, player);
 
@@ -57,7 +59,9 @@ public class ExtractorAttachmentContainerMenu extends BaseContainerMenu {
 
         int x = 44;
         int y = 19;
-        for (int i = 1; i <= type.getFilterSlots(); ++i) {
+        // Energy has no filterable identity, so no filter slots are offered in energy mode.
+        int filterSlots = energyMode ? 0 : type.getFilterSlots();
+        for (int i = 1; i <= filterSlots; ++i) {
             if (fluidMode) {
                 addSlot(new FluidFilterSlot(fluidFilter, i - 1, x, y));
             } else {
@@ -76,6 +80,7 @@ public class ExtractorAttachmentContainerMenu extends BaseContainerMenu {
         this.dir = dir;
         this.extractorAttachmentType = type;
         this.fluidMode = fluidMode;
+        this.energyMode = energyMode;
 
         this.redstoneMode = redstoneMode;
         this.blacklistWhitelist = blacklistWhitelist;
@@ -93,7 +98,7 @@ public class ExtractorAttachmentContainerMenu extends BaseContainerMenu {
         this(windowId, player, BlockPos.ZERO, Direction.NORTH,
              RedstoneMode.IGNORED, BlacklistWhitelist.BLACKLIST, RoutingMode.NEAREST,
              ExtractorAttachmentType.BASIC.getItemsToExtract(), false, ExtractorAttachmentType.BASIC,
-             new ItemStackHandler(15), new FluidInventory(15), false, new String[15]);
+             new ItemStackHandler(15), new FluidInventory(15), false, false, new String[15]);
     }
 
     public BlockPos getPos() {
@@ -106,6 +111,10 @@ public class ExtractorAttachmentContainerMenu extends BaseContainerMenu {
 
     public boolean isFluidMode() {
         return fluidMode;
+    }
+
+    public boolean isEnergyMode() {
+        return energyMode;
     }
 
     public ExtractorAttachmentType getExtractorAttachmentType() {

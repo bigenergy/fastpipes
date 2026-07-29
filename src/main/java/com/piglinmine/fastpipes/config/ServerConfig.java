@@ -83,6 +83,7 @@ public class ServerConfig {
                         "basic",
                         20 * 3, 8, // item tick interval, items to extract
                         0, 100, // fluid tick interval, fluids to extract
+                        0, 1000, // energy tick interval, energy to extract
                         0, // filter slots
                         false, // redstone mode
                         false, // whitelist blacklist
@@ -94,6 +95,7 @@ public class ServerConfig {
                         "improved",
                         20 * 2, 16, // item tick interval, items to extract
                         0, 400, // fluid tick interval, fluids to extract
+                        0, 4000, // energy tick interval, energy to extract
                         4, // filter slots
                         true, // redstone mode
                         false, // whitelist blacklist
@@ -105,6 +107,7 @@ public class ServerConfig {
                         "advanced",
                         20, 32, // item tick interval, items to extract
                         0, 800, // fluid tick interval, fluids to extract
+                        0, 8000, // energy tick interval, energy to extract
                         8, // filter slots
                         true, // redstone mode
                         true, // whitelist blacklist
@@ -116,6 +119,7 @@ public class ServerConfig {
                         "elite",
                         10, 64, // item tick interval, items to extract
                         0, 1600, // fluid tick interval, fluids to extract
+                        0, 16000, // energy tick interval, energy to extract
                         12, // filter slots
                         true, // redstone mode
                         true, // whitelist blacklist
@@ -127,6 +131,7 @@ public class ServerConfig {
                         "ultimate",
                         10, 64, // item tick interval, items to extract
                         0, 3200, // fluid tick interval, fluids to extract
+                        0, 32000, // energy tick interval, energy to extract
                         15, // filter slots
                         true, // redstone mode
                         true, // whitelist blacklist
@@ -320,6 +325,8 @@ public class ServerConfig {
         private final ModConfigSpec.IntValue itemsToExtract;
         private final ModConfigSpec.IntValue fluidTickInterval;
         private final ModConfigSpec.IntValue fluidsToExtract;
+        private final ModConfigSpec.IntValue energyTickInterval;
+        private final ModConfigSpec.IntValue energyToExtract;
         private final ModConfigSpec.IntValue filterSlots;
         private final ModConfigSpec.BooleanValue canSetRedstoneMode;
         private final ModConfigSpec.BooleanValue canSetWhitelistBlacklist;
@@ -333,6 +340,8 @@ public class ServerConfig {
             int defaultItemsToExtract,
             int defaultFluidTickInterval,
             int defaultFluidsToExtract,
+            int defaultEnergyTickInterval,
+            int defaultEnergyToExtract,
             int defaultFilterSlots,
             boolean defaultCanSetRedstoneMode,
             boolean defaultCanSetWhitelistBlacklist,
@@ -345,6 +354,8 @@ public class ServerConfig {
             itemsToExtract = builder.comment("The amount of items to extract per extraction.").defineInRange("itemsToExtract", defaultItemsToExtract, 0, 64);
             fluidTickInterval = builder.comment("The interval between fluid extractions in ticks. Lower is faster.").defineInRange("fluidTickInterval", defaultFluidTickInterval, 0, Integer.MAX_VALUE);
             fluidsToExtract = builder.comment("The amount of fluids in mB to extract per extraction.").defineInRange("fluidsToExtract", defaultFluidsToExtract, 0, Integer.MAX_VALUE);
+            energyTickInterval = builder.comment("The interval between energy extractions in ticks. Lower is faster.").defineInRange("energyTickInterval", defaultEnergyTickInterval, 0, Integer.MAX_VALUE);
+            energyToExtract = builder.comment("The amount of energy in FE to extract per extraction. Still capped by the pipe's transfer rate.").defineInRange("energyToExtract", defaultEnergyToExtract, 0, Integer.MAX_VALUE);
             filterSlots = builder.comment("The amount of filter slots allowed.").defineInRange("filterSlots", defaultFilterSlots, 0, 15);
             canSetRedstoneMode = builder.comment("Whether the redstone mode can be configured for this extractor.").define("canSetRedstoneMode", defaultCanSetRedstoneMode);
             canSetWhitelistBlacklist = builder.comment("Whether the extractor can be toggled between whitelist and blacklist.").define("canSetWhitelistBlacklist", defaultCanSetWhitelistBlacklist);
@@ -369,6 +380,14 @@ public class ServerConfig {
 
         public int getFluidsToExtract() {
             return fluidsToExtract.get();
+        }
+
+        public int getEnergyTickInterval() {
+            return energyTickInterval.get();
+        }
+
+        public int getEnergyToExtract() {
+            return energyToExtract.get();
         }
 
         public int getFilterSlots() {
