@@ -1,4 +1,23 @@
 # Changelog
+## [1.3.6] - 2026-07-29
+
+### Fixed
+- **Items dropped into the world when the destination was nearly full** — extractors sized their dispatch against a capability simulation, which reports the inventory as it is *now* and not as it will be once items already in transit land. With several ticks of travel time an extractor kept re-dispatching against the same free slot; the surplus arrived to a full inventory, bounced, was refused by output-only sources (farmer villagers, generators) and fell on the ground. Networks now track how many items are in flight toward each receiver and extractors subtract that from the free space they see. The count is rebuilt from the live transports every tick, so it cannot drift out of sync after a bounce, a broken pipe, a chunk unload, a world reload, or a network split.
+- **Extraction stalled once every destination was partially filled** — a destination was only considered usable if it could accept the *entire* stack, so a chest with room for 3 was skipped when the extractor offered 5, and extraction stopped completely once no destination had full room. Partial room is now enough; the extractor sends exactly what fits.
+- **Void Attachments never received items** — the full-destination pre-check added in 1.3.1 required an item-handler capability, but a void destination deliberately has no adjacent inventory and no capability, so every extraction toward one was skipped. Void destinations now bypass the capacity probe.
+
+### Changed
+- Items arriving at a destination that filled up mid-transit are now inserted partially instead of bouncing the whole stack — only the remainder is returned or, as a last resort, dropped.
+
+### Notes
+- This supersedes the partial fix shipped in 1.3.1 ("items no longer dropped in world when destination inventory is full"). That version pre-checked capacity but had no notion of items already in transit, so the drop could still happen under sustained throughput.
+
+## [1.3.5] - 2026-07-13
+
+### Fixed
+- **Server hang / watchdog crash caused by extractors reaching into unloaded chunks** — `Level.getBlockEntity` on an unloaded neighbour force-loads that chunk on the server thread. Under a heavy modpack the load path runs DataFixer and structure-template decoding and can block the tick for tens of seconds until the watchdog kills the server. Every tick-path lookup now checks `Level.isLoaded` first and simply retries next tick: extractor (adjacent and routed destination), energy and fluid network dispatch, item-pipe push destination check, network graph rescan, and destination filtering. No chunk is ever force-loaded.
+- **`ConcurrentModificationException` on level tick** — `Network.update()` can split or merge networks mid-iteration, mutating the map that was being walked. The network collection is now snapshotted before the update loop.
+
 ## [1.3.4] - 2026-06-20
 
 ### Fixed
