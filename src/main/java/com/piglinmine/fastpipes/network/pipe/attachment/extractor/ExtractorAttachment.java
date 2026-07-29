@@ -170,28 +170,42 @@ public class ExtractorAttachment extends Attachment {
                 continue;
             }
 
-            // Pre-check destination capacity — don't extract if items can't fit there.
-            // This prevents orphaned items that would otherwise bounce back / drop in world.
-            // Skip destinations in unloaded chunks: touching them would force a synchronous
-            // chunk load on the tick thread. Try again next tick.
-            if (!pipe.getLevel().isLoaded(destination.getReceiver())) {
-                slot++;
-                continue;
+            Attachment destAttachment = destination.getConnectedPipe()
+                .getAttachmentManager()
+                .getAttachment(destination.getIncomingDirection());
+            boolean voidDestination = destAttachment != null && destAttachment.isVoidDestination();
+
+            int fits;
+            if (voidDestination) {
+                // A void destination has no adjacent inventory and no capability (see
+                // NetworkGraphScanner) — it swallows whatever arrives, so skip the capacity probe.
+                fits = simulated.getCount();
+            } else {
+                // Skip destinations in unloaded chunks: touching them would force a synchronous
+                // chunk load on the tick thread. Try again next tick.
+                if (!pipe.getLevel().isLoaded(destination.getReceiver())) {
+                    slot++;
+                    continue;
+                }
+                IItemHandler destHandler = CapabilityUtil.getItemHandler(
+                    pipe.getLevel(),
+                    destination.getReceiver(),
+                    destination.getIncomingDirection().getOpposite()
+                );
+                if (destHandler == null) {
+                    slot++;
+                    continue;
+                }
+                // Extract only what the destination can actually accept — otherwise items pile
+                // up in transit, arrive full, and drop in the world when the source (farmer
+                // villager, generator, one-way inventory) refuses the bounce-back. The simulation
+                // reports the inventory as it is now, so items already in transit toward it have
+                // to be discounted too.
+                ItemStack destRemainder = net.minecraftforge.items.ItemHandlerHelper.insertItem(destHandler, simulated, true);
+                fits = simulated.getCount() - destRemainder.getCount()
+                    - network.getPendingInsertCount(pipe.getLevel(), destination.getReceiver());
             }
-            IItemHandler destHandler = CapabilityUtil.getItemHandler(
-                pipe.getLevel(),
-                destination.getReceiver(),
-                destination.getIncomingDirection().getOpposite()
-            );
-            if (destHandler == null) {
-                slot++;
-                continue;
-            }
-            // Extract only what the destination can actually accept — otherwise items pile
-            // up in transit, arrive full, and drop in the world when the source (farmer
-            // villager, generator, one-way inventory) refuses the bounce-back.
-            ItemStack destRemainder = net.minecraftforge.items.ItemHandlerHelper.insertItem(destHandler, simulated, true);
-            int fits = simulated.getCount() - destRemainder.getCount();
+
             if (fits <= 0) {
                 slot++;
                 continue;
@@ -214,6 +228,9 @@ public class ExtractorAttachment extends Attachment {
                 new ItemBounceBackTransportCallback(sourcePos, getDirection().getOpposite(), extracted),
                 new ItemPipeGoneTransportCallback(extracted)
             ));
+
+            // Book the space so the next loop iteration doesn't hand out the same slot twice.
+            network.reservePendingInsert(pipe.getLevel(), destination.getReceiver(), extracted.getCount());
 
             // If slot still has items, try it again; otherwise move to next
             if (source.getStackInSlot(slot).isEmpty()) {
