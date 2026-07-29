@@ -53,6 +53,14 @@ public enum ExtractorAttachmentType {
         return getConfig().getFluidsToExtract();
     }
 
+    int getEnergyTickInterval() {
+        return getConfig().getEnergyTickInterval();
+    }
+
+    public int getEnergyToExtract() {
+        return getConfig().getEnergyToExtract();
+    }
+
     public int getFilterSlots() {
         return getConfig().getFilterSlots();
     }

@@ -91,7 +91,9 @@ public class ExtractorAttachmentScreen extends BaseScreen<ExtractorAttachmentCon
             btn -> setBlacklistWhitelist((IconButton) btn, menu.getBlacklistWhitelist().next())
         ));
 
-        blacklistWhitelistButton.active = menu.getExtractorAttachmentType().getCanSetWhitelistBlacklist();
+        // Energy has no filterable identity, so filter-related controls are inert in energy mode.
+        blacklistWhitelistButton.active = menu.getExtractorAttachmentType().getCanSetWhitelistBlacklist()
+            && !menu.isEnergyMode();
 
         exactModeButton = this.addRenderableWidget(new IconButton(
             this.leftPos + 78,
@@ -103,9 +105,10 @@ public class ExtractorAttachmentScreen extends BaseScreen<ExtractorAttachmentCon
             btn -> setExactMode((IconButton) btn, !menu.isExactMode())
         ));
 
-        exactModeButton.active = menu.getExtractorAttachmentType().getCanSetExactMode();
+        exactModeButton.active = menu.getExtractorAttachmentType().getCanSetExactMode()
+            && !menu.isEnergyMode();
 
-        if (!menu.isFluidMode()) {
+        if (!menu.isFluidMode() && !menu.isEnergyMode()) {
             routingModeButton = this.addRenderableWidget(new IconButton(
                 this.leftPos + 101,
                 this.topPos + 76,
@@ -490,7 +493,7 @@ public class ExtractorAttachmentScreen extends BaseScreen<ExtractorAttachmentCon
     @Override
     protected void extractLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
 
-        if (!menu.isFluidMode()) {
+        if (!menu.isFluidMode() && !menu.isEnergyMode()) {
             // 1.21.11: GuiGraphicsExtractor.text skips colors with alpha 0. The legacy 4210752 (0x00404040)
             // had implicit alpha 0 and rendered nothing; vanilla now uses 0xFF404040 (signed -12566464).
             graphics.text(font, "" + menu.getStackSize(), 139, 83, 0xFF404040, false);

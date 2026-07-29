@@ -35,7 +35,7 @@ public class ExtractorAttachmentMenuProvider implements MenuProvider {
             attachment.getRoutingMode(), attachment.getStackSize(),
             attachment.isExactMode(), attachment.getType(),
             attachment.getItemFilter(), attachment.getFluidFilter(),
-            attachment.isFluidMode(), attachment.getTagOverrides()
+            attachment.isFluidMode(), attachment.isEnergyMode(), attachment.getTagOverrides()
         );
     }
 
@@ -50,6 +50,7 @@ public class ExtractorAttachmentMenuProvider implements MenuProvider {
             buf.writeBoolean(attachment.isExactMode());
             buf.writeByte(attachment.getType().ordinal());
             buf.writeBoolean(attachment.isFluidMode());
+            buf.writeBoolean(attachment.isEnergyMode());
 
             // Sync fluid filter contents to client
             for (int i = 0; i < ExtractorAttachment.MAX_FILTER_SLOTS; i++) {

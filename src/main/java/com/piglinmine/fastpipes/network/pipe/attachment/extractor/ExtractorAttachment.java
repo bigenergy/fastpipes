@@ -4,8 +4,11 @@ import com.piglinmine.fastpipes.inventory.fluid.FluidInventory;
 import com.piglinmine.fastpipes.menu.ExtractorAttachmentMenuProvider;
 import com.piglinmine.fastpipes.network.Network;
 import com.piglinmine.fastpipes.network.NetworkManager;
+import com.piglinmine.fastpipes.network.energy.EnergyNetwork;
+import com.piglinmine.fastpipes.network.energy.EnergyStorage;
 import com.piglinmine.fastpipes.network.fluid.FluidNetwork;
 import com.piglinmine.fastpipes.network.item.ItemNetwork;
+import com.piglinmine.fastpipes.network.pipe.energy.EnergyPipe;
 import com.piglinmine.fastpipes.network.pipe.Destination;
 import com.piglinmine.fastpipes.network.pipe.Pipe;
 import com.piglinmine.fastpipes.network.pipe.attachment.Attachment;
@@ -24,6 +27,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.energy.IEnergyStorage;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
@@ -97,6 +101,11 @@ public class ExtractorAttachment extends Attachment {
         return pipe.getNetwork() instanceof FluidNetwork;
     }
 
+    /** Energy has nothing to filter on, so the GUI hides the filter area in this mode. */
+    public boolean isEnergyMode() {
+        return pipe.getNetwork() instanceof EnergyNetwork;
+    }
+
     @Override
     public void update() {
         Network network = pipe.getNetwork();
@@ -106,6 +115,8 @@ public class ExtractorAttachment extends Attachment {
             tickInterval = type.getItemTickInterval();
         } else if (network instanceof FluidNetwork) {
             tickInterval = type.getFluidTickInterval();
+        } else if (network instanceof EnergyNetwork) {
+            tickInterval = type.getEnergyTickInterval();
         }
 
         if (tickInterval != 0 && (ticks++) % tickInterval != 0) {
@@ -136,6 +147,69 @@ public class ExtractorAttachment extends Attachment {
             IFluidHandler fluidHandler = capExtractorFluid == null ? null : IFluidHandler.of(capExtractorFluid);
             if (fluidHandler != null) {
                 update((FluidNetwork) network, fluidHandler);
+            }
+        } else if (network instanceof EnergyNetwork) {
+            var capExtractorEnergy = blockEntity.getLevel().getCapability(Capabilities.Energy.BLOCK, destinationPos, getDirection().getOpposite());
+            IEnergyStorage energyStorage = capExtractorEnergy == null ? null : IEnergyStorage.of(capExtractorEnergy);
+            if (energyStorage != null) {
+                update((EnergyNetwork) network, energyStorage);
+            }
+        }
+    }
+
+    /**
+     * Actively pulls energy out of the adjacent block into the network buffer.
+     *
+     * <p>Energy pipes are otherwise purely passive: they only receive what a machine decides to
+     * push into them. Devices that just expose an extractable buffer (Sophisticated Backpacks with
+     * an energy upgrade, most capacitors/accumulators) never push, so their charge was unreachable.
+     */
+    private void update(EnergyNetwork network, IEnergyStorage source) {
+        if (!source.canExtract()) {
+            return;
+        }
+
+        EnergyStorage buffer = network.getEnergyStorage();
+        int room = buffer.getMaxEnergyStored() - buffer.getEnergyStored();
+        if (room <= 0) {
+            return;
+        }
+
+        // The pipe carrying the extraction is the boundary, so it caps throughput — same rule the
+        // rest of the energy code follows (a Basic pipe never moves more than its own rate).
+        int rate = type.getEnergyToExtract();
+        if (pipe instanceof EnergyPipe energyPipe) {
+            rate = Math.min(rate, energyPipe.getType().getTransferRate());
+        }
+
+        int toMove = Math.min(rate, room);
+        if (toMove <= 0) {
+            return;
+        }
+
+        int available = source.extractEnergy(toMove, true);
+        if (available <= 0) {
+            return;
+        }
+
+        int acceptable = buffer.receiveEnergy(available, true);
+        if (acceptable <= 0) {
+            return;
+        }
+
+        int extracted = source.extractEnergy(acceptable, false);
+        if (extracted <= 0) {
+            return;
+        }
+
+        int inserted = buffer.receiveEnergy(extracted, false);
+        if (inserted < extracted) {
+            // Buffer shrank between simulation and commit (another extractor on the same tick).
+            // Hand the surplus back rather than voiding it.
+            int returned = source.receiveEnergy(extracted - inserted, false);
+            if (returned < extracted - inserted) {
+                LOGGER.warn("Lost {} FE extracting from {}: buffer refused it and the source wouldn't take it back",
+                    extracted - inserted - returned, pipe.getPos().relative(getDirection()));
             }
         }
     }

@@ -41,6 +41,7 @@
   "tooltip.fastpipes.energy_pipe.transfer_rate": "传输速率：%s",
   "tooltip.fastpipes.extractor_attachment.item_extraction_rate": "每%2$s提取%1$s",
   "tooltip.fastpipes.extractor_attachment.fluid_extraction_rate": "每%2$s提取%1$s",
+  "tooltip.fastpipes.extractor_attachment.energy_extraction_rate": "每%2$s提取%1$s",
   "tooltip.fastpipes.extractor_attachment.filter_slots": "%d 个过滤栏",
   "misc.fastpipes.second": "秒",
   "misc.fastpipes.seconds": "秒",
