@@ -81,10 +81,12 @@ public class ItemInsertTransportCallback implements TransportCallback {
             return;
         }
 
-        // Try to insert the item (simulate first, then actually insert)
-        if (ItemHandlerHelper.insertItem(itemHandler, toInsert, true).isEmpty()) {
-            ItemHandlerHelper.insertItem(itemHandler, toInsert, false);
-        } else {
+        // Partial insertion: insert what fits, bounce only the remainder. Prevents the
+        // whole stack from bouncing (and often dropping in world) when only part fits.
+        ItemStack remainder = ItemHandlerHelper.insertItem(itemHandler, toInsert, false);
+        if (!remainder.isEmpty() && cancelCallback instanceof ItemBounceBackTransportCallback bb) {
+            bb.callWith(network, level, currentPos, remainder);
+        } else if (!remainder.isEmpty()) {
             cancelCallback.call(network, level, currentPos, cancelCallback);
         }
     }

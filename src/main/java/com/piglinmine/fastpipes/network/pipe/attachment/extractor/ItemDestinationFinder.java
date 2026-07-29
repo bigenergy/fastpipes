@@ -131,7 +131,19 @@ public class ItemDestinationFinder {
             return false;
         }
 
-        return ItemHandlerHelper.insertItem(handler, extracted, true).isEmpty();
+        // Room for *part* of the stack is enough — the extractor sends only what fits.
+        // Requiring the whole stack made a nearly-full destination unusable, which stalled
+        // extraction entirely once every destination was partially filled.
+        ItemStack remainder = ItemHandlerHelper.insertItem(handler, extracted, true);
+        int free = extracted.getCount() - remainder.getCount();
+
+        ItemNetwork network = (ItemNetwork) attachment.getPipe().getNetwork();
+        if (network != null) {
+            free -= network.getPendingInsertCount(
+                destination.getConnectedPipe().getLevel(), destination.getReceiver());
+        }
+
+        return free > 0;
     }
 
     public int getRoundRobinIndex() {

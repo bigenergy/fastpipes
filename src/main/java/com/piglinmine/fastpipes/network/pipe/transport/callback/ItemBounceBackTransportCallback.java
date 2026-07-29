@@ -50,7 +50,14 @@ public class ItemBounceBackTransportCallback implements TransportCallback {
 
     @Override
     public void call(Network network, Level level, BlockPos currentPos, TransportCallback cancelCallback) {
-        ItemStack remaining = toInsert.copy();
+        callWith(network, level, currentPos, toInsert);
+    }
+
+    /**
+     * Bounce the given stack (may be a partial remainder from ItemInsertTransportCallback).
+     */
+    public void callWith(Network network, Level level, BlockPos currentPos, ItemStack stack) {
+        ItemStack remaining = stack.copy();
 
         // 1) Try original source first
         IItemHandler sourceHandler = level.getCapability(Capabilities.ItemHandler.BLOCK, bounceBackItemHandlerPosition, bounceBackDirection);

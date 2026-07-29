@@ -140,6 +140,10 @@ public class ItemTransport {
         return value;
     }
 
+    public BlockPos getDestination() {
+        return destination;
+    }
+
     public Direction getDirection(ItemPipe currentPipe) {
         BlockPos nextPipe = path.peek();
 
