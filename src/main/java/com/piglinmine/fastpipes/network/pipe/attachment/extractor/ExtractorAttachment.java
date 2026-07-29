@@ -176,25 +176,43 @@ public class ExtractorAttachment extends Attachment {
                 continue;
             }
 
-            // Pre-check destination capacity — don't extract if items can't fit there.
-            // TODO 1.21.11: Capabilities.Item.BLOCK now returns ResourceHandler<ItemResource>; wrap via IItemHandler.of()
-            var capExtractorDest = pipe.getLevel().getCapability(
-                Capabilities.Item.BLOCK,
-                destination.getReceiver(),
-                destination.getIncomingDirection().getOpposite()
-            );
-            IItemHandler destHandler = capExtractorDest == null ? null : IItemHandler.of(capExtractorDest);
-            if (destHandler == null) {
-                slot++;
-                continue;
+            Attachment destAttachment = destination.getConnectedPipe()
+                .getAttachmentManager()
+                .getAttachment(destination.getIncomingDirection());
+            boolean voidDestination = destAttachment != null && destAttachment.isVoidDestination();
+
+            int fits;
+            if (voidDestination) {
+                // A void destination has no adjacent inventory and no capability (see
+                // NetworkGraphScanner) — it swallows whatever arrives, so skip the capacity probe.
+                fits = simulated.getCount();
+            } else {
+                var capExtractorDest = pipe.getLevel().getCapability(
+                    Capabilities.Item.BLOCK,
+                    destination.getReceiver(),
+                    destination.getIncomingDirection().getOpposite()
+                );
+                IItemHandler destHandler = capExtractorDest == null ? null : IItemHandler.of(capExtractorDest);
+                if (destHandler == null) {
+                    slot++;
+                    continue;
+                }
+                // Extract only what the destination can actually accept — otherwise items pile
+                // up in transit, arrive full, and drop in the world when the source (farmer
+                // villager, generator, one-way inventory) refuses the bounce-back. The simulation
+                // reports the inventory as it is now, so items already in transit toward it have
+                // to be discounted too.
+                ItemStack destRemainder = ItemHandlerHelper.insertItem(destHandler, simulated, true);
+                fits = simulated.getCount() - destRemainder.getCount()
+                    - network.getPendingInsertCount(pipe.getLevel(), destination.getReceiver());
             }
-            ItemStack destRemainder = ItemHandlerHelper.insertItem(destHandler, simulated, true);
-            if (!destRemainder.isEmpty()) {
+
+            if (fits <= 0) {
                 slot++;
                 continue;
             }
 
-            ItemStack extracted = source.extractItem(slot, remaining, false);
+            ItemStack extracted = source.extractItem(slot, fits, false);
             if (extracted.isEmpty()) {
                 slot++;
                 continue;
@@ -211,6 +229,9 @@ public class ExtractorAttachment extends Attachment {
                 new ItemBounceBackTransportCallback(sourcePos, getDirection().getOpposite(), extracted),
                 new ItemPipeGoneTransportCallback(extracted)
             ));
+
+            // Book the space so the next loop iteration doesn't hand out the same slot twice.
+            network.reservePendingInsert(pipe.getLevel(), destination.getReceiver(), extracted.getCount());
 
             // If slot still has items, try it again; otherwise move to next
             if (source.getStackInSlot(slot).isEmpty()) {

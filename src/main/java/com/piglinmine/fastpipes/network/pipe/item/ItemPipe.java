@@ -113,6 +113,14 @@ public class ItemPipe extends Pipe {
         return transports;
     }
 
+    /**
+     * Transports created this tick that haven't been merged into {@link #getTransports()} yet.
+     * They are already in flight as far as destination capacity is concerned.
+     */
+    public List<ItemTransport> getQueuedTransports() {
+        return transportsToAdd;
+    }
+
     public void addTransport(ItemTransport transport) {
         transportsToAdd.add(transport);
     }

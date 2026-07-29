@@ -50,7 +50,14 @@ public class ItemBounceBackTransportCallback implements TransportCallback {
 
     @Override
     public void call(Network network, Level level, BlockPos currentPos, TransportCallback cancelCallback) {
-        ItemStack remaining = toInsert.copy();
+        callWith(network, level, currentPos, toInsert);
+    }
+
+    /**
+     * Bounce the given stack (may be a partial remainder from ItemInsertTransportCallback).
+     */
+    public void callWith(Network network, Level level, BlockPos currentPos, ItemStack stack) {
+        ItemStack remaining = stack.copy();
 
         // 1) Try original source first
         // TODO 1.21.11: Capabilities.Item.BLOCK now returns ResourceHandler<ItemResource>; wrap via IItemHandler.of()
