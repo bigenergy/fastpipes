@@ -187,13 +187,17 @@ public class ExtractorAttachment extends Attachment {
                 slot++;
                 continue;
             }
+            // Extract only what the destination can actually accept — otherwise items pile
+            // up in transit, arrive full, and drop in the world when the source (farmer
+            // villager, generator, one-way inventory) refuses the bounce-back.
             ItemStack destRemainder = net.minecraftforge.items.ItemHandlerHelper.insertItem(destHandler, simulated, true);
-            if (!destRemainder.isEmpty()) {
+            int fits = simulated.getCount() - destRemainder.getCount();
+            if (fits <= 0) {
                 slot++;
                 continue;
             }
 
-            ItemStack extracted = source.extractItem(slot, remaining, false);
+            ItemStack extracted = source.extractItem(slot, fits, false);
             if (extracted.isEmpty()) {
                 slot++;
                 continue;
