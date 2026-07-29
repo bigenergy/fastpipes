@@ -2,10 +2,35 @@
   "variants": {
     "": {
       "type": "fastpipes:pipe",
-      "core": { "model": "fastpipes:block/pipe/energy/advanced/core" },
-      "extension": { "model": "fastpipes:block/pipe/energy/advanced/extension" },
-      "straight": { "model": "fastpipes:block/pipe/energy/advanced/straight" },
-      "inventory_attachment": { "model": "fastpipes:block/pipe/attachment/inventory_attachment" }
+      "core": {
+        "model": "fastpipes:block/pipe/energy/advanced/core"
+      },
+      "extension": {
+        "model": "fastpipes:block/pipe/energy/advanced/extension"
+      },
+      "straight": {
+        "model": "fastpipes:block/pipe/energy/advanced/straight"
+      },
+      "inventory_attachment": {
+        "model": "fastpipes:block/pipe/attachment/inventory_attachment"
+      },
+      "attachments": {
+        "fastpipes:basic_extractor": {
+          "model": "fastpipes:block/pipe/attachment/extractor/basic"
+        },
+        "fastpipes:improved_extractor": {
+          "model": "fastpipes:block/pipe/attachment/extractor/improved"
+        },
+        "fastpipes:advanced_extractor": {
+          "model": "fastpipes:block/pipe/attachment/extractor/advanced"
+        },
+        "fastpipes:elite_extractor": {
+          "model": "fastpipes:block/pipe/attachment/extractor/elite"
+        },
+        "fastpipes:ultimate_extractor": {
+          "model": "fastpipes:block/pipe/attachment/extractor/ultimate"
+        }
+      }
     }
   }
 }

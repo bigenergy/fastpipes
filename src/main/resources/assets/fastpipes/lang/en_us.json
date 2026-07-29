@@ -41,6 +41,7 @@
   "tooltip.fastpipes.energy_pipe.transfer_rate": "Transfer rate: %s",
   "tooltip.fastpipes.extractor_attachment.item_extraction_rate": "Extracts %s every %s",
   "tooltip.fastpipes.extractor_attachment.fluid_extraction_rate": "Extracts %s every %s",
+  "tooltip.fastpipes.extractor_attachment.energy_extraction_rate": "Extracts %s every %s",
   "tooltip.fastpipes.extractor_attachment.filter_slots": "%d filter slots",
   "misc.fastpipes.second": "second",
   "misc.fastpipes.seconds": "seconds",
@@ -84,7 +85,7 @@
   "jei.fastpipes.elite_extractor_attachment.description": "Extracts items or fluids from inventories/tanks. Elite extraction rate.",
   "jei.fastpipes.ultimate_extractor_attachment.description": "Extracts items or fluids from inventories/tanks. Ultimate extraction rate.",
   
-  "tooltip.fastpipes.extractor_attachment.hint": "Place on a pipe facing an inventory to pull items/fluids",
+  "tooltip.fastpipes.extractor_attachment.hint": "Place on a pipe facing an inventory to pull items/fluids/energy",
   "tooltip.fastpipes.inserter_attachment.hint": "Place on a pipe to mark it as an item destination",
   "tooltip.fastpipes.attachment.place": "Right-click a pipe side to place",
   "tooltip.fastpipes.attachment.remove": "Sneak + empty hand to remove",
