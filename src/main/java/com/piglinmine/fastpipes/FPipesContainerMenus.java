@@ -40,6 +40,7 @@ public class FPipesContainerMenus {
                 boolean exactMode = data.readBoolean();
                 ExtractorAttachmentType type = ExtractorAttachmentType.get(data.readByte());
                 boolean fluidMode = data.readBoolean();
+                boolean energyMode = data.readBoolean();
 
                 // Read fluid filter contents from buffer
                 FluidInventory fluidFilter = ExtractorAttachment.createFluidFilterInventory(null);
@@ -54,7 +55,7 @@ public class FPipesContainerMenus {
                     windowId, inv.player, pos, dir, rm, bw, routingMode,
                     stackSize, exactMode, type,
                     ExtractorAttachment.createItemFilterInventory(null),
-                    fluidFilter, fluidMode
+                    fluidFilter, fluidMode, energyMode
                 );
             } else {
                 return new ExtractorAttachmentContainerMenu(windowId, inv.player);
