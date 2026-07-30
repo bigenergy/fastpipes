@@ -90,6 +90,8 @@
   "jei.fastpipes.ultimate_extractor_attachment.description": "Извлекает предметы или жидкости из инвентарей и баков. Ультимативная скорость извлечения.",
 
   "item.fastpipes.wrench": "Трубный ключ",
+  "tooltip.fastpipes.attachment.hint1": "ПКМ по стороне трубы — установка на эту сторону",
+  "tooltip.fastpipes.attachment.hint2": "Присесть + ПКМ — установка на противоположную сторону",
   "tooltip.fastpipes.wrench.hint1": "ПКМ по стороне трубы для отключения/подключения",
   "tooltip.fastpipes.wrench.hint2": "Присесть + ПКМ для разрушения трубы",
   "jei.fastpipes.wrench.description": "ПКМ по стороне трубы для отключения или подключения соединения. Присесть + ПКМ для разрушения трубы.",

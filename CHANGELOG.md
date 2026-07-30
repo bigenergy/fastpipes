@@ -1,4 +1,14 @@
 # Changelog
+## [1.3.8] - 2026-07-30
+
+### Fixed
+- **Nearest-first routing behaved like round-robin** — an extractor set to *Nearest First* spread its output across every destination one delivery at a time instead of filling the closest one. The in-flight reservation added in 1.3.6 was being compared against the wrong number: a simulated insert only reports how much of the *offered* stack fits (so at most the configured stack size), while the reservation counts every item on the way, uncapped. Subtracting the second from the first made any destination with a single stack in transit read as completely full, so the extractor moved on to the next one — and by the time it came back around, a new delivery was in the air again. Free space is now measured against the destination's real remaining room, so *Nearest First* fills the nearest inventory and only moves on when it is genuinely out of space. The 1.3.6 guarantee still holds: nothing is ever dispatched beyond what the destination can hold, so items still never bounce or drop.
+- **Sneak+right-click with a wrench did nothing** — Minecraft suppresses a block's own right-click handler whenever the player sneaks while holding an item, and the engine's opt-out only takes effect when *both* hands agree to it. The default answer for a non-empty hand is "no", so anything at all in the off hand cancelled the wrench gesture and the click was swallowed with no feedback. Breaking a pipe with the wrench now works regardless of what is in the off hand, and the same fix applies to wrenches from other mods.
+- **Attachments could not be placed on a pipe side that was walled in** — the clickable target for placing an attachment was the 3-pixel plate at the outer edge of a face, and that plate is only part of the pipe's hit box on sides that already have a pipe connection or an inventory. On a bare side there was nothing to hit, and where a neighbouring block covered the face the plate was unreachable, so the only way to fit an attachment was to break the block next to the pipe first. Clicking anywhere on a pipe face now places the attachment on that face, and sneak+clicking places it on the *opposite* face — which reaches sides that are boxed in.
+
+### Security
+- Wrench-breaking a pipe now respects build permission, so it cannot be used to bypass adventure mode or a protected region.
+
 ## [1.3.7] - 2026-07-30
 
 ### Added
