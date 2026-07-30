@@ -45,5 +45,6 @@ public class FastPipes {
 
         // Register forge event listeners
         NeoForge.EVENT_BUS.addListener(CommonSetup::onLevelTick);
+        NeoForge.EVENT_BUS.addListener(CommonSetup::onRightClickBlock);
     }
 } 

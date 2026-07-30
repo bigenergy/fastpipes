@@ -129,8 +129,14 @@ public class ItemDestinationFinder {
         // Room for *part* of the stack is enough — the extractor sends only what fits.
         // Requiring the whole stack made a nearly-full destination unusable, which stalled
         // extraction entirely once every destination was partially filled.
+        // A handler can refuse an item through insertItem alone, so keep the probe as a gate.
         ItemStack remainder = ItemHandlerHelper.insertItem(handler, extracted, true);
-        int free = extracted.getCount() - remainder.getCount();
+        int accepts = extracted.getCount() - remainder.getCount();
+        if (accepts <= 0) {
+            return false;
+        }
+
+        int free = Math.max(accepts, getFreeSpace(handler, extracted));
 
         ItemNetwork network = (ItemNetwork) attachment.getPipe().getNetwork();
         if (network != null) {
@@ -139,6 +145,41 @@ public class ItemDestinationFinder {
         }
 
         return free > 0;
+    }
+
+
+    /**
+     * Room actually left for {@code stack} in {@code handler}, counting every slot.
+     * <p>
+     * Simulating an insert only reports how much of the *offered* stack fits, so the result is
+     * capped by the offered count. Subtracting the network's in-flight reservation — which counts
+     * every item on the way, uncapped — from that clamped number made a destination with any
+     * delivery in transit look completely full. With NEAREST routing that silently degraded into
+     * round-robin: the closest barrel was skipped for as long as one stack was travelling toward
+     * it, so a row of barrels each got one delivery in turn instead of the first being filled.
+     * <p>
+     * Callers floor this against what a simulated insert reports, because a handler that accepts
+     * through {@code insertItem} while denying {@code isItemValid} would otherwise read as full.
+     */
+    public static int getFreeSpace(IItemHandler handler, ItemStack stack) {
+        long free = 0;
+        for (int slot = 0; slot < handler.getSlots(); slot++) {
+            ItemStack inSlot = handler.getStackInSlot(slot);
+            int slotLimit = handler.getSlotLimit(slot);
+
+            if (inSlot.isEmpty()) {
+                if (handler.isItemValid(slot, stack)) {
+                    free += Math.min(slotLimit, stack.getMaxStackSize());
+                }
+            } else if (ItemStack.isSameItemSameComponents(inSlot, stack)) {
+                free += Math.max(0, Math.min(slotLimit, inSlot.getMaxStackSize()) - inSlot.getCount());
+            }
+
+            if (free >= Integer.MAX_VALUE) {
+                return Integer.MAX_VALUE;
+            }
+        }
+        return (int) free;
     }
 
     public int getRoundRobinIndex() {

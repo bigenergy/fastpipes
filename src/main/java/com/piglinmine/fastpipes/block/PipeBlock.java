@@ -218,6 +218,9 @@ public abstract class PipeBlock extends Block implements EntityBlock, SimpleWate
 
         // Wrench: shift+right-click to break pipe (supports cross-mod wrenches via ItemAbility)
         if (WrenchItem.isWrench(held) && player.isCrouching()) {
+            if (!player.mayBuild()) {
+                return InteractionResult.PASS;
+            }
             if (!level.isClientSide()) {
                 level.destroyBlock(pos, !player.isCreative(), player);
             }
@@ -249,6 +252,14 @@ public abstract class PipeBlock extends Block implements EntityBlock, SimpleWate
                 && pipeBlockEntity.getAttachmentManager().hasAttachment(hit.getDirection())) {
                 dirClicked = hit.getDirection();
             }
+        }
+
+        // Placing an attachment: the 3px attachment plate only joins the pipe's hit box on sides
+        // that already have a pipe connection or an inventory, so on a bare side there is nothing
+        // to hit and placement was outright impossible. Fall back to the clicked face; sneaking
+        // aims at the opposite side instead, for faces that are walled in by a neighbour block.
+        if (dirClicked == null && held.getItem() instanceof AttachmentItem) {
+            dirClicked = player.isCrouching() ? hit.getDirection().getOpposite() : hit.getDirection();
         }
 
         if (dirClicked != null) {
