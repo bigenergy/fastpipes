@@ -1,6 +1,7 @@
 package com.piglinmine.fastpipes.item;
 
 import com.piglinmine.fastpipes.network.pipe.attachment.AttachmentFactory;
+import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -30,6 +31,11 @@ public class AttachmentItem extends Item {
         for (Component line : tooltip) {
             tooltipAdder.accept(line);
         }
+
+        tooltipAdder.accept(Component.translatable("tooltip.fastpipes.attachment.hint1")
+            .withStyle(ChatFormatting.DARK_GRAY, ChatFormatting.ITALIC));
+        tooltipAdder.accept(Component.translatable("tooltip.fastpipes.attachment.hint2")
+            .withStyle(ChatFormatting.DARK_GRAY, ChatFormatting.ITALIC));
     }
 
     public AttachmentFactory getFactory() {

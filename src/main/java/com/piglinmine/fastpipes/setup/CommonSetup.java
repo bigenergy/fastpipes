@@ -23,9 +23,15 @@ import com.piglinmine.fastpipes.network.pipe.fluid.FluidPipeType;
 import com.piglinmine.fastpipes.network.pipe.item.ItemPipe;
 import com.piglinmine.fastpipes.network.pipe.item.ItemPipeFactory;
 import com.piglinmine.fastpipes.network.pipe.transport.callback.TransportCallbackFactoryRegistry;
+import com.piglinmine.fastpipes.block.PipeBlock;
+import com.piglinmine.fastpipes.item.AttachmentItem;
+import com.piglinmine.fastpipes.item.WrenchItem;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.TriState;
+import net.minecraft.world.item.ItemStack;
 import com.piglinmine.fastpipes.FastPipes;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLConstructModEvent;
@@ -135,6 +141,33 @@ public class CommonSetup {
         LOGGER.debug("Registered SensorAttachmentFactory for type: {}", SensorAttachmentType.INSTANCE.getId());
 
         LOGGER.debug("Attachment factories registered successfully");
+    }
+
+    /**
+     * Lets sneak+right-click reach the pipe's own interaction handler at all.
+     * <p>
+     * Vanilla suppresses a block's right-click handling whenever the player sneaks while holding
+     * an item, and the {@code doesSneakBypassUse} escape hatch only takes effect when *both* hands
+     * agree (see {@code ServerPlayerGameMode#useItemOn}, which calls it once per hand). The default
+     * implementation returns {@code stack.isEmpty()}, so anything at all in the off hand cancelled
+     * the bypass and the click was swallowed with no feedback — wrench-breaking a pipe only worked
+     * with a completely empty off hand. Forcing {@code useBlock} to TRUE runs the block's handler
+     * regardless, on both sides, and covers third-party wrenches too.
+     */
+    @SubscribeEvent
+    public static void onRightClickBlock(PlayerInteractEvent.RightClickBlock event) {
+        if (!event.getEntity().isSecondaryUseActive()) {
+            return;
+        }
+
+        if (!(event.getLevel().getBlockState(event.getPos()).getBlock() instanceof PipeBlock)) {
+            return;
+        }
+
+        ItemStack held = event.getItemStack();
+        if (WrenchItem.isWrench(held) || held.getItem() instanceof AttachmentItem) {
+            event.setUseBlock(TriState.TRUE);
+        }
     }
 
     @SubscribeEvent
