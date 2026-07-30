@@ -23,8 +23,14 @@ import com.piglinmine.fastpipes.network.pipe.fluid.FluidPipeType;
 import com.piglinmine.fastpipes.network.pipe.item.ItemPipe;
 import com.piglinmine.fastpipes.network.pipe.item.ItemPipeFactory;
 import com.piglinmine.fastpipes.network.pipe.transport.callback.TransportCallbackFactoryRegistry;
+import com.piglinmine.fastpipes.block.PipeBlock;
+import com.piglinmine.fastpipes.item.AttachmentItem;
+import com.piglinmine.fastpipes.item.WrenchItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -130,6 +136,33 @@ public class CommonSetup {
         LOGGER.debug("Registered SensorAttachmentFactory for type: {}", SensorAttachmentType.INSTANCE.getId());
 
         LOGGER.debug("Attachment factories registered successfully");
+    }
+
+    /**
+     * Lets sneak+right-click reach {@link PipeBlock#use} at all.
+     * <p>
+     * Vanilla suppresses Block#use whenever the player sneaks while holding an item, and Forge's
+     * {@code doesSneakBypassUse} escape hatch only takes effect when *both* hands agree (see
+     * {@code ServerPlayerGameMode#useItemOn} and {@code MultiPlayerGameMode#performUseItemOn}).
+     * The default implementation returns {@code stack.isEmpty()}, so anything at all in the off
+     * hand cancelled the bypass and the click was swallowed with no feedback — wrench-breaking a
+     * pipe only worked with a completely empty off hand. Forcing {@code useBlock} to ALLOW runs
+     * the block's own handler regardless, on both sides, and covers third-party wrenches too.
+     */
+    @SubscribeEvent
+    public static void onRightClickBlock(PlayerInteractEvent.RightClickBlock event) {
+        if (!event.getEntity().isSecondaryUseActive()) {
+            return;
+        }
+
+        if (!(event.getLevel().getBlockState(event.getPos()).getBlock() instanceof PipeBlock)) {
+            return;
+        }
+
+        ItemStack held = event.getItemStack();
+        if (WrenchItem.isWrench(held) || held.getItem() instanceof AttachmentItem) {
+            event.setUseBlock(Event.Result.ALLOW);
+        }
     }
 
     @SubscribeEvent

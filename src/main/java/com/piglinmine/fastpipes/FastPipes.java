@@ -44,5 +44,6 @@ public class FastPipes {
 
         // Register forge event listeners
         MinecraftForge.EVENT_BUS.addListener(CommonSetup::onLevelTick);
+        MinecraftForge.EVENT_BUS.addListener(CommonSetup::onRightClickBlock);
     }
 }

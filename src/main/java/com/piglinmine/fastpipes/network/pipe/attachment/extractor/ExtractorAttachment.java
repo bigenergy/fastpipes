@@ -275,8 +275,13 @@ public class ExtractorAttachment extends Attachment {
                 // reports the inventory as it is now, so items already in transit toward it have
                 // to be discounted too.
                 ItemStack destRemainder = net.minecraftforge.items.ItemHandlerHelper.insertItem(destHandler, simulated, true);
-                fits = simulated.getCount() - destRemainder.getCount()
+                int accepts = simulated.getCount() - destRemainder.getCount();
+                // `accepts` is capped by how much we offered, the reservation is not — cap the
+                // reservation against the destination's real remaining room instead, or a single
+                // stack in transit would zero out an otherwise empty inventory.
+                int roomLeft = Math.max(accepts, ItemDestinationFinder.getFreeSpace(destHandler, simulated))
                     - network.getPendingInsertCount(pipe.getLevel(), destination.getReceiver());
+                fits = Math.min(accepts, roomLeft);
             }
 
             if (fits <= 0) {
