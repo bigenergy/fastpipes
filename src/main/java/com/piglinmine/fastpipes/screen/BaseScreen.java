@@ -19,6 +19,14 @@ public abstract class BaseScreen<T extends BaseContainerMenu> extends AbstractCo
         super(screenContainer, inv, title);
     }
 
+    public int getGuiLeftPos() {
+        return leftPos;
+    }
+
+    public int getGuiTopPos() {
+        return topPos;
+    }
+
     @Override
     protected void renderBg(GuiGraphics graphics, float partialTicks, int mouseX, int mouseY) {
         for (FluidFilterSlot slot : menu.getFluidSlots()) {
