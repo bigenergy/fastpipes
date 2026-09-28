@@ -4,6 +4,8 @@ import com.piglinmine.fastpipes.menu.slot.FilterSlot;
 import com.piglinmine.fastpipes.menu.slot.FluidFilterSlot;
 import com.piglinmine.fastpipes.network.FastPipesNetwork;
 import com.piglinmine.fastpipes.network.message.FluidFilterSlotUpdateMessage;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -87,6 +89,40 @@ public class BaseContainerMenu extends AbstractContainerMenu {
 
     public List<FluidFilterSlot> getFluidSlots() {
         return fluidSlots;
+    }
+
+    /**
+     * Position of the block this menu belongs to, or {@code null} when the menu is
+     * not tied to a pipe attachment (e.g. the terminal).
+     */
+    @Nullable
+    public BlockPos getPos() {
+        return null;
+    }
+
+    /**
+     * Side of the block this menu belongs to, or {@code null} when the menu is not
+     * tied to a pipe attachment (e.g. the terminal).
+     */
+    @Nullable
+    public Direction getDirection() {
+        return null;
+    }
+
+    /**
+     * Tag override ("#namespace:tag") configured for a filter slot, or an empty
+     * string if the slot has none. Menus without tag-override support always
+     * return an empty string.
+     */
+    public String getTagOverride(int slot) {
+        return "";
+    }
+
+    /**
+     * Sets the tag override of a filter slot and syncs it to the server. Menus
+     * without tag-override support ignore this.
+     */
+    public void setTagOverride(int slot, String value) {
     }
 
     @Override
