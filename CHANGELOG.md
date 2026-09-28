@@ -1,4 +1,9 @@
 # Changelog
+## [1.3.9] - 2026-09-29
+
+### Fixed
+- **Server crash (`StackOverflowError`) when pipes sit next to Mekanism logistical transporters** — a pipe answers "can you take this item?" by simulating an insert into each candidate destination, so that it never accepts an item it cannot deliver. Mekanism answers the same question the same way: every insert into a logistical transporter recalculates its path, which enumerates acceptors, which simulates an insert back into the pipe. Neither side could answer without asking the other, so the two recursed until the tick loop died and took the server with it. A pipe now refuses an insert that it is already in the middle of routing, which ends the exchange. The refusal costs at most one missed routing opportunity that tick — the pipe never claims an item it cannot deliver, so nothing is dropped or lost.
+
 ## [1.3.8] - 2026-07-30
 
 ### Fixed

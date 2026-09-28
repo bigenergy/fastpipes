@@ -77,6 +77,24 @@ public class ItemPipeBlockEntity extends PipeBlockEntity {
         this.props = props;
     }
 
+
+    /**
+     * Set while this pipe's item handler is working out where an incoming stack would go.
+     * <p>
+     * Our handler answers "can you take this?" by simulating an insert into each candidate
+     * destination. Other transport mods answer the same question the same way — Mekanism's
+     * logistical transporter recalculates its path on every {@code insertItem}, which enumerates
+     * acceptors, which simulates an insert back into us. Pipe asks transporter, transporter asks
+     * pipe, and the two recurse until the server tick dies with a StackOverflowError.
+     * <p>
+     * Neither side can answer without consulting the other, so someone has to stop asking. A
+     * re-entrant call reports the pipe as unable to accept: refusing costs at most one missed
+     * routing opportunity this tick, while claiming to accept would take items we cannot promise
+     * to deliver. Thread-scoped because the guard must not leak between the server thread and
+     * whatever thread a mod might probe capabilities from.
+     */
+    private static final ThreadLocal<Boolean> ROUTING_IN_PROGRESS = ThreadLocal.withInitial(() -> Boolean.FALSE);
+
     // NeoForge Capability Handler — exposes the pipe as a push target for adjacent machines
     public IItemHandler getItemHandler(Direction side) {
         if (level == null || level.isClientSide()) return null;
@@ -96,23 +114,32 @@ public class ItemPipeBlockEntity extends PipeBlockEntity {
             @Override
             public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
                 if (stack.isEmpty()) return ItemStack.EMPTY;
-                BlockPos sourcePos = worldPosition.relative(side);
-                Destination destination = cache.findNearestDestination(
-                    worldPosition, d -> isPushDestinationApplicable(d, sourcePos, side, stack));
-                if (destination == null) return stack;
-                if (simulate) return ItemStack.EMPTY;
-                Path<BlockPos> path = cache.getPath(worldPosition, destination);
-                if (path == null) return stack;
-                itemPipe.addTransport(new ItemTransport(
-                    stack.copy(),
-                    sourcePos,
-                    destination.getReceiver(),
-                    path.toQueue(),
-                    new ItemInsertTransportCallback(destination.getReceiver(), destination.getIncomingDirection(), stack),
-                    new ItemBounceBackTransportCallback(sourcePos, side, stack),
-                    new ItemPipeGoneTransportCallback(stack)
-                ));
-                return ItemStack.EMPTY;
+
+                // Reached through our own destination probing — see ROUTING_IN_PROGRESS.
+                if (ROUTING_IN_PROGRESS.get()) return stack;
+
+                ROUTING_IN_PROGRESS.set(Boolean.TRUE);
+                try {
+                    BlockPos sourcePos = worldPosition.relative(side);
+                    Destination destination = cache.findNearestDestination(
+                        worldPosition, d -> isPushDestinationApplicable(d, sourcePos, side, stack));
+                    if (destination == null) return stack;
+                    if (simulate) return ItemStack.EMPTY;
+                    Path<BlockPos> path = cache.getPath(worldPosition, destination);
+                    if (path == null) return stack;
+                    itemPipe.addTransport(new ItemTransport(
+                        stack.copy(),
+                        sourcePos,
+                        destination.getReceiver(),
+                        path.toQueue(),
+                        new ItemInsertTransportCallback(destination.getReceiver(), destination.getIncomingDirection(), stack),
+                        new ItemBounceBackTransportCallback(sourcePos, side, stack),
+                        new ItemPipeGoneTransportCallback(stack)
+                    ));
+                    return ItemStack.EMPTY;
+                } finally {
+                    ROUTING_IN_PROGRESS.set(Boolean.FALSE);
+                }
             }
         };
     }
