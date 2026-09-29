@@ -1,9 +1,26 @@
 {
+  "conditions": [
+    {
+      "type": "fastpipes:content_enabled",
+      "content": "barrels"
+    }
+  ],
   "type": "minecraft:crafting_shaped",
-  "pattern": ["NNN", "NDN", "NNN"],
+  "pattern": [
+    "NNN",
+    "NDN",
+    "NNN"
+  ],
   "key": {
-    "N": {"tag": "forge:gems/diamond"},
-    "D": {"item": "fastpipes:gold_barrel_upgrade"}
+    "N": {
+      "tag": "forge:gems/diamond"
+    },
+    "D": {
+      "item": "fastpipes:gold_barrel_upgrade"
+    }
   },
-  "result": {"item": "fastpipes:diamond_barrel_upgrade", "count": 1}
+  "result": {
+    "item": "fastpipes:diamond_barrel_upgrade",
+    "count": 1
+  }
 }

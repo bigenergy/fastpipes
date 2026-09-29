@@ -1,11 +1,14 @@
 package com.piglinmine.fastpipes;
 
+import com.piglinmine.fastpipes.config.CommonConfig;
+import com.piglinmine.fastpipes.config.ContentEnabledCondition;
 import com.piglinmine.fastpipes.config.ServerConfig;
 import com.piglinmine.fastpipes.network.FastPipesNetwork;
 import com.piglinmine.fastpipes.setup.ClientSetup;
 import com.piglinmine.fastpipes.setup.CommonSetup;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
@@ -17,6 +20,7 @@ import net.minecraftforge.fml.loading.FMLEnvironment;
 public class FastPipes {
     public static final String MOD_ID = "fastpipes";
     public static final ServerConfig SERVER_CONFIG = new ServerConfig();
+    public static final CommonConfig COMMON_CONFIG = new CommonConfig();
 
     public FastPipes() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
@@ -33,8 +37,12 @@ public class FastPipes {
             modEventBus.register(ClientSetup.class);
         }
 
-        // Register server config
+        // Register configs. The content toggles are COMMON, not SERVER — see CommonConfig.
         ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, SERVER_CONFIG.getSpec());
+        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, COMMON_CONFIG.getSpec());
+
+        // Recipe condition backing the content toggles
+        CraftingHelper.register(ContentEnabledCondition.Serializer.INSTANCE);
 
         // Register networking
         FastPipesNetwork.register();

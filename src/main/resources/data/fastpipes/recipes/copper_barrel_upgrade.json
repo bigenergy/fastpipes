@@ -1,12 +1,31 @@
 {
+  "conditions": [
+    {
+      "type": "fastpipes:content_enabled",
+      "content": "barrels"
+    }
+  ],
   "type": "minecraft:crafting_shaped",
-  "pattern": ["CCC", "CBC", "CCC"],
+  "pattern": [
+    "CCC",
+    "CBC",
+    "CCC"
+  ],
   "key": {
-    "C": {"tag": "forge:ingots/copper"},
+    "C": {
+      "tag": "forge:ingots/copper"
+    },
     "B": [
-      {"item": "minecraft:barrel"},
-      {"item": "fastpipes:oak_barrel"}
+      {
+        "item": "minecraft:barrel"
+      },
+      {
+        "item": "fastpipes:oak_barrel"
+      }
     ]
   },
-  "result": {"item": "fastpipes:copper_barrel_upgrade", "count": 1}
+  "result": {
+    "item": "fastpipes:copper_barrel_upgrade",
+    "count": 1
+  }
 }

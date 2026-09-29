@@ -1,9 +1,26 @@
 {
+  "conditions": [
+    {
+      "type": "fastpipes:content_enabled",
+      "content": "barrels"
+    }
+  ],
   "type": "minecraft:crafting_shaped",
-  "pattern": ["III", "ICI", "III"],
+  "pattern": [
+    "III",
+    "ICI",
+    "III"
+  ],
   "key": {
-    "I": {"tag": "forge:ingots/iron"},
-    "C": {"item": "fastpipes:copper_barrel_upgrade"}
+    "I": {
+      "tag": "forge:ingots/iron"
+    },
+    "C": {
+      "item": "fastpipes:copper_barrel_upgrade"
+    }
   },
-  "result": {"item": "fastpipes:iron_barrel_upgrade", "count": 1}
+  "result": {
+    "item": "fastpipes:iron_barrel_upgrade",
+    "count": 1
+  }
 }

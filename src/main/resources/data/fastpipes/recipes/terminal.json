@@ -1,4 +1,10 @@
 {
+  "conditions": [
+    {
+      "type": "fastpipes:content_enabled",
+      "content": "terminal"
+    }
+  ],
   "type": "minecraft:crafting_shaped",
   "pattern": [
     "IGI",

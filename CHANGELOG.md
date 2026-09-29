@@ -1,4 +1,9 @@
 # Changelog
+## [1.4.0] - 2026-09-29
+
+### Added
+- **Config toggles to disable the barrels and the pipe terminal** — packs that already ship a storage system can now run FastPipes as a pure transport layer. `content.enableBarrels` hides the six tiered barrels and their five upgrade items; `content.enableTerminal` hides the pipe terminal. Disabled content is dropped from the creative tab and its recipes stop loading, so it also disappears from recipe viewers, which build their item lists from the creative tabs. Both default to `true`, and either can be turned back on: nothing is deregistered, so blocks already placed in a world keep working regardless of the setting — they just cannot be obtained again. The toggles live in the common config, because all three places that read them (creative tabs, recipe loading, recipe viewers) run where a per-world server config is not available yet. Changing them needs a restart or `/reload`, the same as any other recipe change.
+
 ## [1.3.9] - 2026-09-29
 
 ### Fixed

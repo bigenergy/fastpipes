@@ -1,9 +1,26 @@
 {
+  "conditions": [
+    {
+      "type": "fastpipes:content_enabled",
+      "content": "barrels"
+    }
+  ],
   "type": "minecraft:crafting_shaped",
-  "pattern": ["GGG", "GBG", "GGG"],
+  "pattern": [
+    "GGG",
+    "GBG",
+    "GGG"
+  ],
   "key": {
-    "G": {"tag": "forge:ingots/gold"},
-    "B": {"item": "fastpipes:iron_barrel"}
+    "G": {
+      "tag": "forge:ingots/gold"
+    },
+    "B": {
+      "item": "fastpipes:iron_barrel"
+    }
   },
-  "result": {"item": "fastpipes:gold_barrel", "count": 1}
+  "result": {
+    "item": "fastpipes:gold_barrel",
+    "count": 1
+  }
 }

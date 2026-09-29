@@ -1,9 +1,26 @@
 {
+  "conditions": [
+    {
+      "type": "fastpipes:content_enabled",
+      "content": "barrels"
+    }
+  ],
   "type": "minecraft:crafting_shaped",
-  "pattern": ["GGG", "GIG", "GGG"],
+  "pattern": [
+    "GGG",
+    "GIG",
+    "GGG"
+  ],
   "key": {
-    "G": {"tag": "forge:ingots/gold"},
-    "I": {"item": "fastpipes:iron_barrel_upgrade"}
+    "G": {
+      "tag": "forge:ingots/gold"
+    },
+    "I": {
+      "item": "fastpipes:iron_barrel_upgrade"
+    }
   },
-  "result": {"item": "fastpipes:gold_barrel_upgrade", "count": 1}
+  "result": {
+    "item": "fastpipes:gold_barrel_upgrade",
+    "count": 1
+  }
 }
