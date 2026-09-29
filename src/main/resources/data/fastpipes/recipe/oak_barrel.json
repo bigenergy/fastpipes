@@ -1,4 +1,10 @@
 {
+  "neoforge:conditions": [
+    {
+      "type": "fastpipes:content_enabled",
+      "content": "barrels"
+    }
+  ],
   "type": "minecraft:crafting_shaped",
   "pattern": [
     "PSP",
