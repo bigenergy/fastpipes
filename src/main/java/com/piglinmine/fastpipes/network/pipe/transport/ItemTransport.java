@@ -25,6 +25,10 @@ import java.util.Deque;
 
 public class ItemTransport {
     private static final Logger LOGGER = LogManager.getLogger(ItemTransport.class);
+    private static final long LOG_INTERVAL_MS = 10_000L;
+    private static final Object LOG_LOCK = new Object();
+    private static long lastLoggedAt;
+    private static int suppressedSinceLastLog;
 
     private final ItemStack value;
     private final BlockPos source;
@@ -159,10 +163,41 @@ public class ItemTransport {
         return true;
     }
 
-    private boolean onPipeGone(Network network, Level level, BlockPos posWherePipeIsGone) {
-        LOGGER.warn("Pipe on path is gone");
+    private boolean onPipeGone(Network network, Level level, BlockPos posWherePipeIsGone, String reason) {
+        logPathBroken(posWherePipeIsGone, reason);
         pipeGoneCallback.call(network, level, posWherePipeIsGone, cancelCallback);
         return true;
+    }
+
+    /**
+     * A broken path is not cosmetic: the callback hands the stack to whichever inventory in the
+     * network will take it, and drops it on the ground if none will. So the warning has to stay —
+     * but one line per affected item floods a busy server's log, and the old wording named
+     * neither the place nor which of the two checks tripped, which made reports impossible to act
+     * on. Report the details, then collapse repeats into a count.
+     */
+    private void logPathBroken(BlockPos brokenAt, String reason) {
+        synchronized (LOG_LOCK) {
+            long now = System.currentTimeMillis();
+            if (now - lastLoggedAt < LOG_INTERVAL_MS) {
+                suppressedSinceLastLog++;
+                return;
+            }
+
+            if (suppressedSinceLastLog > 0) {
+                LOGGER.warn(
+                    "Item transport path broken at {} ({}), carrying {} to {}; {} further"
+                        + " occurrences suppressed in the last {}s",
+                    brokenAt, reason, value, destination, suppressedSinceLastLog,
+                    LOG_INTERVAL_MS / 1000L);
+            } else {
+                LOGGER.warn("Item transport path broken at {} ({}), carrying {} to {}",
+                    brokenAt, reason, value, destination);
+            }
+
+            suppressedSinceLastLog = 0;
+            lastLoggedAt = now;
+        }
     }
 
     public boolean update(Network network, ItemPipe currentPipe) {
@@ -171,13 +206,20 @@ public class ItemTransport {
         double progress = (double) progressInCurrentPipe / (double) getMaxTicksInPipe(currentPipe);
 
         BlockPos nextPos = currentPipe.getPos().relative(getDirection(currentPipe));
-        if (progress > 0.25 && currentPipe.getLevel().isEmptyBlock(nextPos)) {
+        // Only judge a neighbour we can actually see. Pipes tick even while their chunk is
+        // unloaded, because Network#update walks every pipe in the network rather than relying
+        // on block entity ticking, so this check ran against unloaded positions — reading one
+        // forces a synchronous chunk load on the tick thread, the same hazard guarded everywhere
+        // else since 1.3.5. An unloaded neighbour is unknown, not missing; wait for it to load.
+        if (progress > 0.25
+            && currentPipe.getLevel().isLoaded(nextPos)
+            && currentPipe.getLevel().isEmptyBlock(nextPos)) {
             // Don't treat empty block as "pipe gone" if the current pipe has a void attachment facing that direction
             Direction dir = getDirection(currentPipe);
             Attachment att = currentPipe.getAttachmentManager().getAttachment(dir);
             if (att == null || !att.isVoidDestination()) {
                 currentPipe.removeTransport(this);
-                return onPipeGone(network, currentPipe.getLevel(), nextPos);
+                return onPipeGone(network, currentPipe.getLevel(), nextPos, "next block is air");
             }
         }
 
@@ -192,7 +234,8 @@ public class ItemTransport {
 
             Pipe nextPipe = network.getPipe(nextPipePos);
             if (nextPipe == null) {
-                return onPipeGone(network, currentPipe.getLevel(), nextPipePos);
+                return onPipeGone(network, currentPipe.getLevel(), nextPipePos,
+                    "next pipe is no longer part of this network");
             }
 
             progressInCurrentPipe = 0;

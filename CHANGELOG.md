@@ -1,4 +1,12 @@
 # Changelog
+## [1.4.1] - 2026-09-29
+
+### Fixed
+- **"Pipe on path is gone" spamming the server log** — the warning fired for pipes whose chunk simply was not loaded. Pipes tick even then, because the network walks every pipe it owns rather than relying on block entity ticking, so the check asking "is the next block still there?" was reading positions nobody could see — which also forced those chunks to load synchronously on the tick thread, the hazard guarded everywhere else since 1.3.5. An unloaded neighbour now counts as unknown rather than missing, and the item waits for it.
+
+### Changed
+- A genuinely broken transport path is still reported, but the message now names the position, which of the two checks tripped, the item and its intended destination, and repeats within ten seconds are collapsed into a count. The old message said only "Pipe on path is gone", which was impossible to act on. This warning is worth reading when it appears: a broken path means the item is handed to whichever inventory in the network will accept it, or dropped on the ground if none will, so it does not arrive where it was routed.
+
 ## [1.4.0] - 2026-09-29
 
 ### Added
