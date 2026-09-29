@@ -2,18 +2,31 @@ package com.piglinmine.fastpipes.integration.jei;
 
 import com.piglinmine.fastpipes.FastPipes;
 import com.piglinmine.fastpipes.FPipesItems;
+import com.piglinmine.fastpipes.screen.ExtractorAttachmentScreen;
+import com.piglinmine.fastpipes.screen.InserterAttachmentScreen;
+import com.piglinmine.fastpipes.screen.SensorAttachmentScreen;
+import com.piglinmine.fastpipes.screen.VoidAttachmentScreen;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.RecipeTypes;
+import mezz.jei.api.neoforge.NeoForgeTypes;
+import mezz.jei.api.registration.IExtraIngredientRegistration;
 import mezz.jei.api.registration.IGuiHandlerRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
 import mezz.jei.api.registration.IRecipeTransferRegistration;
 import mezz.jei.api.registration.ISubtypeRegistration;
 import mezz.jei.api.registration.IVanillaCategoryExtensionRegistration;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.Fluids;
+import net.neoforged.neoforge.fluids.FluidStack;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @JeiPlugin
 public class FastPipesJEIPlugin implements IModPlugin {
@@ -33,6 +46,26 @@ public class FastPipesJEIPlugin implements IModPlugin {
     @Override
     public void registerVanillaCategoryExtensions(IVanillaCategoryExtensionRegistration registration) {
         // Register extensions for vanilla categories if needed
+    }
+
+    @Override
+    public void registerExtraIngredients(IExtraIngredientRegistration registration) {
+        // JEI only lists fluids that report themselves as a source, which leaves out
+        // fluids that cannot be placed in the world and have no bucket item - the
+        // Iron's Spells inks being the motivating case. Register every other
+        // non-empty fluid so they show up in JEI and can be dragged onto a filter.
+        List<FluidStack> fluids = new ArrayList<>();
+        for (Fluid fluid : BuiltInRegistries.FLUID) {
+            if (fluid == Fluids.EMPTY || fluid == Fluids.FLOWING_WATER || fluid == Fluids.FLOWING_LAVA) {
+                continue;
+            }
+            fluids.add(new FluidStack(fluid, 1000));
+        }
+
+        if (!fluids.isEmpty()) {
+            registration.addExtraIngredients(NeoForgeTypes.FLUID_STACK, fluids);
+            LOGGER.debug("Registered {} extra fluid ingredients with JEI", fluids.size());
+        }
     }
 
     @Override
@@ -132,5 +165,11 @@ public class FastPipesJEIPlugin implements IModPlugin {
 
     @Override
     public void registerGuiHandlers(IGuiHandlerRegistration registration) {
+        // Let fluids (and fluid containers) be dragged from JEI onto the fluid
+        // filter slots of the attachment screens.
+        registration.addGhostIngredientHandler(ExtractorAttachmentScreen.class, new FluidFilterGhostIngredientHandler<>());
+        registration.addGhostIngredientHandler(InserterAttachmentScreen.class, new FluidFilterGhostIngredientHandler<>());
+        registration.addGhostIngredientHandler(VoidAttachmentScreen.class, new FluidFilterGhostIngredientHandler<>());
+        registration.addGhostIngredientHandler(SensorAttachmentScreen.class, new FluidFilterGhostIngredientHandler<>());
     }
 } 
